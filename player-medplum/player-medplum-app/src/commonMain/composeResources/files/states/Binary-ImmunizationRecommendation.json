@@ -1,0 +1,73 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "http://ohs.dev/ViewDefinition/ImmunizationRecommendation",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "recommendationId",
+          "path": "id",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        },
+        {
+          "name": "recommendationPatientRef",
+          "path": "patient.reference.replace('Patient/', '')",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        }
+      ],
+      "select": [
+        {
+          "forEach": "recommendation",
+          "column": [
+            {
+              "name": "doseLabel",
+              "path": "vaccineCode.text.first()",
+              "type": "http://hl7.org/fhir/StructureDefinition/string"
+            },
+            {
+              "name": "vaccineCode",
+              "path": "vaccineCode.coding.code.first()",
+              "type": "http://hl7.org/fhir/StructureDefinition/string"
+            },
+            {
+              "name": "vaccineSystem",
+              "path": "vaccineCode.coding.system.first()",
+              "type": "http://hl7.org/fhir/StructureDefinition/string"
+            },
+            {
+              "name": "vaccineDisplay",
+              "path": "vaccineCode.coding.display.first()",
+              "type": "http://hl7.org/fhir/StructureDefinition/string"
+            },
+            {
+              "name": "forecastStatus",
+              "path": "forecastStatus.coding.code.first()",
+              "type": "http://hl7.org/fhir/StructureDefinition/code"
+            },
+            {
+              "name": "series",
+              "path": "series",
+              "type": "http://hl7.org/fhir/StructureDefinition/string"
+            },
+            {
+              "name": "doseNumber",
+              "path": "doseNumber.ofType(positiveInt)",
+              "type": "http://hl7.org/fhir/StructureDefinition/integer"
+            },
+            {
+              "name": "dueDate",
+              "path": "dateCriterion.where(code.coding.code = '30980-7').value.first()",
+              "type": "http://hl7.org/fhir/StructureDefinition/dateTime"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "name": "ImmunizationRecommendation",
+  "status": "active",
+  "resource": "ImmunizationRecommendation"
+}

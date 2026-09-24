@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Required for FHIR sync and the OIDC auth flow (discovery, token exchange, userinfo). -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+      Every class named below lives in :player-medplum-app, not in this module. That is fine:
+      android:name resolves against the merged application's runtime classpath. The names are
+      spelled out in full rather than as ".MainActivity" precisely because they are not local:
+      the two modules happen to share a namespace, and a reader should not have to know that.
+    -->
+    <application
+        android:name="dev.ohs.player.medplum.OhsPlayerApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        <activity
+            android:exported="true"
+            android:name="dev.ohs.player.medplum.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          Captures the OAuth redirect. Declared in auth/Platform.android.kt alongside the
+          expect/actual AuthorizationLauncher it completes. The scheme/host are injected as manifest
+          placeholders by androidApp/build.gradle.kts, from the same OAUTH_REDIRECT_SCHEME /
+          OAUTH_REDIRECT_HOST values (env var or local.properties) that generateAuthConfig bakes
+          into GeneratedAuthConfig. Do not hardcode them here - they would silently drift.
+        -->
+        <activity
+            android:name="dev.ohs.player.medplum.auth.LoginRedirectActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="${oauthRedirectScheme}"
+                    android:host="${oauthRedirectHost}" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

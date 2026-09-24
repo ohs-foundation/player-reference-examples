@@ -1,0 +1,44 @@
+{
+  "resourceType": "CodeSystem",
+  "id": "view-type-codesystem",
+  "url": "http://example.org",
+  "name": "ViewTypeCS",
+  "title": "UI Component Types",
+  "status": "active",
+  "content": "complete",
+  "description": "View types this app renders. Each code selects a component the renderer binds to.",
+  "concept": [
+    {
+      "code": "PatientCard",
+      "display": "Patient summary list card"
+    },
+    {
+      "code": "PatientHeader",
+      "display": "Patient detail header"
+    },
+    {
+      "code": "ImmunizationItem",
+      "display": "Immunization row"
+    },
+    {
+      "code": "ImmunizationRecommendationItem",
+      "display": "Immunization due/overdue row"
+    },
+    {
+      "code": "ContactItem",
+      "display": "Caregiver row"
+    },
+    {
+      "code": "SectionCard",
+      "display": "Section wrapper"
+    },
+    {
+      "code": "GrowthItem",
+      "display": "Growth measurement row"
+    },
+    {
+      "code": "AdverseEventItem",
+      "display": "Adverse event (AEFI) row"
+    }
+  ]
+}

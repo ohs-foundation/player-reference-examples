@@ -1,0 +1,16 @@
+{
+  "resourceType": "http://ohs.dev/StructureDefinition/ViewConfig",
+  "viewType": "ImmunizationRecommendationItem",
+  "property": [
+    {
+      "name": "showDueDate",
+      "type": "boolean",
+      "valueBoolean": true
+    },
+    {
+      "name": "hideNotDue",
+      "type": "boolean",
+      "valueBoolean": true
+    }
+  ]
+}

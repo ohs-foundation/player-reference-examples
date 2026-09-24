@@ -1,0 +1,38 @@
+# Ignores specific to this example's Kotlin Multiplatform / Gradle build.
+# Editor, OS and agent ignores live in the repo-root .gitignore.
+
+# --- Gradle / Kotlin ---
+.gradle
+.kotlin
+# Matched by depth, not `**/build/`: a bare `**/build/` also swallows Kotlin
+# package directories named `build` (e.g. build-logic's dev.ohs.build), and git
+# cannot re-include a file whose parent directory is excluded. Every Gradle
+# project here sits at depth 1 or 2 from this file.
+/build/
+/*/build/
+/*/*/build/
+kotlin-js-store
+node_modules/
+
+# bin directories
+ig-codegen/bin/
+build-logic/bin/
+
+# --- Local config & signing material ---
+local.properties
+keystore.properties
+*.jks
+
+# --- Android ---
+captures
+.externalNativeBuild
+.cxx
+
+# --- Xcode ---
+xcuserdata
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings

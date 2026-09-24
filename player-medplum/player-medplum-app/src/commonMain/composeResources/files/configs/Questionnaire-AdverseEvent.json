@@ -1,0 +1,441 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "adverse-event",
+  "url": "https://medplum.player.ohs.dev/fhir/Questionnaire/adverse-event",
+  "version": "1.0.0",
+  "name": "AdverseEventFollowingImmunization",
+  "title": "Report adverse event",
+  "status": "active",
+  "date": "2026-09-21",
+  "subjectType": [
+    "Patient"
+  ],
+  "_comment": [
+    "AEFI report, scoped to the clinical core of a WHO AEFI investigation.",
+    "",
+    "The full WHO form is a 5-step investigation: vaccine lot and expiry, diluent and",
+    "its manufacturer, injection technique and site, hospitalisation and discharge dates, past",
+    "reaction history, and the investigating officer's own details. That is a national",
+    "pharmacovigilance instrument filled in by an investigator after the fact. This form is the",
+    "part a facility records at the point of care: which dose, what happened, how bad, and how it",
+    "ended. The rest is deliberately out of scope.",
+    "",
+    "Everything here is base R4 -- no extensions. severity, seriousness and outcome use FHIR's",
+    "own AdverseEvent code systems. The reaction is free text in AdverseEvent.event.text because",
+    "R4 defines no code system for AEFI manifestations, and inventing one would be worse than",
+    "saying it in words.",
+    "",
+    "The vaccine question has NO answerOption here on purpose: QuestionnaireService fills it at",
+    "launch with the doses this child actually received, so suspectEntity points at a real",
+    "Immunization rather than at a vaccine name."
+  ],
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId",
+      "valueString": "aefiId"
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#aefi-template"
+          }
+        },
+        {
+          "url": "resourceId",
+          "valueString": "%aefiId.replace('urn:uuid:', '')"
+        }
+      ]
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "AdverseEvent",
+      "id": "aefi-template",
+      "actuality": "actual",
+      "category": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/adverse-event-category",
+              "code": "product-use-error",
+              "display": "Product Use Error"
+            }
+          ],
+          "text": "Adverse event following immunization"
+        }
+      ],
+      "subject": {
+        "_reference": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "'Patient/__PATIENT_ID__'"
+              }
+            }
+          ]
+        }
+      },
+      "recorder": {
+        "_reference": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "'Practitioner/__PRACTITIONER_ID__'"
+              }
+            }
+          ]
+        }
+      },
+      "event": {
+        "_text": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "item.where(linkId='aefi-reaction').answer.value.first()"
+              }
+            }
+          ]
+        }
+      },
+      "_date": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueExpression": {
+              "language": "text/fhirpath",
+              "expression": "item.where(linkId='aefi-onset').answer.value.first()"
+            }
+          }
+        ]
+      },
+      "severity": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-severity",
+            "_code": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "item.where(linkId='aefi-severity').answer.value.ofType(Coding).code.first()"
+                  }
+                }
+              ]
+            },
+            "_display": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "item.where(linkId='aefi-severity').answer.value.ofType(Coding).display.first()"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "seriousness": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-seriousness",
+            "_code": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "item.where(linkId='aefi-serious').answer.value.ofType(Coding).code.first()"
+                  }
+                }
+              ]
+            },
+            "_display": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "item.where(linkId='aefi-serious').answer.value.ofType(Coding).display.first()"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "outcome": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-outcome",
+            "_code": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "item.where(linkId='aefi-outcome').answer.value.ofType(Coding).code.first()"
+                  }
+                }
+              ]
+            },
+            "_display": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "item.where(linkId='aefi-outcome').answer.value.ofType(Coding).display.first()"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "suspectEntity": [
+        {
+          "instance": {
+            "_reference": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "'Immunization/' + item.where(linkId='aefi-vaccine').answer.value.ofType(Coding).code.first()"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "item": [
+    {
+      "linkId": "patient-id",
+      "text": "Patient id",
+      "type": "string",
+      "readOnly": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "aefi-vaccine",
+      "text": "Which vaccine was given?",
+      "type": "choice",
+      "required": true,
+      "answerOption": []
+    },
+    {
+      "linkId": "aefi-onset",
+      "text": "When did the reaction start?",
+      "type": "dateTime",
+      "required": true
+    },
+    {
+      "linkId": "aefi-reaction",
+      "text": "What happened?",
+      "type": "choice",
+      "required": true,
+      "answerOption": [
+        {
+          "valueString": "Abscess at injection site"
+        },
+        {
+          "valueString": "Inflammation at injection site"
+        },
+        {
+          "valueString": "Swelling at injection site"
+        },
+        {
+          "valueString": "Oedema at injection site"
+        },
+        {
+          "valueString": "Urticaria (hives)"
+        },
+        {
+          "valueString": "Eczema"
+        },
+        {
+          "valueString": "Generalised oedema"
+        },
+        {
+          "valueString": "Anaphylactic shock"
+        },
+        {
+          "valueString": "Collapse / hypotonic-hyporesponsive episode"
+        },
+        {
+          "valueString": "Convulsions"
+        },
+        {
+          "valueString": "Loss of consciousness"
+        },
+        {
+          "valueString": "Brachial neuritis"
+        },
+        {
+          "valueString": "Acute flaccid paralysis"
+        },
+        {
+          "valueString": "Encephalopathy"
+        },
+        {
+          "valueString": "Lymphadenitis"
+        },
+        {
+          "valueString": "Fever"
+        },
+        {
+          "valueString": "Other"
+        }
+      ]
+    },
+    {
+      "linkId": "aefi-severity",
+      "text": "How severe was it?",
+      "type": "choice",
+      "required": true,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-severity",
+            "code": "mild",
+            "display": "Mild"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-severity",
+            "code": "moderate",
+            "display": "Moderate"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-severity",
+            "code": "severe",
+            "display": "Severe"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "radio-button",
+                "display": "Radio Button"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "aefi-serious",
+      "text": "Was it serious?",
+      "type": "choice",
+      "required": true,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-seriousness",
+            "code": "Non-serious",
+            "display": "Non-serious"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-seriousness",
+            "code": "Serious",
+            "display": "Serious"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "radio-button",
+                "display": "Radio Button"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "aefi-outcome",
+      "text": "How did it end?",
+      "type": "choice",
+      "required": true,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-outcome",
+            "code": "resolved",
+            "display": "Recovered"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-outcome",
+            "code": "recovering",
+            "display": "Recovering"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-outcome",
+            "code": "ongoing",
+            "display": "Still ongoing"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-outcome",
+            "code": "resolvedWithSequelae",
+            "display": "Recovered with lasting effects"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-outcome",
+            "code": "fatal",
+            "display": "Died"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/adverse-event-outcome",
+            "code": "unknown",
+            "display": "Unknown"
+          }
+        }
+      ]
+    }
+  ]
+}

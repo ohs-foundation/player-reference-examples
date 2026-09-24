@@ -1,0 +1,56 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "http://ohs.dev/ViewDefinition/AdverseEventReport",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "adverseEventId",
+          "path": "id",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        },
+        {
+          "name": "adverseEventReaction",
+          "path": "iif(event.text.exists(), event.text, event.coding.display.first())",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        },
+        {
+          "name": "adverseEventDate",
+          "path": "date",
+          "type": "http://hl7.org/fhir/StructureDefinition/dateTime"
+        },
+        {
+          "name": "adverseEventSeverity",
+          "path": "severity.coding.code.first()",
+          "type": "http://hl7.org/fhir/StructureDefinition/code"
+        },
+        {
+          "name": "adverseEventSeriousness",
+          "path": "seriousness.coding.code.first()",
+          "type": "http://hl7.org/fhir/StructureDefinition/code"
+        },
+        {
+          "name": "adverseEventOutcome",
+          "path": "outcome.coding.display.first()",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        },
+        {
+          "name": "adverseEventVaccineRef",
+          "path": "suspectEntity.instance.reference.first().replace('Immunization/', '')",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        },
+        {
+          "name": "adverseEventPatientRef",
+          "path": "subject.reference.replace('Patient/', '')",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        }
+      ]
+    }
+  ],
+  "name": "AdverseEventReport",
+  "status": "active",
+  "resource": "AdverseEvent"
+}

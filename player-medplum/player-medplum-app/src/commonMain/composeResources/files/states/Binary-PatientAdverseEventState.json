@@ -1,0 +1,23 @@
+{
+  "resourceType": "http://ohs.dev/StructureDefinition/ViewJoinMap",
+  "joins": [
+    {
+      "view": "PatientSummary",
+      "from": "included",
+      "resource": "Patient",
+      "searchParam": "patient",
+      "matchKey": "adverseEventPatientRef"
+    },
+    {
+      "view": "Immunization",
+      "from": "revIncluded",
+      "resource": "Immunization",
+      "searchParam": "patient",
+      "matchKey": "adverseEventVaccineRef"
+    }
+  ],
+  "name": "patientAdverseEvent",
+  "from": "revIncluded",
+  "resource": "AdverseEvent",
+  "view": "AdverseEventReport"
+}
