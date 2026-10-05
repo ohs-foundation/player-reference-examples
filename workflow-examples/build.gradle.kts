@@ -259,8 +259,7 @@ val generateAuthConfig =
     inputs.property("versionCode", versionCode)
     outputs.dir(outDir)
     doLast {
-      val pkgDir =
-        outDir.get().asFile.resolve("dev/ohs/player/reference/app/auth").apply { mkdirs() }
+      val pkgDir = outDir.get().asFile.resolve("dev/ohs/workflow/examples/auth").apply { mkdirs() }
       pkgDir
         .resolve("GeneratedAuthConfig.kt")
         .writeText(
