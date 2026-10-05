@@ -33,4 +33,9 @@ class HomeDestinationTest {
   fun nurseWorksPatients() {
     assertEquals(listOf(HomeDestination.Patients), AppRole.NURSE.destinations())
   }
+
+  @Test
+  fun clinicianWorksTheQueue() {
+    assertEquals(listOf(HomeDestination.Queue), AppRole.CLINICIAN.destinations())
+  }
 }

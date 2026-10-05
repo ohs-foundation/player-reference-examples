@@ -21,6 +21,8 @@ import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.Reference
 import dev.ohs.fhir.model.r4.ServiceRequest
 import dev.ohs.fhir.model.r4.Task
+import dev.ohs.workflow.examples.util.displayName
+import dev.ohs.workflow.examples.util.idOf
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
@@ -86,14 +88,6 @@ fun referrals(
       )
     }
     .sortedByDescending { it.date }
-
-fun Patient?.displayName(): String =
-  this?.name?.firstOrNull()?.let { name ->
-    (name.given.mapNotNull { it.value } + listOfNotNull(name.family?.value)).joinToString(" ")
-  } ?: ""
-
-fun Reference?.idOf(type: String): String? =
-  this?.reference?.value?.takeIf { it.startsWith("$type/") }?.removePrefix("$type/")
 
 private fun Reference?.isTo(reference: String) = this?.reference?.value == reference
 

@@ -13,6 +13,7 @@
     <string name="home_destination_patients">Patients</string>
     <string name="home_destination_follow_ups">Follow-ups</string>
     <string name="home_destination_referrals">Referrals</string>
+    <string name="home_destination_queue">OPD queue</string>
     <string name="home_registers">Registers</string>
     <string name="home_signed_in">Signed in</string>
     <string name="home_last_synced">Last synced: %1$s</string>
@@ -53,6 +54,16 @@
     <string name="follow_ups_empty">No follow-ups due</string>
     <string name="follow_up_done">Done</string>
     <string name="referrals_empty">No referrals sent</string>
+
+    <!-- OPD queue -->
+    <string name="queue_empty">No one is waiting</string>
+    <string name="queue_referral">Community referral</string>
+    <string name="queue_priority_stat">See now</string>
+    <string name="queue_priority_urgent">Urgent</string>
+    <string name="queue_priority_routine">Routine</string>
+    <string name="queue_outcome">Outcome</string>
+    <string name="queue_complete">Complete</string>
+    <string name="queue_cancel">Cancel</string>
 
     <!-- Patient list screen -->
     <string name="patient_list_title">Patients</string>

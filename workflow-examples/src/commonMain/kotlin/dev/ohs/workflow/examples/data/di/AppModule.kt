@@ -33,6 +33,7 @@ import dev.ohs.workflow.examples.data.sync.InitialSyncStore
 import dev.ohs.workflow.examples.data.sync.createSyncTimestampDataStore
 import dev.ohs.workflow.examples.feature.chw.ChwWorklistViewModel
 import dev.ohs.workflow.examples.feature.home.HomeViewModel
+import dev.ohs.workflow.examples.feature.opd.QueueViewModel
 import dev.ohs.workflow.examples.feature.patient.list.PatientListViewModel
 import dev.ohs.workflow.examples.feature.patient.profile.PatientProfileViewModel
 import dev.ohs.workflow.examples.feature.questionnaire.QuestionnaireHostViewModel
@@ -96,6 +97,7 @@ internal val viewModelModule = module {
   viewModel { PatientListViewModel(get()) }
   viewModel { (patientId: String) -> PatientProfileViewModel(patientId, get()) }
   viewModel { (context: UserContext) -> ChwWorklistViewModel(context, get()) }
+  viewModel { (context: UserContext) -> QueueViewModel(context, get(), get()) }
   viewModel { (questionnaireId: String, launchContext: QuestionnaireLaunchContext) ->
     QuestionnaireHostViewModel(questionnaireId, launchContext, get())
   }

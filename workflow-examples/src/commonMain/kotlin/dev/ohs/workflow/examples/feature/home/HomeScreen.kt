@@ -76,6 +76,7 @@ import androidx.window.core.layout.WindowSizeClass
 import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.feature.chw.FollowUpsScreen
 import dev.ohs.workflow.examples.feature.chw.ReferralsScreen
+import dev.ohs.workflow.examples.feature.opd.QueueScreen
 import dev.ohs.workflow.examples.feature.patient.list.PatientListScreen
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -255,6 +256,7 @@ fun HomeScreen(
           PatientListScreen(onPatientClick = onPatientClick, onRegister = onRegisterPatient)
         HomeDestination.FollowUps -> FollowUpsScreen(context, onPatientClick)
         HomeDestination.Referrals -> ReferralsScreen(context, onPatientClick)
+        HomeDestination.Queue -> QueueScreen(context)
       }
     }
 
