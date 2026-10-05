@@ -45,7 +45,7 @@ suspend fun loadSyncConfig(role: AppRole): SyncConfig =
  * it.
  */
 object SyncConfigResolver {
-  private val placeholder = Regex("""\{(\w+)}""")
+  private val placeholder = Regex("""\{(\w+)\}""")
 
   fun resolve(config: SyncConfig, context: UserContext): ResourceSearchParams {
     val types = config.resources.map { it.type }
