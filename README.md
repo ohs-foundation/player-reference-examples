@@ -111,6 +111,8 @@ Kiambu County Department of Health          county code 022
 3. Sign in as **clinician1**. *Amina* is at the top of the OPD queue, marked *Community referral*. Open her entry, enter an outcome, and choose **Complete**. Sync.
 4. Sign in as **chw1** and sync. Under *Referrals*, Amina now shows *Seen at facility*.
 
+A walk-in follows the same facility path without a referral. **nurse1** opens or registers the patient, then checks them in with a reason and vitals. Triage queues them `routine`, or `stat` when SpO₂ is below 90, and **clinician1** sees them in the OPD queue after a sync.
+
 To see the home-treatment path, register a second child, then assess them with fever and a positive RDT. The result lists artemether-lumefantrine and a day-3 follow-up, which then appears under *Follow-ups*.
 
 ## Tests
