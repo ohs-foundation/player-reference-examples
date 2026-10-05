@@ -1,0 +1,105 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "iccm-sick-child",
+  "status": "active",
+  "title": "Sick child assessment",
+  "item": [
+    {
+      "linkId": "age-months",
+      "text": "Age in months",
+      "type": "integer",
+      "required": true
+    },
+    {
+      "linkId": "unable-to-drink",
+      "text": "Not able to drink or breastfeed",
+      "type": "boolean",
+      "required": true
+    },
+    {
+      "linkId": "vomits-everything",
+      "text": "Vomits everything",
+      "type": "boolean",
+      "required": true
+    },
+    {
+      "linkId": "convulsions",
+      "text": "Convulsions",
+      "type": "boolean",
+      "required": true
+    },
+    {
+      "linkId": "lethargic",
+      "text": "Very sleepy or unconscious",
+      "type": "boolean",
+      "required": true
+    },
+    {
+      "linkId": "chest-indrawing",
+      "text": "Chest indrawing",
+      "type": "boolean",
+      "required": true
+    },
+    {
+      "linkId": "fever",
+      "text": "Fever (now or in the last 3 days)",
+      "type": "boolean",
+      "required": true
+    },
+    {
+      "linkId": "rdt-result",
+      "text": "Malaria RDT result",
+      "type": "choice",
+      "required": true,
+      "enableWhen": [
+        {
+          "question": "fever",
+          "operator": "=",
+          "answerBoolean": true
+        }
+      ],
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://ohs.dev/fhir/CodeSystem/rdt-result",
+            "code": "positive",
+            "display": "Positive"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://ohs.dev/fhir/CodeSystem/rdt-result",
+            "code": "negative",
+            "display": "Negative"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://ohs.dev/fhir/CodeSystem/rdt-result",
+            "code": "not-done",
+            "display": "Not done"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "cough",
+      "text": "Cough or difficult breathing",
+      "type": "boolean",
+      "required": true
+    },
+    {
+      "linkId": "respiratory-rate",
+      "text": "Breaths per minute",
+      "type": "integer",
+      "required": true,
+      "enableWhen": [
+        {
+          "question": "cough",
+          "operator": "=",
+          "answerBoolean": true
+        }
+      ]
+    }
+  ]
+}

@@ -29,7 +29,14 @@ import player_reference_examples.workflow_examples.generated.resources.Res
  * PlanDefinitions and ActivityDefinitions bundled with the app. Kept out of the engine on purpose:
  * an engine write is queued for upload, and the gateway refuses these types.
  */
-private val PROTOCOL_FILES: List<String> = emptyList()
+private val PROTOCOL_FILES: List<String> =
+  listOf(
+    "PlanDefinition-iccm-sick-child.json",
+    "ActivityDefinition-iccm-referral.json",
+    "ActivityDefinition-iccm-al.json",
+    "ActivityDefinition-iccm-amoxicillin.json",
+    "ActivityDefinition-iccm-follow-up.json",
+  )
 
 class BundledProtocols(private val resources: List<Resource>) : CanonicalResolver {
 

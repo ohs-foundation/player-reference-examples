@@ -1,0 +1,26 @@
+{
+  "resourceType": "ActivityDefinition",
+  "id": "iccm-referral",
+  "url": "http://ohs.dev/fhir/ActivityDefinition/iccm-referral",
+  "status": "active",
+  "kind": "ServiceRequest",
+  "title": "Urgent referral",
+  "code": {
+    "coding": [
+      {
+        "system": "http://snomed.info/sct",
+        "code": "3457005",
+        "display": "Patient referral"
+      }
+    ]
+  },
+  "dynamicValue": [
+    {
+      "path": "priority",
+      "expression": {
+        "language": "text/fhirpath",
+        "expression": "'urgent'"
+      }
+    }
+  ]
+}
