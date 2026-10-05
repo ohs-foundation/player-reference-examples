@@ -44,7 +44,7 @@ class RoleDownloadWorkManagerTest {
       urls += request.url
     }
 
-    assertTrue(urls.any { it.startsWith("Task?owner=Practitioner/p1&status=requested") }, "$urls")
+    assertTrue(urls.any { it.startsWith("Task?owner=Practitioner/p1&code=") }, "$urls")
     assertTrue(urls.any { it.startsWith("Practitioner?_id=p1") }, "$urls")
   }
 
