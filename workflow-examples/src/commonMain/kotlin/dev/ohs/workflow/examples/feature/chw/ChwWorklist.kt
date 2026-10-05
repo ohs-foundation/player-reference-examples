@@ -55,7 +55,9 @@ fun followUps(tasks: List<Task>, patients: Map<String, Patient>, practitionerId:
     }
     .mapNotNull { task ->
       val patientId = task.`for`.idOf("Patient") ?: return@mapNotNull null
-      val due = task.authoredOn.date()?.plus(FOLLOW_UP_AFTER_DAYS, DateTimeUnit.DAY)
+      val due =
+        task.restriction?.period?.end.date()
+          ?: task.authoredOn.date()?.plus(FOLLOW_UP_AFTER_DAYS, DateTimeUnit.DAY)
       WorkItem(task.id!!, patientId, patients[patientId].displayName(), "$due", WorkStatus.Due)
     }
     .sortedBy { it.date }

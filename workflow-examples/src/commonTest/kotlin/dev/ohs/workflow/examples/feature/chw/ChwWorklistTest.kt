@@ -23,6 +23,7 @@ import dev.ohs.fhir.model.r4.Enumeration
 import dev.ohs.fhir.model.r4.FhirDateTime
 import dev.ohs.fhir.model.r4.HumanName
 import dev.ohs.fhir.model.r4.Patient
+import dev.ohs.fhir.model.r4.Period
 import dev.ohs.fhir.model.r4.Reference
 import dev.ohs.fhir.model.r4.ServiceRequest
 import dev.ohs.fhir.model.r4.String as FhirString
@@ -131,5 +132,14 @@ class ChwWorklistTest {
       mapOf("sr-open" to WorkStatus.WaitingAtFacility, "sr-done" to WorkStatus.SeenAtFacility),
       items.associate { it.id to it.status },
     )
+  }
+
+  @Test
+  fun storedDueDateWins() {
+    val task =
+      followUp("t1", "Practitioner/p1", Task.TaskStatus.Requested, "2026-10-05")
+        .copy(restriction = Task.Restriction(period = Period(end = on("2026-10-07"))))
+
+    assertEquals("2026-10-07", followUps(listOf(task), patients, "p1").single().date)
   }
 }

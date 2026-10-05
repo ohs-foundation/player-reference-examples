@@ -23,6 +23,7 @@ import dev.ohs.fhir.model.r4.Code
 import dev.ohs.fhir.model.r4.Coding
 import dev.ohs.fhir.model.r4.Encounter
 import dev.ohs.fhir.model.r4.Enumeration
+import dev.ohs.fhir.model.r4.FhirDateTime
 import dev.ohs.fhir.model.r4.Integer
 import dev.ohs.fhir.model.r4.MedicationRequest
 import dev.ohs.fhir.model.r4.Patient
@@ -45,6 +46,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.LocalDate
 
 class ProtocolServiceTest {
   private lateinit var fhirEngine: FhirEngine
@@ -184,6 +186,7 @@ class ProtocolServiceTest {
     assertEquals("Practitioner/p-chw", assessed.followUp?.owner?.reference?.value)
     val stored = repository.read("Task", assessed.followUp!!.id!!) as Task
     assertEquals("Practitioner/p-chw", stored.owner?.reference?.value)
+    assertEquals(FhirDateTime.Date(LocalDate(2026, 10, 8)), stored.restriction?.period?.end?.value)
     assertEquals(Task.TaskStatus.Requested, stored.status.value)
   }
 

@@ -51,12 +51,15 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
 import kotlinx.datetime.toLocalDateTime
 
 const val ICCM_SICK_CHILD = "http://ohs.dev/fhir/PlanDefinition/iccm-sick-child"
 const val OPD_TRIAGE = "http://ohs.dev/fhir/PlanDefinition/opd-triage"
 const val REFERRAL_CODE = "3457005"
+private const val HOME_TREATMENT_FOLLOW_UP_DAYS = 3
 private const val LOINC = "http://loinc.org"
 
 /** What the iCCM protocol decided for one assessment, as stored resources. */
@@ -90,7 +93,7 @@ class ProtocolService(
         when (it) {
           is ServiceRequest -> it.copy(requester = chw)
           is MedicationRequest -> it.copy(requester = chw)
-          is Task -> it.copy(owner = chw)
+          is Task -> it.copy(owner = chw, restriction = dueIn(HOME_TREATMENT_FOLLOW_UP_DAYS))
           else -> it
         }
       }
@@ -239,9 +242,8 @@ class ProtocolService(
     variables: Map<String, Any?>,
     assign: (Resource) -> Resource,
   ): List<Resource> {
-    val today = now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     return operator()
-      .generateCarePlan(planDefinition, patient, variables, today)
+      .generateCarePlan(planDefinition, patient, variables, today())
       .contained
       .filterNot { it is RequestGroup }
       .map { assign(standalone(it)) }
@@ -303,6 +305,14 @@ class ProtocolService(
   private fun dateTimeNow() =
     DateTime(
       value = FhirDateTime.fromString(Instant.fromEpochSeconds(now().epochSeconds).toString())
+    )
+
+  private fun today() = now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+
+  private fun dueIn(days: Int) =
+    Task.Restriction(
+      period =
+        Period(end = DateTime(value = FhirDateTime.Date(today().plus(days, DateTimeUnit.DAY))))
     )
 
   private fun reference(value: String) = Reference(reference = FhirString(value = value))
