@@ -176,6 +176,20 @@ class IccmSickChildTest {
   }
 
   @Test
+  fun infantUnderTwoMonthsIsAlwaysReferred() = runTest {
+    assertEquals(
+      setOf("refer"),
+      actionsFor(
+        number("age-months", 1),
+        *noDangerSigns,
+        no("fever"),
+        yes("cough"),
+        number("respiratory-rate", 52),
+      ),
+    )
+  }
+
+  @Test
   fun wellChildNeedsNothing() = runTest {
     assertEquals(
       emptySet(),

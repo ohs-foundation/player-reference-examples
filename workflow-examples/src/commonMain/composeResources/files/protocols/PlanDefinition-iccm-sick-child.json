@@ -6,7 +6,7 @@
   "name": "IccmSickChild",
   "title": "iCCM sick child 2–59 months",
   "status": "active",
-  "description": "Community case management of a sick child: refer on any general danger sign, otherwise treat malaria (fever with a positive RDT) and fast-breathing pneumonia at home and follow up on day 3.",
+  "description": "Community case management of a sick child: refer on any general danger sign or when younger than 2 months, otherwise treat malaria (fever with a positive RDT) and fast-breathing pneumonia at home and follow up on day 3.",
   "action": [
     {
       "id": "refer",
@@ -16,7 +16,7 @@
           "kind": "applicability",
           "expression": {
             "language": "text/fhirpath",
-            "expression": "%assessment.entry.resource.item.where(linkId in ('unable-to-drink' | 'vomits-everything' | 'convulsions' | 'lethargic' | 'chest-indrawing')).answer.value contains true"
+            "expression": "(%assessment.entry.resource.item.where(linkId in ('unable-to-drink' | 'vomits-everything' | 'convulsions' | 'lethargic' | 'chest-indrawing')).answer.value contains true) or (%assessment.entry.resource.item.where(linkId = 'age-months').where(answer.value.first() < 2).exists())"
           }
         }
       ],
@@ -30,7 +30,7 @@
           "kind": "applicability",
           "expression": {
             "language": "text/fhirpath",
-            "expression": "(%assessment.entry.resource.item.where(linkId in ('unable-to-drink' | 'vomits-everything' | 'convulsions' | 'lethargic' | 'chest-indrawing')).answer.value contains true).not() and (%assessment.entry.resource.item.where(linkId = 'fever').answer.value contains true) and (%assessment.entry.resource.item.where(linkId = 'rdt-result').answer.value.code contains 'positive')"
+            "expression": "((%assessment.entry.resource.item.where(linkId in ('unable-to-drink' | 'vomits-everything' | 'convulsions' | 'lethargic' | 'chest-indrawing')).answer.value contains true) or (%assessment.entry.resource.item.where(linkId = 'age-months').where(answer.value.first() < 2).exists())).not() and (%assessment.entry.resource.item.where(linkId = 'fever').answer.value contains true) and (%assessment.entry.resource.item.where(linkId = 'rdt-result').answer.value.code contains 'positive')"
           }
         }
       ],
@@ -44,7 +44,7 @@
           "kind": "applicability",
           "expression": {
             "language": "text/fhirpath",
-            "expression": "(%assessment.entry.resource.item.where(linkId in ('unable-to-drink' | 'vomits-everything' | 'convulsions' | 'lethargic' | 'chest-indrawing')).answer.value contains true).not() and ((%assessment.entry.resource.item.where(linkId = 'cough').answer.value contains true) and ((%assessment.entry.resource.item.where(linkId = 'age-months').answer.value.first() < 12 and %assessment.entry.resource.item.where(linkId = 'respiratory-rate').answer.value.first() >= 50) or (%assessment.entry.resource.item.where(linkId = 'age-months').answer.value.first() >= 12 and %assessment.entry.resource.item.where(linkId = 'respiratory-rate').answer.value.first() >= 40)))"
+            "expression": "((%assessment.entry.resource.item.where(linkId in ('unable-to-drink' | 'vomits-everything' | 'convulsions' | 'lethargic' | 'chest-indrawing')).answer.value contains true) or (%assessment.entry.resource.item.where(linkId = 'age-months').where(answer.value.first() < 2).exists())).not() and ((%assessment.entry.resource.item.where(linkId = 'cough').answer.value contains true) and ((%assessment.entry.resource.item.where(linkId = 'age-months').answer.value.first() < 12 and %assessment.entry.resource.item.where(linkId = 'respiratory-rate').answer.value.first() >= 50) or (%assessment.entry.resource.item.where(linkId = 'age-months').answer.value.first() >= 12 and %assessment.entry.resource.item.where(linkId = 'respiratory-rate').answer.value.first() >= 40)))"
           }
         }
       ],
@@ -58,7 +58,7 @@
           "kind": "applicability",
           "expression": {
             "language": "text/fhirpath",
-            "expression": "((%assessment.entry.resource.item.where(linkId in ('unable-to-drink' | 'vomits-everything' | 'convulsions' | 'lethargic' | 'chest-indrawing')).answer.value contains true).not() and (%assessment.entry.resource.item.where(linkId = 'fever').answer.value contains true) and (%assessment.entry.resource.item.where(linkId = 'rdt-result').answer.value.code contains 'positive')) or ((%assessment.entry.resource.item.where(linkId in ('unable-to-drink' | 'vomits-everything' | 'convulsions' | 'lethargic' | 'chest-indrawing')).answer.value contains true).not() and ((%assessment.entry.resource.item.where(linkId = 'cough').answer.value contains true) and ((%assessment.entry.resource.item.where(linkId = 'age-months').answer.value.first() < 12 and %assessment.entry.resource.item.where(linkId = 'respiratory-rate').answer.value.first() >= 50) or (%assessment.entry.resource.item.where(linkId = 'age-months').answer.value.first() >= 12 and %assessment.entry.resource.item.where(linkId = 'respiratory-rate').answer.value.first() >= 40))))"
+            "expression": "(((%assessment.entry.resource.item.where(linkId in ('unable-to-drink' | 'vomits-everything' | 'convulsions' | 'lethargic' | 'chest-indrawing')).answer.value contains true) or (%assessment.entry.resource.item.where(linkId = 'age-months').where(answer.value.first() < 2).exists())).not() and (%assessment.entry.resource.item.where(linkId = 'fever').answer.value contains true) and (%assessment.entry.resource.item.where(linkId = 'rdt-result').answer.value.code contains 'positive')) or (((%assessment.entry.resource.item.where(linkId in ('unable-to-drink' | 'vomits-everything' | 'convulsions' | 'lethargic' | 'chest-indrawing')).answer.value contains true) or (%assessment.entry.resource.item.where(linkId = 'age-months').where(answer.value.first() < 2).exists())).not() and ((%assessment.entry.resource.item.where(linkId = 'cough').answer.value contains true) and ((%assessment.entry.resource.item.where(linkId = 'age-months').answer.value.first() < 12 and %assessment.entry.resource.item.where(linkId = 'respiratory-rate').answer.value.first() >= 50) or (%assessment.entry.resource.item.where(linkId = 'age-months').answer.value.first() >= 12 and %assessment.entry.resource.item.where(linkId = 'respiratory-rate').answer.value.first() >= 40))))"
           }
         }
       ],

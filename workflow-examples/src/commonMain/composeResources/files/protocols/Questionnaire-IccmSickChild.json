@@ -6,9 +6,19 @@
   "item": [
     {
       "linkId": "age-months",
-      "text": "Age in months",
+      "text": "Age in months (0–59)",
       "type": "integer",
-      "required": true
+      "required": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/minValue",
+          "valueInteger": 0
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/maxValue",
+          "valueInteger": 59
+        }
+      ]
     },
     {
       "linkId": "unable-to-drink",
