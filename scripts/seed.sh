@@ -8,7 +8,7 @@ if [[ -f "$here/seed.env" ]]; then
   source "$here/seed.env"
 fi
 : "${KEYCLOAK_URL:?}" "${KEYCLOAK_REALM:?}" "${SEED_CLIENT_ID:?}" "${SEED_CLIENT_SECRET:?}"
-: "${FHIR_URL:?}" "${DEMO_PASSWORD:?}"
+: "${FHIR_URL:?}"
 
 types=(Patient Encounter Observation QuestionnaireResponse ServiceRequest MedicationRequest
   Task Procedure Practitioner PractitionerRole Location Organization Questionnaire)
@@ -42,7 +42,7 @@ admin -X POST "$api/users/$service_account/role-mappings/realm" \
   -d "$(admin "$api/roles?max=1000" | jq '[.[] | select(.name | test("^(GET|PUT)_|^ORG_SCOPE_EXEMPT$"))]')"
 
 ensure_user() {
-  local username=$1 id
+  local username=$1 password=$2 id
   id=$(admin "$api/users?username=$username&exact=true" | jq -r '.[0].id // empty')
   if [[ -z $id ]]; then
     admin -X POST "$api/users" -d "$(jq -n --arg u "$username" \
@@ -50,14 +50,14 @@ ensure_user() {
     id=$(admin "$api/users?username=$username&exact=true" | jq -r '.[0].id')
   fi
   admin -X PUT "$api/users/$id/reset-password" \
-    -d "$(jq -n --arg p "$DEMO_PASSWORD" '{type: "password", value: $p, temporary: false}')"
+    -d "$(jq -n --arg p "$password" '{type: "password", value: $p, temporary: false}')"
   admin -X POST "$api/users/$id/role-mappings/realm" -d "$roles"
   echo "$id"
 }
 
-chw=$(ensure_user chw1)
-nurse=$(ensure_user nurse1)
-clinician=$(ensure_user clinician1)
+chw=$(ensure_user chw1 'chw_1234!')
+nurse=$(ensure_user nurse1 'nurse_1234!')
+clinician=$(ensure_user clinician1 'clinician_1234!')
 token=$(new_token)
 
 sed -e "s/__CHW_SUB__/$chw/" -e "s/__NURSE_SUB__/$nurse/" -e "s/__CLINICIAN_SUB__/$clinician/" \
