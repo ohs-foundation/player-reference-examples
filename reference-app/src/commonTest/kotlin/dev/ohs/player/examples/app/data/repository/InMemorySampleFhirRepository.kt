@@ -16,7 +16,6 @@
 package dev.ohs.player.examples.app.data.repository
 
 import dev.ohs.fhir.engine.resourceType
-import dev.ohs.fhir.model.r4.Bundle
 import dev.ohs.fhir.model.r4.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,13 +30,6 @@ class InMemorySampleFhirRepository : FhirRepository {
   override suspend fun upsert(resource: Resource) {
     store(resource)
     _revision.value += 1
-  }
-
-  override suspend fun upsert(bundle: Bundle): Int {
-    val resources = bundle.entry.mapNotNull { it.resource }
-    resources.forEach(::store)
-    if (resources.isNotEmpty()) _revision.value += 1
-    return resources.size
   }
 
   override suspend fun get(resourceType: String, id: String): Resource? {

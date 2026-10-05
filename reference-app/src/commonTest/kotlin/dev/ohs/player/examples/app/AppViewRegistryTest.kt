@@ -20,12 +20,6 @@ import dev.ohs.player.client.layout.HorizontalListRenderer
 import dev.ohs.player.client.layout.VerticalListRenderer
 import dev.ohs.player.client.registry.componentRenderer
 import dev.ohs.player.client.registry.layoutRenderer
-import dev.ohs.player.generated.state.GroupListState
-import dev.ohs.player.generated.state.GroupMemberState
-import dev.ohs.player.generated.state.PatientAllergyState
-import dev.ohs.player.generated.state.PatientConditionState
-import dev.ohs.player.generated.state.PatientImmunizationState
-import dev.ohs.player.generated.state.PatientMedicationState
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.player.generated.viewtype.ViewTypeCS
 import kotlin.test.Test
@@ -36,24 +30,13 @@ class AppViewRegistryTest {
   fun allRequiredRenderersAreRegistered() {
     val registry = buildAppViewRegistry()
 
-    // Group list
-    registry.componentRenderer<GroupListState>(ViewTypeCS.GroupCard)
-    registry.layoutRenderer<GroupListState>(VerticalListRenderer.VIEW_TYPE)
-
-    // Group profile
-    registry.componentRenderer<GroupMemberState>(ViewTypeCS.MemberItem)
-
     // Patient list — component + every layout
     registry.componentRenderer<PatientSummaryState>(ViewTypeCS.PatientCard)
     registry.layoutRenderer<PatientSummaryState>(VerticalListRenderer.VIEW_TYPE)
     registry.layoutRenderer<PatientSummaryState>(HorizontalListRenderer.VIEW_TYPE)
     registry.layoutRenderer<PatientSummaryState>(GridListRenderer.VIEW_TYPE)
 
-    // Patient IPS profile — all IG-authored item types
+    // Patient profile header
     registry.componentRenderer<PatientSummaryState>(ViewTypeCS.PatientHeader)
-    registry.componentRenderer<PatientAllergyState>(ViewTypeCS.AllergyItem)
-    registry.componentRenderer<PatientMedicationState>(ViewTypeCS.MedicationItem)
-    registry.componentRenderer<PatientConditionState>(ViewTypeCS.ConditionItem)
-    registry.componentRenderer<PatientImmunizationState>(ViewTypeCS.ImmunizationItem)
   }
 }

@@ -17,17 +17,9 @@ package dev.ohs.player.examples.app.data.repository
 
 import dev.ohs.player.examples.app.data.Extraction.extractor
 import dev.ohs.player.examples.app.data.datasource.allPatientIds
-import dev.ohs.player.examples.app.data.datasource.patientProfileSearchResult
 import dev.ohs.player.examples.app.data.datasource.patientSummarySearchResult
 import dev.ohs.player.examples.app.feature.patient.profile.ProfileUiState
-import dev.ohs.player.generated.state.AllergyReactionState
-import dev.ohs.player.generated.state.PatientAllergyState
-import dev.ohs.player.generated.state.PatientConditionState
-import dev.ohs.player.generated.state.PatientContactState
-import dev.ohs.player.generated.state.PatientImmunizationState
-import dev.ohs.player.generated.state.PatientMedicationState
 import dev.ohs.player.generated.state.PatientSummaryState
-import dev.ohs.player.generated.state.PatientTelecomState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -58,19 +50,7 @@ class PatientRepository(private val fhirRepository: FhirRepository) {
   suspend fun getPatientProfile(patientId: String): ProfileUiState =
     withContext(extractorDispatcher) {
       val result =
-        patientProfileSearchResult(patientId, fhirRepository) ?: return@withContext ProfileUiState()
-      ProfileUiState(
-        patient = extractor.extract<PatientSummaryState>(result).firstOrNull(),
-        allergies = extractor.extract<PatientAllergyState>(result),
-        allergyReactions = extractor.extract<AllergyReactionState>(result),
-        medications = extractor.extract<PatientMedicationState>(result),
-        conditions = extractor.extract<PatientConditionState>(result),
-        immunizations = extractor.extract<PatientImmunizationState>(result),
-        contacts =
-          extractor.extract<PatientContactState>(result).filter {
-            it.contactGivenName != null || it.contactFamilyName != null
-          },
-        telecoms = extractor.extract<PatientTelecomState>(result).filter { it.telecomValue != null },
-      )
+        patientSummarySearchResult(patientId, fhirRepository) ?: return@withContext ProfileUiState()
+      ProfileUiState(patient = extractor.extract<PatientSummaryState>(result).firstOrNull())
     }
 }

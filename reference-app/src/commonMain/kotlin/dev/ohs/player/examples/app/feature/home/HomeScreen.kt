@@ -57,7 +57,6 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -76,9 +75,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
-import dev.ohs.player.examples.app.feature.group.list.GroupListScreen
-import dev.ohs.player.examples.app.feature.group.list.LocalSelectedGroupId
-import dev.ohs.player.examples.app.feature.group.profile.GroupProfileScreen
+import dev.ohs.player.examples.app.feature.patient.list.PatientListScreen
 import dev.ohs.player.examples.app.feature.patient.profile.PatientProfileScreen
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
@@ -88,7 +85,7 @@ import player_reference_examples.reference_app.generated.resources.home_cancel_s
 import player_reference_examples.reference_app.generated.resources.home_last_synced
 import player_reference_examples.reference_app.generated.resources.home_open_navigation_menu
 import player_reference_examples.reference_app.generated.resources.home_registers
-import player_reference_examples.reference_app.generated.resources.home_select_household
+import player_reference_examples.reference_app.generated.resources.home_select_patient
 import player_reference_examples.reference_app.generated.resources.home_sign_out
 import player_reference_examples.reference_app.generated.resources.home_signed_in
 import player_reference_examples.reference_app.generated.resources.home_sync_cancelled
@@ -98,20 +95,12 @@ import player_reference_examples.reference_app.generated.resources.home_sync_now
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun HomeScreen(
-  userName: String,
-  onGroupClick: (String) -> Unit,
-  onDataCaptureClick: () -> Unit,
-  onAddMembers: (String) -> Unit,
-  onAddClinicalData: (String) -> Unit,
-  onSignOut: () -> Unit,
-) {
+fun HomeScreen(userName: String, onPatientClick: (String) -> Unit, onSignOut: () -> Unit) {
   val homeViewModel: HomeViewModel = koinViewModel()
   val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
 
-  var selectedDestination by remember { mutableStateOf(HomeDestination.Households) }
-  var selectedGroupId by rememberSaveable { mutableStateOf<String?>(null) }
-  var selectedPatientId by rememberSaveable(selectedGroupId) { mutableStateOf<String?>(null) }
+  var selectedDestination by remember { mutableStateOf(HomeDestination.Patients) }
+  var selectedPatientId by rememberSaveable { mutableStateOf<String?>(null) }
   val drawerState = rememberDrawerState(DrawerValue.Closed)
   val scope = rememberCoroutineScope()
   val snackbarHostState = remember { SnackbarHostState() }
@@ -257,41 +246,26 @@ fun HomeScreen(
 
     val content: @Composable () -> Unit = {
       when (selectedDestination) {
-        HomeDestination.Households ->
+        HomeDestination.Patients ->
           if (isExpandedWidth) {
             Row(modifier = Modifier.fillMaxSize()) {
               Box(modifier = Modifier.weight(1f).fillMaxSize()) {
-                CompositionLocalProvider(LocalSelectedGroupId provides selectedGroupId) {
-                  GroupListScreen(
-                    onGroupClick = { selectedGroupId = it },
-                    onDataCaptureClick = onDataCaptureClick,
-                  )
-                }
+                PatientListScreen(onPatientClick = { selectedPatientId = it })
               }
               VerticalDivider()
               Box(modifier = Modifier.weight(1.5f).fillMaxSize()) {
-                val patientId = selectedPatientId
-                val groupId = selectedGroupId
-                when {
-                  patientId != null ->
+                when (val patientId = selectedPatientId) {
+                  null -> EmptyDetailPlaceholder()
+                  else ->
                     PatientProfileScreen(
                       patientId = patientId,
                       onBack = { selectedPatientId = null },
-                      onAddClinicalData = { onAddClinicalData(patientId) },
                     )
-                  groupId != null ->
-                    GroupProfileScreen(
-                      groupId = groupId,
-                      onBack = { selectedGroupId = null },
-                      onMemberClick = { selectedPatientId = it },
-                      onAddMembers = { onAddMembers(groupId) },
-                    )
-                  else -> EmptyDetailPlaceholder()
                 }
               }
             }
           } else {
-            GroupListScreen(onGroupClick = onGroupClick, onDataCaptureClick = onDataCaptureClick)
+            PatientListScreen(onPatientClick = onPatientClick)
           }
       }
     }
@@ -408,7 +382,7 @@ fun HomeScreen(
 private fun EmptyDetailPlaceholder() {
   Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
     Text(
-      text = stringResource(Res.string.home_select_household),
+      text = stringResource(Res.string.home_select_patient),
       style = MaterialTheme.typography.bodyLarge,
       color = MaterialTheme.colorScheme.onSurfaceVariant,
       textAlign = TextAlign.Center,

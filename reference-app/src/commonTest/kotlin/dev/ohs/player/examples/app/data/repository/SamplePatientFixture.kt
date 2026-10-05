@@ -18,10 +18,12 @@ package dev.ohs.player.examples.app.data.repository
 import dev.ohs.fhir.model.r4.Resource
 import dev.ohs.player.examples.app.util.FhirJson
 
-/** Patient "p1" (Amina Diallo) and related clinical resources, for UI tests. */
+/** Patient "p1" (Amina Diallo), for UI tests. */
 object SamplePatientFixture {
   val resources: List<Resource> =
     listOf(
+      FhirJson.instance.decodeFromString(
+        Resource.serializer(),
         """
           {
             "resourceType": "Patient",
@@ -29,77 +31,10 @@ object SamplePatientFixture {
             "name": [{"family": "Diallo", "given": ["Amina"]}],
             "gender": "female",
             "birthDate": "1990-03-14",
-            "active": true,
-            "telecom": [
-              {"system": "phone", "value": "+221 77 123 4567"},
-              {"system": "email", "value": "amina.diallo@example.com"}
-            ]
+            "active": true
           }
-        """,
         """
-          {
-            "resourceType": "AllergyIntolerance",
-            "id": "ai-p1-a",
-            "patient": {"reference": "Patient/p1"},
-            "code": {"coding": [{"display": "Penicillin"}]},
-            "criticality": "high",
-            "clinicalStatus": {
-              "coding": [
-                {
-                  "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
-                  "code": "active"
-                }
-              ]
-            },
-            "reaction": [
-              {
-                "manifestation": [
-                  {
-                    "coding": [
-                      {"system": "http://snomed.info/sct", "code": "247472004", "display": "Urticaria"}
-                    ]
-                  }
-                ],
-                "severity": "moderate"
-              }
-            ]
-          }
-        """,
-        """
-          {
-            "resourceType": "MedicationRequest",
-            "id": "med-p1-a",
-            "status": "active",
-            "intent": "order",
-            "subject": {"reference": "Patient/p1"},
-            "medicationCodeableConcept": {"coding": [{"display": "Salbutamol 100mcg inhaler"}]},
-            "dosageInstruction": [{"text": "100mcg PRN"}]
-          }
-        """,
-        """
-          {
-            "resourceType": "Condition",
-            "id": "cond-p1-a",
-            "subject": {"reference": "Patient/p1"},
-            "code": {"coding": [{"display": "Asthma"}]},
-            "clinicalStatus": {
-              "coding": [
-                {"system": "http://terminology.hl7.org/CodeSystem/condition-clinical", "code": "active"}
-              ]
-            },
-            "onsetDateTime": "2015-06-01"
-          }
-        """,
-        """
-          {
-            "resourceType": "Immunization",
-            "id": "imm-p1-a",
-            "status": "completed",
-            "vaccineCode": {"coding": [{"display": "BCG vaccine"}]},
-            "patient": {"reference": "Patient/p1"},
-            "occurrenceDateTime": "1990-03-14"
-          }
-        """,
+          .trimIndent(),
       )
-      .map { FhirJson.instance.decodeFromString(Resource.serializer(), it.trimIndent()) }
+    )
 }

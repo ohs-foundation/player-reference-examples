@@ -15,22 +15,6 @@
  */
 package dev.ohs.player.examples.app.feature.patient.profile
 
-import dev.ohs.player.generated.state.AllergyReactionState
-import dev.ohs.player.generated.state.PatientAllergyState
-import dev.ohs.player.generated.state.PatientConditionState
-import dev.ohs.player.generated.state.PatientContactState
-import dev.ohs.player.generated.state.PatientImmunizationState
-import dev.ohs.player.generated.state.PatientMedicationState
 import dev.ohs.player.generated.state.PatientSummaryState
-import dev.ohs.player.generated.state.PatientTelecomState
 
-data class ProfileUiState(
-  val patient: PatientSummaryState? = null,
-  val allergies: List<PatientAllergyState> = emptyList(),
-  val allergyReactions: List<AllergyReactionState> = emptyList(),
-  val medications: List<PatientMedicationState> = emptyList(),
-  val conditions: List<PatientConditionState> = emptyList(),
-  val immunizations: List<PatientImmunizationState> = emptyList(),
-  val contacts: List<PatientContactState> = emptyList(),
-  val telecoms: List<PatientTelecomState> = emptyList(),
-)
+data class ProfileUiState(val patient: PatientSummaryState? = null)

@@ -68,29 +68,20 @@ class HomeScreenTest {
   @AfterTest fun tearDown() = stopKoin()
 
   @Test
-  fun homeScreen_defaultsToHouseholdsContentWithDrawerSectionsVisible() = runComposeUiTest {
+  fun homeScreen_defaultsToPatientsContentWithDrawerSectionsVisible() = runComposeUiTest {
     startTestKoin(FakeSyncManager { SyncJobStatus.Succeeded() })
     val registry = buildAppViewRegistry()
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme {
-          HomeScreen(
-            userName = "Test User",
-            onGroupClick = {},
-            onDataCaptureClick = {},
-            onAddMembers = {},
-            onAddClinicalData = {},
-            onSignOut = {},
-          )
-        }
+        MaterialTheme { HomeScreen(userName = "Test User", onPatientClick = {}, onSignOut = {}) }
       }
     }
 
     waitUntil(timeoutMillis = 5_000L) {
-      onAllNodesWithText("No households").fetchSemanticsNodes().isNotEmpty()
+      onAllNodesWithText("No patients").fetchSemanticsNodes().isNotEmpty()
     }
     assertTrue(onAllNodesWithText("Registers").fetchSemanticsNodes().isNotEmpty())
-    assertTrue(onAllNodesWithText("Households").fetchSemanticsNodes().isNotEmpty())
+    assertTrue(onAllNodesWithText("Patients").fetchSemanticsNodes().isNotEmpty())
     assertTrue(onAllNodesWithText("Sync now").fetchSemanticsNodes().isNotEmpty())
   }
 
@@ -107,16 +98,7 @@ class HomeScreenTest {
     val registry = buildAppViewRegistry()
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme {
-          HomeScreen(
-            userName = "Test User",
-            onGroupClick = {},
-            onDataCaptureClick = {},
-            onAddMembers = {},
-            onAddClinicalData = {},
-            onSignOut = {},
-          )
-        }
+        MaterialTheme { HomeScreen(userName = "Test User", onPatientClick = {}, onSignOut = {}) }
       }
     }
 
@@ -149,16 +131,7 @@ class HomeScreenTest {
     val registry = buildAppViewRegistry()
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme {
-          HomeScreen(
-            userName = "Test User",
-            onGroupClick = {},
-            onDataCaptureClick = {},
-            onAddMembers = {},
-            onAddClinicalData = {},
-            onSignOut = {},
-          )
-        }
+        MaterialTheme { HomeScreen(userName = "Test User", onPatientClick = {}, onSignOut = {}) }
       }
     }
 
@@ -186,16 +159,7 @@ class HomeScreenTest {
     val registry = buildAppViewRegistry()
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme {
-          HomeScreen(
-            userName = "Test User",
-            onGroupClick = {},
-            onDataCaptureClick = {},
-            onAddMembers = {},
-            onAddClinicalData = {},
-            onSignOut = {},
-          )
-        }
+        MaterialTheme { HomeScreen(userName = "Test User", onPatientClick = {}, onSignOut = {}) }
       }
     }
 

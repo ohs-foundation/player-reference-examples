@@ -36,12 +36,10 @@ import dev.ohs.player.client.registry.LocalViewRegistry
 import dev.ohs.player.examples.app.auth.AuthState
 import dev.ohs.player.examples.app.auth.AuthViewModel
 import dev.ohs.player.examples.app.auth.rememberAuthorizationLauncher
-import dev.ohs.player.examples.app.feature.group.profile.GroupProfileScreen
 import dev.ohs.player.examples.app.feature.home.HomeScreen
 import dev.ohs.player.examples.app.feature.login.LoginScreen
 import dev.ohs.player.examples.app.feature.patient.profile.PatientProfileScreen
 import dev.ohs.player.examples.app.feature.questionnaire.QuestionnaireHostScreen
-import dev.ohs.player.examples.app.feature.questionnaire.QuestionnaireIds
 import dev.ohs.player.examples.app.feature.sync.InitialSyncGateState
 import dev.ohs.player.examples.app.feature.sync.InitialSyncScreen
 import dev.ohs.player.examples.app.feature.sync.InitialSyncViewModel
@@ -95,51 +93,20 @@ fun App() {
             InitialSyncGateState.Passed -> {
               val navController = rememberNavController()
               NavHost(navController = navController, startDestination = "home") {
-
-                // Screen 1: Home (adaptive navigation drawer shell around the household list)
                 composable("home") {
                   HomeScreen(
                     userName = userName,
-                    onGroupClick = { id -> navController.navigate("groupProfile/$id") },
-                    onDataCaptureClick = {
-                      navController.navigate(
-                        questionnaireHostRoute(
-                          questionnaireId = QuestionnaireIds.HOUSEHOLD_REGISTRATION
-                        )
-                      )
-                    },
-                    onAddMembers = { groupId ->
-                      navController.navigate(
-                        questionnaireHostRoute(
-                          questionnaireId = QuestionnaireIds.HOUSEHOLD_MEMBERS,
-                          groupId = groupId,
-                        )
-                      )
-                    },
-                    onAddClinicalData = { patientId ->
-                      navController.navigate(
-                        questionnaireHostRoute(
-                          questionnaireId = QuestionnaireIds.PATIENT_CLINICAL_DATA,
-                          patientId = patientId,
-                        )
-                      )
-                    },
+                    onPatientClick = { id -> navController.navigate("patientProfile/$id") },
                     onSignOut = { authViewModel.logout() },
                   )
                 }
 
                 composable(
-                  route =
-                    "questionnaireHost/{questionnaireId}?patientId={patientId}&groupId={groupId}",
+                  route = "questionnaireHost/{questionnaireId}?patientId={patientId}",
                   arguments =
                     listOf(
                       navArgument("questionnaireId") { type = NavType.StringType },
                       navArgument("patientId") {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                      },
-                      navArgument("groupId") {
                         type = NavType.StringType
                         nullable = true
                         defaultValue = null
@@ -149,37 +116,13 @@ fun App() {
                   val questionnaireId =
                     back.arguments?.read { getStringOrNull("questionnaireId") }.orEmpty()
                   val patientId = back.arguments?.read { getStringOrNull("patientId") }
-                  val groupId = back.arguments?.read { getStringOrNull("groupId") }
                   QuestionnaireHostScreen(
                     questionnaireId = questionnaireId,
                     patientId = patientId,
-                    groupId = groupId,
                     onBack = { navController.popBackStack() },
                   )
                 }
 
-                // Screen 2: Household profile (head + members)
-                composable(
-                  route = "groupProfile/{groupId}",
-                  arguments = listOf(navArgument("groupId") { type = NavType.StringType }),
-                ) { back ->
-                  val groupId = back.arguments?.read { getStringOrNull("groupId") }.orEmpty()
-                  GroupProfileScreen(
-                    groupId = groupId,
-                    onBack = { navController.popBackStack() },
-                    onMemberClick = { id -> navController.navigate("patientProfile/$id") },
-                    onAddMembers = {
-                      navController.navigate(
-                        questionnaireHostRoute(
-                          questionnaireId = QuestionnaireIds.HOUSEHOLD_MEMBERS,
-                          groupId = groupId,
-                        )
-                      )
-                    },
-                  )
-                }
-
-                // Screen 3: Patient IPS summary
                 composable(
                   route = "patientProfile/{patientId}",
                   arguments = listOf(navArgument("patientId") { type = NavType.StringType }),
@@ -188,14 +131,6 @@ fun App() {
                   PatientProfileScreen(
                     patientId = patientId,
                     onBack = { navController.popBackStack() },
-                    onAddClinicalData = {
-                      navController.navigate(
-                        questionnaireHostRoute(
-                          questionnaireId = QuestionnaireIds.PATIENT_CLINICAL_DATA,
-                          patientId = patientId,
-                        )
-                      )
-                    },
                   )
                 }
               }
@@ -204,20 +139,6 @@ fun App() {
         }
       }
     }
-  }
-}
-
-private fun questionnaireHostRoute(
-  questionnaireId: String,
-  patientId: String? = null,
-  groupId: String? = null,
-): String = buildString {
-  append("questionnaireHost/$questionnaireId")
-  val queryParameters =
-    listOfNotNull(patientId?.let { "patientId=$it" }, groupId?.let { "groupId=$it" })
-  if (queryParameters.isNotEmpty()) {
-    append("?")
-    append(queryParameters.joinToString("&"))
   }
 }
 

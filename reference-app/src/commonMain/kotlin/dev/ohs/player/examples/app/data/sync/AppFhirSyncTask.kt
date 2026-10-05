@@ -31,8 +31,7 @@ import dev.ohs.fhir.model.r4.terminologies.ResourceType
  * Resource types downloaded on every sync, with their search parameters. Empty parameters mean
  * "everything of this type, since the last sync". Adding a resource type later is a new map entry.
  */
-private val SYNC_RESOURCE_PARAMS: ResourceSearchParams =
-  mapOf(ResourceType.Patient to emptyMap(), ResourceType.Group to emptyMap())
+private val SYNC_RESOURCE_PARAMS: ResourceSearchParams = mapOf(ResourceType.Patient to emptyMap())
 
 const val SYNC_TIMEOUT_DURATION = 120L
 

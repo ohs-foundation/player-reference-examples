@@ -18,10 +18,7 @@ package dev.ohs.player.examples.app.feature.patient.profile
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ExperimentalTestApi
-import androidx.compose.ui.test.hasScrollAction
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.runComposeUiTest
 import dev.ohs.player.client.registry.LocalViewRegistry
 import dev.ohs.player.examples.app.buildAppViewRegistry
@@ -54,27 +51,17 @@ class PatientProfileScreenTest {
   @AfterTest fun tearDown() = stopKoin()
 
   @Test
-  fun knownPatient_rendersNameAndClinicalSections() = runComposeUiTest {
+  fun knownPatient_rendersName() = runComposeUiTest {
     val registry = buildAppViewRegistry()
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme {
-          PatientProfileScreen(patientId = "p1", onBack = {}, onAddClinicalData = {})
-        }
+        MaterialTheme { PatientProfileScreen(patientId = "p1", onBack = {}) }
       }
     }
 
     waitUntil(timeoutMillis = 5_000L) {
       onAllNodesWithText("Amina Diallo").fetchSemanticsNodes().isNotEmpty()
     }
-    val scrollable = onNode(hasScrollAction())
-    listOf("Amina Diallo", "Allergies", "Medications", "Conditions", "Immunizations").forEach { text
-      ->
-      scrollable.performScrollToNode(hasText(text, ignoreCase = true))
-      assertTrue(
-        onAllNodesWithText(text, ignoreCase = true).fetchSemanticsNodes().isNotEmpty(),
-        "Expected to find '$text' after scrolling the patient profile",
-      )
-    }
+    assertTrue(onAllNodesWithText("Amina Diallo").fetchSemanticsNodes().isNotEmpty())
   }
 }

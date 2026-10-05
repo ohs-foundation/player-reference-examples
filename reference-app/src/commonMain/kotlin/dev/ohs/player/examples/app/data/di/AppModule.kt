@@ -24,13 +24,10 @@ import dev.ohs.player.examples.app.auth.SessionRepository
 import dev.ohs.player.examples.app.auth.SessionStore
 import dev.ohs.player.examples.app.data.repository.FhirEngineRepository
 import dev.ohs.player.examples.app.data.repository.FhirRepository
-import dev.ohs.player.examples.app.data.repository.GroupRepository
 import dev.ohs.player.examples.app.data.repository.PatientRepository
 import dev.ohs.player.examples.app.data.sync.DataStoreInitialSyncStore
 import dev.ohs.player.examples.app.data.sync.InitialSyncStore
 import dev.ohs.player.examples.app.data.sync.createSyncTimestampDataStore
-import dev.ohs.player.examples.app.feature.group.list.GroupListViewModel
-import dev.ohs.player.examples.app.feature.group.profile.GroupProfileViewModel
 import dev.ohs.player.examples.app.feature.home.HomeViewModel
 import dev.ohs.player.examples.app.feature.patient.list.PatientListViewModel
 import dev.ohs.player.examples.app.feature.patient.profile.PatientProfileViewModel
@@ -54,10 +51,7 @@ internal val fhirEngineRepositoryModule = module {
  * [fhirEngineRepositoryModule] so tests can swap in a fake [FhirRepository] without redeclaring
  * these bindings.
  */
-internal val repositoryModule = module {
-  single { PatientRepository(get()) }
-  single { GroupRepository(get()) }
-}
+internal val repositoryModule = module { single { PatientRepository(get()) } }
 
 internal val serviceModule = module { factory { QuestionnaireService(get()) } }
 
@@ -86,8 +80,6 @@ internal val authModule = module {
 internal val viewModelModule = module {
   viewModel { PatientListViewModel(get()) }
   viewModel { (patientId: String) -> PatientProfileViewModel(patientId, get()) }
-  viewModel { GroupListViewModel(get()) }
-  viewModel { (groupId: String) -> GroupProfileViewModel(groupId, get()) }
   viewModel { (questionnaireId: String, launchContext: QuestionnaireLaunchContext) ->
     QuestionnaireHostViewModel(questionnaireId, launchContext, get())
   }

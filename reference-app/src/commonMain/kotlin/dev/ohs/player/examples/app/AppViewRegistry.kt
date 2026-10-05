@@ -16,15 +16,11 @@
 package dev.ohs.player.examples.app
 
 import dev.ohs.player.client.registry.ViewRegistry
-import dev.ohs.player.examples.app.feature.group.list.registerGroupList
-import dev.ohs.player.examples.app.feature.group.profile.registerGroupProfile
 import dev.ohs.player.examples.app.feature.patient.list.registerPatientList
 import dev.ohs.player.examples.app.feature.patient.profile.registerPatientProfile
 
 fun buildAppViewRegistry(): ViewRegistry =
   ViewRegistry().apply {
-    registerGroupList()
-    registerGroupProfile()
     registerPatientList()
     registerPatientProfile()
   }

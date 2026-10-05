@@ -19,25 +19,17 @@ import dev.ohs.fhir.engine.FhirEngine
 import dev.ohs.fhir.engine.db.ResourceNotFoundException
 import dev.ohs.fhir.engine.resourceType
 import dev.ohs.fhir.engine.search.Search
-import dev.ohs.fhir.model.r4.Bundle
 import dev.ohs.fhir.model.r4.Resource
 import dev.ohs.fhir.model.r4.terminologies.ResourceType
 import dev.ohs.player.examples.app.data.DataChangeSignal
 import dev.ohs.player.examples.app.generateId
 import dev.ohs.player.examples.app.util.FhirJson
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 
-/**
- * [FhirRepository] backed by a real on-disk database via [FhirEngine].
- *
- * Bundle submissions resolve entry ids and rewrite internal references — see
- * [normalizeBundleResources] (added in a later change).
- */
+/** [FhirRepository] backed by a real on-disk database via [FhirEngine]. */
 class FhirEngineRepository(private val fhirEngine: FhirEngine) : FhirRepository {
 
   private val json = FhirJson.instance
@@ -47,14 +39,6 @@ class FhirEngineRepository(private val fhirEngine: FhirEngine) : FhirRepository 
   override suspend fun upsert(resource: Resource) {
     upsertResource(resource)
     DataChangeSignal.notifyChanged()
-  }
-
-  override suspend fun upsert(bundle: Bundle): Int {
-    val normalized = normalizeBundleResources(bundle)
-    if (normalized.isEmpty()) return 0
-    fhirEngine.withTransaction { normalized.forEach { upsertResource(it) } }
-    DataChangeSignal.notifyChanged()
-    return normalized.size
   }
 
   override suspend fun get(resourceType: String, id: String): Resource? {
@@ -73,75 +57,6 @@ class FhirEngineRepository(private val fhirEngine: FhirEngine) : FhirRepository 
     val type = ResourceType.valueOf(withId.resourceType)
     val exists = runCatching { fhirEngine.get(type, withId.id!!) }.isSuccess
     if (exists) fhirEngine.update(withId) else fhirEngine.create(withId)
-  }
-
-  private fun normalizeBundleResources(bundle: Bundle): List<Resource> {
-    val drafts =
-      bundle.entry.mapNotNull { entry ->
-        val resource = entry.resource ?: return@mapNotNull null
-        val resolvedId =
-          resource.id
-            ?: idFromFullUrl(entry.fullUrl?.value)
-            ?: idFromRequestUrl(entry.request?.url?.value, resource.resourceType)
-            ?: generateId()
-        entry.fullUrl?.value to resource.withId(resolvedId)
-      }
-
-    val referenceMap =
-      drafts
-        .mapNotNull { (fullUrl, resource) ->
-          fullUrl?.let { it to "${resource.resourceType}/${resource.id}" }
-        }
-        .toMap()
-
-    return drafts.map { (_, resource) -> rewriteReferences(resource, referenceMap) }
-  }
-
-  private fun rewriteReferences(resource: Resource, referenceMap: Map<String, String>): Resource {
-    val rewritten =
-      rewriteReferencesInElement(
-        json.encodeToJsonElement(Resource.serializer(), resource),
-        referenceMap,
-      )
-    return json.decodeFromJsonElement(Resource.serializer(), rewritten)
-  }
-
-  private fun rewriteReferencesInElement(
-    element: JsonElement,
-    referenceMap: Map<String, String>,
-  ): JsonElement =
-    when (element) {
-      is JsonObject ->
-        JsonObject(
-          element.mapValues { (key, value) ->
-            if (key == "reference" && value is JsonPrimitive) {
-              referenceMap[value.content]?.let(::JsonPrimitive) ?: value
-            } else {
-              rewriteReferencesInElement(value, referenceMap)
-            }
-          }
-        )
-
-      is JsonArray -> JsonArray(element.map { rewriteReferencesInElement(it, referenceMap) })
-
-      else -> element
-    }
-
-  private fun idFromFullUrl(fullUrl: String?): String? =
-    when {
-      fullUrl.isNullOrBlank() -> null
-      fullUrl.startsWith("urn:uuid:") -> fullUrl.substringAfterLast(':').ifBlank { null }
-      fullUrl.contains('/') -> fullUrl.substringAfterLast('/').substringBefore('?').ifBlank { null }
-      else -> null
-    }
-
-  private fun idFromRequestUrl(url: String?, resourceType: String): String? {
-    if (url.isNullOrBlank()) return null
-    val candidate =
-      url.substringAfterLast('/').substringBefore('?').ifBlank {
-        return null
-      }
-    return candidate.takeUnless { it == resourceType }
   }
 
   private fun Resource.withId(newId: String): Resource {

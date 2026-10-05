@@ -15,7 +15,6 @@
  */
 package dev.ohs.player.examples.app.data.repository
 
-import dev.ohs.fhir.model.r4.Bundle
 import dev.ohs.fhir.model.r4.Resource
 import kotlinx.coroutines.flow.StateFlow
 
@@ -23,7 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface FhirRepository {
   /**
    * Incremented on every successful [upsert]. Implementers must bump this after each write so that
-   * observers (e.g. [PatientRepository], [GroupRepository]) know to re-query.
+   * observers (e.g. [PatientRepository]) know to re-query.
    *
    * TODO: To be deleted, once https://github.com/ohs-foundation/kotlin-fhir-engine/issues/65 is
    *   done
@@ -31,8 +30,6 @@ interface FhirRepository {
   val revision: StateFlow<Long>
 
   suspend fun upsert(resource: Resource)
-
-  suspend fun upsert(bundle: Bundle): Int
 
   suspend fun get(resourceType: String, id: String): Resource?
 

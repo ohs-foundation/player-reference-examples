@@ -68,13 +68,9 @@ import player_reference_examples.reference_app.generated.resources.questionnaire
 fun QuestionnaireHostScreen(
   questionnaireId: String,
   patientId: String? = null,
-  groupId: String? = null,
   onBack: () -> Unit,
 ) {
-  val launchContext =
-    remember(patientId, groupId) {
-      QuestionnaireLaunchContext(patientId = patientId, groupId = groupId)
-    }
+  val launchContext = remember(patientId) { QuestionnaireLaunchContext(patientId = patientId) }
   val viewItemMatchersProvider = remember {
     object : QuestionnaireItemViewFactoryMatchersProvider {
       override fun get(): List<QuestionnaireItemViewFactoryMatcher> = listOf()
@@ -82,7 +78,7 @@ fun QuestionnaireHostScreen(
   }
 
   val viewModel =
-    koinViewModel<QuestionnaireHostViewModel>(key = "$questionnaireId:$patientId:$groupId") {
+    koinViewModel<QuestionnaireHostViewModel>(key = "$questionnaireId:$patientId") {
       parametersOf(questionnaireId, launchContext)
     }
   val uiState by viewModel.uiState.collectAsState()
