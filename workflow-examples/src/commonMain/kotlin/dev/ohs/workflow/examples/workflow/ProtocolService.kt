@@ -299,7 +299,11 @@ class ProtocolService(
         ),
     )
 
-  private fun dateTimeNow() = DateTime(value = FhirDateTime.fromString(now().toString()))
+  // A fractional second breaks fhir-model's date-time parsing, so stamp whole seconds.
+  private fun dateTimeNow() =
+    DateTime(
+      value = FhirDateTime.fromString(Instant.fromEpochSeconds(now().epochSeconds).toString())
+    )
 
   private fun reference(value: String) = Reference(reference = FhirString(value = value))
 

@@ -262,4 +262,23 @@ class ProtocolServiceTest {
         .filter { it.intent.value == ServiceRequest.RequestIntent.Order }
     assertEquals(listOf(first.id), orders.map { it.id })
   }
+
+  @Test
+  fun realClockTimestampsWithNanosecondsAreStored() = runTest {
+    val service =
+      ProtocolService(
+        repository,
+        { FhirOperator(repository, resolver = BundledProtocols.load()) },
+        now = { Instant.parse("2026-10-05T16:54:12.123456789Z") },
+      )
+
+    val assessed =
+      service.assessSickChild(
+        child,
+        response(number("age-months", 36), yes("chest-indrawing"), no("fever"), no("cough")),
+        chw,
+      )
+
+    assertNotNull(assessed.referral?.authoredOn)
+  }
 }
