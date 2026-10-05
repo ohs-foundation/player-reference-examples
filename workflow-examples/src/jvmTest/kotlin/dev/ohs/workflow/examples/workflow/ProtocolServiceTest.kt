@@ -284,4 +284,57 @@ class ProtocolServiceTest {
 
     assertNotNull(assessed.referral?.authoredOn)
   }
+
+  @Test
+  fun closingAReferralHandsTheChildBackToTheChw() = runTest {
+    val proposal =
+      service
+        .assessSickChild(
+          child,
+          response(number("age-months", 14), yes("convulsions"), no("fever"), no("cough")),
+          chw,
+        )
+        .referral!!
+    val order = service.confirmReferral(proposal, chw)
+    val consult = service.checkIn(child, response(number("spo2", 97)), nurse)
+
+    service.completeConsult(consult, "Treated and discharged")
+
+    val tasks =
+      repository
+        .searchByReferenceParam("Task", "subject", "Patient/child-1")
+        .filterIsInstance<Task>()
+    val followUp =
+      assertNotNull(
+        tasks.singleOrNull {
+          it.code?.coding?.any { coding -> coding.code?.value == "iccm-follow-up" } == true
+        },
+        tasks.joinToString { "${it.code?.coding?.firstOrNull()?.code?.value}/${it.status.value}" },
+      )
+    assertEquals("Practitioner/p-chw", followUp.owner?.reference?.value)
+    assertEquals("ServiceRequest/${order.id}", followUp.focus?.reference?.value)
+    assertEquals(Task.TaskStatus.Requested, followUp.status.value)
+    assertEquals(
+      FhirDateTime.Date(LocalDate(2026, 10, 7)),
+      followUp.restriction?.period?.end?.value,
+    )
+    assertEquals(
+      "Follow up after facility visit: Treated and discharged",
+      followUp.description?.value,
+    )
+  }
+
+  @Test
+  fun walkInConsultCreatesNoFollowUp() = runTest {
+    val consult = service.checkIn(child, response(number("spo2", 97)), nurse)
+
+    service.completeConsult(consult, "Advised rest")
+
+    assertTrue(
+      repository.searchByReferenceParam("Task", "subject", "Patient/child-1").all {
+        (it as Task).code?.coding?.none { coding -> coding.code?.value == "iccm-follow-up" } !=
+          false
+      }
+    )
+  }
 }

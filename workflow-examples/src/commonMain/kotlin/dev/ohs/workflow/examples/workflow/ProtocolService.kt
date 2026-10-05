@@ -58,8 +58,10 @@ import kotlinx.datetime.toLocalDateTime
 
 const val ICCM_SICK_CHILD = "http://ohs.dev/fhir/PlanDefinition/iccm-sick-child"
 const val OPD_TRIAGE = "http://ohs.dev/fhir/PlanDefinition/opd-triage"
+const val REFERRAL_FOLLOW_UP = "http://ohs.dev/fhir/PlanDefinition/referral-follow-up"
 const val REFERRAL_CODE = "3457005"
 private const val HOME_TREATMENT_FOLLOW_UP_DAYS = 3
+private const val AFTER_FACILITY_FOLLOW_UP_DAYS = 2
 private const val LOINC = "http://loinc.org"
 
 /** What the iCCM protocol decided for one assessment, as stored resources. */
@@ -204,6 +206,7 @@ class ProtocolService(
           .resource
           .copy(outcome = CodeableConcept(text = FhirString(value = outcome)))
       )
+      handBackToCommunity(referral, outcome)
     }
     repository.update(current.copy(status = Enumeration(value = Task.TaskStatus.Completed)))
     val encounter =
@@ -225,6 +228,20 @@ class ProtocolService(
         order.intent.value == ServiceRequest.RequestIntent.Order &&
           order.basedOn.any { it.reference?.value == "ServiceRequest/${proposal.id}" }
       }
+
+  private suspend fun handBackToCommunity(referral: ServiceRequest, outcome: String) {
+    val patient =
+      referral.subject.idOf("Patient")?.let { repository.read("Patient", it) } as? Patient
+    if (patient == null || referral.requester == null) return
+    apply(REFERRAL_FOLLOW_UP, patient, mapOf("referral" to collection(listOf(referral)))) {
+      (it as Task).copy(
+        owner = referral.requester,
+        focus = reference("ServiceRequest/${referral.id}"),
+        restriction = dueIn(AFTER_FACILITY_FOLLOW_UP_DAYS),
+        description = FhirString(value = "Follow up after facility visit: $outcome"),
+      )
+    }
+  }
 
   private suspend fun activeReferrals(patient: Patient): List<ServiceRequest> =
     repository

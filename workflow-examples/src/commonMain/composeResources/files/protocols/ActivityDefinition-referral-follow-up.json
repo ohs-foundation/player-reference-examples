@@ -1,0 +1,17 @@
+{
+  "resourceType": "ActivityDefinition",
+  "id": "referral-follow-up",
+  "url": "http://ohs.dev/fhir/ActivityDefinition/referral-follow-up",
+  "status": "active",
+  "kind": "Task",
+  "title": "Follow up after facility visit",
+  "description": "Follow up after facility visit",
+  "code": {
+    "coding": [
+      {
+        "system": "http://ohs.dev/fhir/CodeSystem/task-type",
+        "code": "iccm-follow-up"
+      }
+    ]
+  }
+}
