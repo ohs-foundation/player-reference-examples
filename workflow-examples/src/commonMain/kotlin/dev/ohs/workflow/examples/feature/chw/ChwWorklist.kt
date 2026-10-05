@@ -43,6 +43,7 @@ data class WorkItem(
   val patientName: String,
   val date: String,
   val status: WorkStatus,
+  val detail: String? = null,
 )
 
 /** The CHW's open iCCM follow-up visits, soonest first. */
@@ -58,7 +59,14 @@ fun followUps(tasks: List<Task>, patients: Map<String, Patient>, practitionerId:
       val due =
         task.restriction?.period?.end.date()
           ?: task.authoredOn.date()?.plus(FOLLOW_UP_AFTER_DAYS, DateTimeUnit.DAY)
-      WorkItem(task.id!!, patientId, patients[patientId].displayName(), "$due", WorkStatus.Due)
+      WorkItem(
+        task.id!!,
+        patientId,
+        patients[patientId].displayName(),
+        "$due",
+        WorkStatus.Due,
+        task.description?.value,
+      )
     }
     .sortedBy { it.date }
 
@@ -87,6 +95,7 @@ fun referrals(
         patients[patientId].displayName(),
         "${request.authoredOn.date()}",
         status,
+        request.priority?.value?.code?.replaceFirstChar { it.uppercaseChar() },
       )
     }
     .sortedByDescending { it.date }

@@ -17,6 +17,7 @@ package dev.ohs.workflow.examples.feature.chw
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,7 +27,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,7 +38,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.follow_up_done
 import player_reference_examples.workflow_examples.generated.resources.follow_ups_empty
 import player_reference_examples.workflow_examples.generated.resources.referrals_empty
 import player_reference_examples.workflow_examples.generated.resources.work_due
@@ -46,21 +45,21 @@ import player_reference_examples.workflow_examples.generated.resources.work_seen
 import player_reference_examples.workflow_examples.generated.resources.work_waiting_at_facility
 
 @Composable
-fun FollowUpsScreen(context: UserContext, onPatientClick: (String) -> Unit) {
+fun FollowUpsScreen(context: UserContext, onStartVisit: (WorkItem) -> Unit) {
   val viewModel = koinViewModel<ChwWorklistViewModel> { parametersOf(context) }
   val items by viewModel.followUps.collectAsStateWithLifecycle()
-  WorklistContent(items, stringResource(Res.string.follow_ups_empty), onPatientClick) { item ->
-    TextButton(onClick = { viewModel.completeFollowUp(item.id) }) {
-      Text(stringResource(Res.string.follow_up_done))
-    }
-  }
+  WorklistContent(items, stringResource(Res.string.follow_ups_empty), onStartVisit)
 }
 
 @Composable
 fun ReferralsScreen(context: UserContext, onPatientClick: (String) -> Unit) {
   val viewModel = koinViewModel<ChwWorklistViewModel> { parametersOf(context) }
   val items by viewModel.referrals.collectAsStateWithLifecycle()
-  WorklistContent(items, stringResource(Res.string.referrals_empty), onPatientClick)
+  WorklistContent(
+    items,
+    stringResource(Res.string.referrals_empty),
+    onItemClick = { onPatientClick(it.patientId) },
+  )
 }
 
 /** A plain worklist: one row per item with its patient, status and an optional action. */
@@ -68,7 +67,7 @@ fun ReferralsScreen(context: UserContext, onPatientClick: (String) -> Unit) {
 fun WorklistContent(
   items: List<WorkItem>?,
   empty: String,
-  onPatientClick: (String) -> Unit,
+  onItemClick: (WorkItem) -> Unit,
   action: @Composable (WorkItem) -> Unit = {},
 ) {
   when {
@@ -84,9 +83,14 @@ fun WorklistContent(
       LazyColumn(Modifier.fillMaxSize()) {
         items(items, key = { it.id }) { item ->
           ListItem(
-            modifier = Modifier.clickable { onPatientClick(item.patientId) },
+            modifier = Modifier.clickable { onItemClick(item) },
             headlineContent = { Text(item.patientName) },
-            supportingContent = { Text(item.statusLabel()) },
+            supportingContent = {
+              Column {
+                Text(item.statusLabel())
+                item.detail?.let { Text(it, style = MaterialTheme.typography.bodySmall) }
+              }
+            },
             trailingContent = { action(item) },
           )
           HorizontalDivider()

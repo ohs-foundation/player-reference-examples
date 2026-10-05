@@ -139,6 +139,11 @@ private fun SignedInApp(context: UserContext, userName: String, onSignOut: () ->
             context = context,
             userName = userName,
             onPatientClick = { id -> navController.navigate("patientProfile/$id") },
+            onStartFollowUp = { item ->
+              navController.navigate(
+                "questionnaireHost/${QuestionnaireIds.ICCM_FOLLOW_UP}?patientId=${item.patientId}&taskId=${item.id}"
+              )
+            },
             onRegisterPatient = {
               navController.navigate("questionnaireHost/${QuestionnaireIds.PATIENT_REGISTRATION}")
             },
@@ -147,11 +152,16 @@ private fun SignedInApp(context: UserContext, userName: String, onSignOut: () ->
         }
 
         composable(
-          route = "questionnaireHost/{questionnaireId}?patientId={patientId}",
+          route = "questionnaireHost/{questionnaireId}?patientId={patientId}&taskId={taskId}",
           arguments =
             listOf(
               navArgument("questionnaireId") { type = NavType.StringType },
               navArgument("patientId") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+              },
+              navArgument("taskId") {
                 type = NavType.StringType
                 nullable = true
                 defaultValue = null
@@ -161,9 +171,11 @@ private fun SignedInApp(context: UserContext, userName: String, onSignOut: () ->
           val questionnaireId =
             back.arguments?.read { getStringOrNull("questionnaireId") }.orEmpty()
           val patientId = back.arguments?.read { getStringOrNull("patientId") }
+          val taskId = back.arguments?.read { getStringOrNull("taskId") }
           QuestionnaireHostScreen(
             questionnaireId = questionnaireId,
             patientId = patientId,
+            taskId = taskId,
             user = context,
             onBack = { navController.popBackStack() },
           )

@@ -17,18 +17,15 @@ package dev.ohs.workflow.examples.feature.chw
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.ohs.fhir.model.r4.Enumeration
 import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.ServiceRequest
 import dev.ohs.fhir.model.r4.Task
 import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.data.repository.FhirRepository
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class ChwWorklistViewModel(
   private val context: UserContext,
@@ -56,12 +53,6 @@ class ChwWorklistViewModel(
         )
       }
       .stateIn(viewModelScope, SharingStarted.Eagerly, null)
-
-  fun completeFollowUp(taskId: String): Job =
-    viewModelScope.launch {
-      val task = repository.get("Task", taskId) as? Task ?: return@launch
-      repository.upsert(task.copy(status = Enumeration(value = Task.TaskStatus.Completed)))
-    }
 
   private suspend fun patients(): Map<String, Patient> =
     repository.all("Patient").filterIsInstance<Patient>().associateBy { it.id.orEmpty() }

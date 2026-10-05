@@ -70,11 +70,14 @@ import player_reference_examples.workflow_examples.generated.resources.questionn
 fun QuestionnaireHostScreen(
   questionnaireId: String,
   patientId: String? = null,
+  taskId: String? = null,
   user: UserContext? = null,
   onBack: () -> Unit,
 ) {
   val launchContext =
-    remember(patientId, user) { QuestionnaireLaunchContext(patientId = patientId, user = user) }
+    remember(patientId, user, taskId) {
+      QuestionnaireLaunchContext(patientId = patientId, user = user, taskId = taskId)
+    }
   val viewItemMatchersProvider = remember {
     object : QuestionnaireItemViewFactoryMatchersProvider {
       override fun get(): List<QuestionnaireItemViewFactoryMatcher> = listOf()
@@ -82,7 +85,7 @@ fun QuestionnaireHostScreen(
   }
 
   val viewModel =
-    koinViewModel<QuestionnaireHostViewModel>(key = "$questionnaireId:$patientId") {
+    koinViewModel<QuestionnaireHostViewModel>(key = "$questionnaireId:$patientId:$taskId") {
       parametersOf(questionnaireId, launchContext)
     }
   val uiState by viewModel.uiState.collectAsState()

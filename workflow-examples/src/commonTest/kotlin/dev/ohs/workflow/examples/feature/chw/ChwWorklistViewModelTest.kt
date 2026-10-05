@@ -36,7 +36,7 @@ import kotlinx.coroutines.test.runTest
 class ChwWorklistViewModelTest {
 
   @Test
-  fun completingAFollowUpRemovesItFromTheList() = runTest {
+  fun aClosedFollowUpLeavesTheList() = runTest {
     val repository = InMemorySampleFhirRepository()
     repository.upsert(Patient(id = "child-1"))
     repository.upsert(
@@ -53,9 +53,12 @@ class ChwWorklistViewModelTest {
     val viewModel = ChwWorklistViewModel(UserContext(AppRole.CHW, "p1", "o1", null), repository)
     assertEquals(listOf("t1"), viewModel.followUps.first { it != null }!!.map { it.id })
 
-    viewModel.completeFollowUp("t1").join()
+    repository.upsert(
+      (repository.get("Task", "t1") as Task).copy(
+        status = Enumeration(value = Task.TaskStatus.Completed)
+      )
+    )
 
-    assertEquals(Task.TaskStatus.Completed, (repository.get("Task", "t1") as Task).status.value)
     assertEquals(emptyList(), viewModel.followUps.first { it?.isEmpty() == true })
   }
 }

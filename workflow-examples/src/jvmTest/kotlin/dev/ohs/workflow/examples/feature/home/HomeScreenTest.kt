@@ -80,6 +80,7 @@ class HomeScreenTest {
             context = UserContext(AppRole.NURSE, "p1", "o1", "l1"),
             userName = "Test User",
             onPatientClick = {},
+            onStartFollowUp = {},
             onRegisterPatient = {},
             onSignOut = {},
           )
@@ -113,6 +114,7 @@ class HomeScreenTest {
             context = UserContext(AppRole.NURSE, "p1", "o1", "l1"),
             userName = "Test User",
             onPatientClick = {},
+            onStartFollowUp = {},
             onRegisterPatient = {},
             onSignOut = {},
           )
@@ -154,6 +156,7 @@ class HomeScreenTest {
             context = UserContext(AppRole.NURSE, "p1", "o1", "l1"),
             userName = "Test User",
             onPatientClick = {},
+            onStartFollowUp = {},
             onRegisterPatient = {},
             onSignOut = {},
           )
@@ -190,6 +193,7 @@ class HomeScreenTest {
             context = UserContext(AppRole.NURSE, "p1", "o1", "l1"),
             userName = "Test User",
             onPatientClick = {},
+            onStartFollowUp = {},
             onRegisterPatient = {},
             onSignOut = {},
           )

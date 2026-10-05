@@ -142,4 +142,16 @@ class ChwWorklistTest {
 
     assertEquals("2026-10-07", followUps(listOf(task), patients, "p1").single().date)
   }
+
+  @Test
+  fun followUpSaysWhyItIsDue() {
+    val task =
+      followUp("t1", "Practitioner/p1", Task.TaskStatus.Requested, "2026-10-05")
+        .copy(description = FhirString(value = "Follow up after facility visit: Discharged"))
+
+    assertEquals(
+      "Follow up after facility visit: Discharged",
+      followUps(listOf(task), patients, "p1").single().detail,
+    )
+  }
 }

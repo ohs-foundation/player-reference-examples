@@ -36,15 +36,23 @@ class WorklistContentTest {
         WorklistContent(
           items =
             listOf(
-              WorkItem("sr-1", "child-1", "Amina Otieno", "2026-10-05", WorkStatus.SeenAtFacility)
+              WorkItem(
+                "sr-1",
+                "child-1",
+                "Amina Otieno",
+                "2026-10-05",
+                WorkStatus.SeenAtFacility,
+                "Urgent",
+              )
             ),
           empty = "No referrals",
-          onPatientClick = { opened = it },
+          onItemClick = { opened = it.patientId },
         )
       }
     }
 
     onNodeWithText("Seen at facility").assertExists()
+    onNodeWithText("Urgent").assertExists()
     onNodeWithText("Amina Otieno").performClick()
     assertEquals("child-1", opened)
   }
@@ -53,7 +61,7 @@ class WorklistContentTest {
   fun emptyListSaysSo() = runComposeUiTest {
     setContent {
       MaterialTheme {
-        WorklistContent(items = emptyList(), empty = "No follow-ups due", onPatientClick = {})
+        WorklistContent(items = emptyList(), empty = "No follow-ups due", onItemClick = {})
       }
     }
 
@@ -68,7 +76,7 @@ class WorklistContentTest {
         WorklistContent(
           items = listOf(WorkItem("t1", "child-1", "Amina Otieno", "2026-10-08", WorkStatus.Due)),
           empty = "",
-          onPatientClick = {},
+          onItemClick = {},
           action = { item -> TextButton(onClick = { done = item.id }) { Text("Done") } },
         )
       }

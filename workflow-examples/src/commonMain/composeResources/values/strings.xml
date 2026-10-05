@@ -52,7 +52,6 @@
     <string name="work_waiting_at_facility">Waiting at facility</string>
     <string name="work_seen_at_facility">Seen at facility</string>
     <string name="follow_ups_empty">No follow-ups due</string>
-    <string name="follow_up_done">Done</string>
     <string name="referrals_empty">No referrals sent</string>
 
     <!-- OPD queue -->

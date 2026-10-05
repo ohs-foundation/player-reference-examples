@@ -29,7 +29,11 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import player_reference_examples.workflow_examples.generated.resources.Res
 
 /** Caller-supplied identifiers describing why/for-whom a questionnaire was launched. */
-data class QuestionnaireLaunchContext(val patientId: String? = null, val user: UserContext? = null)
+data class QuestionnaireLaunchContext(
+  val patientId: String? = null,
+  val user: UserContext? = null,
+  val taskId: String? = null,
+)
 
 /** Outcome of submitting a QuestionnaireResponse, ready for the UI to render. */
 data class QuestionnaireSubmissionResult(
@@ -41,6 +45,7 @@ object QuestionnaireIds {
   const val PATIENT_REGISTRATION = "patient-registration"
   const val ICCM_SICK_CHILD = "iccm-sick-child"
   const val OPD_CHECK_IN = "opd-check-in"
+  const val ICCM_FOLLOW_UP = "iccm-follow-up"
 }
 
 /** Bundled Questionnaire JSON, keyed by the id it should be read under. */
@@ -50,6 +55,7 @@ private val BUNDLED_QUESTIONNAIRE_PATHS: Map<String, String> =
       "files/protocols/Questionnaire-PatientRegistration.json",
     QuestionnaireIds.ICCM_SICK_CHILD to "files/protocols/Questionnaire-IccmSickChild.json",
     QuestionnaireIds.OPD_CHECK_IN to "files/protocols/Questionnaire-OpdCheckIn.json",
+    QuestionnaireIds.ICCM_FOLLOW_UP to "files/protocols/Questionnaire-IccmFollowUp.json",
   )
 
 /** Reads bundled Questionnaires and persists what their responses produce via [FhirRepository]. */
@@ -87,6 +93,16 @@ class QuestionnaireService(
         val assessment =
           protocols.assessSickChild(patient(launchContext), response, launchContext.user())
         QuestionnaireSubmissionResult("Assessment saved.", assessment)
+      }
+      QuestionnaireIds.ICCM_FOLLOW_UP -> {
+        val taskId = launchContext.taskId ?: error("A follow-up visit needs its follow-up task.")
+        val visit =
+          protocols.recordFollowUp(patient(launchContext), response, taskId, launchContext.user())
+        if (visit.referral == null) {
+          QuestionnaireSubmissionResult("Follow-up recorded: the child is better.")
+        } else {
+          QuestionnaireSubmissionResult("Follow-up recorded.", visit)
+        }
       }
       QuestionnaireIds.OPD_CHECK_IN -> {
         val consult = protocols.checkIn(patient(launchContext), response, launchContext.user())
