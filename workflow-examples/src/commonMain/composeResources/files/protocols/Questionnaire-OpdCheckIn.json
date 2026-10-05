@@ -1,0 +1,29 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "opd-check-in",
+  "status": "active",
+  "title": "OPD check-in",
+  "item": [
+    {
+      "linkId": "reason",
+      "text": "Reason for visit",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "temperature",
+      "text": "Temperature (°C)",
+      "type": "decimal"
+    },
+    {
+      "linkId": "respiratory-rate",
+      "text": "Breaths per minute",
+      "type": "integer"
+    },
+    {
+      "linkId": "spo2",
+      "text": "Oxygen saturation (%)",
+      "type": "integer"
+    }
+  ]
+}

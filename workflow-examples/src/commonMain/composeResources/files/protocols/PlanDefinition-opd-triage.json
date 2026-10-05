@@ -1,0 +1,26 @@
+{
+  "resourceType": "PlanDefinition",
+  "id": "opd-triage",
+  "url": "http://ohs.dev/fhir/PlanDefinition/opd-triage",
+  "version": "1.0.0",
+  "name": "OpdTriage",
+  "title": "OPD triage",
+  "status": "active",
+  "description": "Queues every arrival for consultation. Low oxygen saturation or an urgent community referral is seen first; any other referral comes before walk-ins.",
+  "action": [
+    {
+      "id": "queue",
+      "title": "Queue for consultation",
+      "definitionCanonical": "http://ohs.dev/fhir/ActivityDefinition/opd-consult",
+      "dynamicValue": [
+        {
+          "path": "priority",
+          "expression": {
+            "language": "text/fhirpath",
+            "expression": "iif((%vitals.entry.resource.where(code.coding.code = '59408-5').value.value.first() < 90) or %referrals.entry.resource.where(priority = 'urgent').exists(), 'stat', iif(%referrals.entry.resource.exists(), 'urgent', 'routine'))"
+          }
+        }
+      ]
+    }
+  ]
+}

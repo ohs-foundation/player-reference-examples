@@ -36,6 +36,8 @@ private val PROTOCOL_FILES: List<String> =
     "ActivityDefinition-iccm-al.json",
     "ActivityDefinition-iccm-amoxicillin.json",
     "ActivityDefinition-iccm-follow-up.json",
+    "PlanDefinition-opd-triage.json",
+    "ActivityDefinition-opd-consult.json",
   )
 
 class BundledProtocols(private val resources: List<Resource>) : CanonicalResolver {
