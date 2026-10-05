@@ -209,8 +209,10 @@ fun QuestionnaireHostScreen(
                 AssessmentResultContent(
                   assessment = it,
                   referralSent = state.referralSent,
-                  onConfirmReferral = viewModel::confirmReferral,
+                  sending = state.sending,
+                  onConfirmReferral = { viewModel.confirmReferral() },
                   onDone = onBack,
+                  error = state.referralError,
                 )
               }
           }

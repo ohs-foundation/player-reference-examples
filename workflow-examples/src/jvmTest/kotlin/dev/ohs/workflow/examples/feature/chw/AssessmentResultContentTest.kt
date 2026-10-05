@@ -17,6 +17,7 @@ package dev.ohs.workflow.examples.feature.chw
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -59,6 +60,7 @@ class AssessmentResultContentTest {
         AssessmentResultContent(
           AssessmentResult(referral, emptyList(), null),
           referralSent = false,
+          sending = false,
           onConfirmReferral = { confirmed++ },
           onDone = {},
         )
@@ -77,6 +79,7 @@ class AssessmentResultContentTest {
         AssessmentResultContent(
           AssessmentResult(null, listOf(amoxicillin), null),
           referralSent = false,
+          sending = false,
           onConfirmReferral = {},
           onDone = {},
         )
@@ -94,6 +97,7 @@ class AssessmentResultContentTest {
         AssessmentResultContent(
           AssessmentResult(referral, emptyList(), null),
           referralSent = true,
+          sending = false,
           onConfirmReferral = {},
           onDone = {},
         )
@@ -102,5 +106,22 @@ class AssessmentResultContentTest {
 
     onNodeWithText("Referral sent to the facility").assertExists()
     assertTrue(onAllNodesWithText("Confirm referral").fetchSemanticsNodes().isEmpty())
+  }
+
+  @Test
+  fun confirmIsDisabledWhileSending() = runComposeUiTest {
+    setContent {
+      MaterialTheme {
+        AssessmentResultContent(
+          AssessmentResult(referral, emptyList(), null),
+          referralSent = false,
+          sending = true,
+          onConfirmReferral = {},
+          onDone = {},
+        )
+      }
+    }
+
+    onNodeWithText("Confirm referral").assertIsNotEnabled()
   }
 }

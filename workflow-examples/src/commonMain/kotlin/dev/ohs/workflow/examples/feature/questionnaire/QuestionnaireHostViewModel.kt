@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.ohs.fhir.model.r4.Questionnaire as QuestionnaireR4
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,8 +51,7 @@ class QuestionnaireHostViewModel(
       runCatching {
           val questionnaire = questionnaireService.getQuestionnaire(questionnaireId)
           loadedQuestionnaire = questionnaire
-          questionnaireService.prepareForLaunch(questionnaire, launchContext) to
-            questionnaire.title?.value
+          questionnaireService.toJson(questionnaire) to questionnaire.title?.value
         }
         .onSuccess { (json, title) -> _uiState.value = QuestionnaireHostUiState.Ready(json, title) }
         .onFailure { throwable ->
@@ -61,16 +61,22 @@ class QuestionnaireHostViewModel(
     }
   }
 
-  fun confirmReferral() {
-    val submitted = _uiState.value as? QuestionnaireHostUiState.Submitted ?: return
-    val referral = submitted.result.assessment?.referral ?: return
-    viewModelScope.launch {
-      runCatching { questionnaireService.confirmReferral(referral, launchContext) }
-        .onSuccess { _uiState.value = submitted.copy(referralSent = true) }
-        .onFailure { throwable ->
-          _uiState.value =
-            QuestionnaireHostUiState.Error(throwable.message ?: "Failed to send the referral.")
-        }
+  fun confirmReferral(): Job {
+    val submitted = _uiState.value as? QuestionnaireHostUiState.Submitted
+    val referral = submitted?.result?.assessment?.referral
+    if (submitted == null || referral == null || submitted.sending || submitted.referralSent) {
+      return Job().apply { complete() }
+    }
+    _uiState.value = submitted.copy(sending = true, referralError = null)
+    return viewModelScope.launch {
+      _uiState.value =
+        runCatching { questionnaireService.confirmReferral(referral, launchContext) }
+          .fold(
+            onSuccess = { submitted.copy(referralSent = true) },
+            onFailure = {
+              submitted.copy(referralError = it.message ?: "Failed to send the referral.")
+            },
+          )
     }
   }
 

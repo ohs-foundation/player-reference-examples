@@ -45,8 +45,10 @@ import player_reference_examples.workflow_examples.generated.resources.assessmen
 fun AssessmentResultContent(
   assessment: AssessmentResult,
   referralSent: Boolean,
+  sending: Boolean,
   onConfirmReferral: () -> Unit,
   onDone: () -> Unit,
+  error: String? = null,
 ) {
   Column(
     modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -71,10 +73,15 @@ fun AssessmentResultContent(
           color = MaterialTheme.colorScheme.primary,
         )
       assessment.referral != null ->
-        Button(onClick = onConfirmReferral, modifier = Modifier.fillMaxWidth()) {
+        Button(
+          onClick = onConfirmReferral,
+          enabled = !sending,
+          modifier = Modifier.fillMaxWidth(),
+        ) {
           Text(stringResource(Res.string.assessment_confirm_referral))
         }
     }
+    error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
     OutlinedButton(onClick = onDone, modifier = Modifier.fillMaxWidth()) {
       Text(stringResource(Res.string.assessment_done))
     }

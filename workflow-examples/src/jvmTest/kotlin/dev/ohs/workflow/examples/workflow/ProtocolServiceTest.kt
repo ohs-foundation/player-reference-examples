@@ -32,6 +32,7 @@ import dev.ohs.fhir.model.r4.QuestionnaireResponse.Item.Answer.Value
 import dev.ohs.fhir.model.r4.ServiceRequest
 import dev.ohs.fhir.model.r4.String as FhirString
 import dev.ohs.fhir.model.r4.Task
+import dev.ohs.fhir.model.r4.terminologies.ResourceType
 import dev.ohs.fhir.workflow.FhirOperator
 import dev.ohs.workflow.examples.auth.AppRole
 import dev.ohs.workflow.examples.auth.UserContext
@@ -197,5 +198,68 @@ class ProtocolServiceTest {
 
     assertEquals(Task.RequestPriority.Routine, consult.priority?.value)
     assertNull(consult.focus)
+  }
+
+  @Test
+  fun completingAConsultTwiceClosesTheReferralOnce() = runTest {
+    val proposal =
+      service
+        .assessSickChild(
+          child,
+          response(number("age-months", 14), yes("convulsions"), no("fever"), no("cough")),
+          chw,
+        )
+        .referral!!
+    service.confirmReferral(proposal, chw)
+    val consult = service.checkIn(child, response(number("spo2", 97)), nurse)
+
+    service.completeConsult(consult, "Seen")
+    service.completeConsult(consult, "Seen again")
+
+    assertEquals(
+      1,
+      repository.searchByReferenceParam("Procedure", "subject", "Patient/child-1").size,
+    )
+    assertEquals(
+      Task.TaskStatus.Completed,
+      (repository.read("Task", consult.id!!) as Task).status.value,
+    )
+  }
+
+  @Test
+  fun consultWithoutItsEncounterOnThisDeviceStillCloses() = runTest {
+    val consult = service.checkIn(child, response(number("spo2", 97)), nurse)
+    val encounterId = consult.encounter?.reference?.value!!.substringAfter("Encounter/")
+    fhirEngine.delete(ResourceType.Encounter, encounterId)
+
+    service.completeConsult(consult, "Seen")
+
+    assertEquals(
+      Task.TaskStatus.Completed,
+      (repository.read("Task", consult.id!!) as Task).status.value,
+    )
+  }
+
+  @Test
+  fun confirmingAReferralTwiceKeepsOneOrder() = runTest {
+    val proposal =
+      service
+        .assessSickChild(
+          child,
+          response(number("age-months", 14), yes("lethargic"), no("fever"), no("cough")),
+          chw,
+        )
+        .referral!!
+
+    val first = service.confirmReferral(proposal, chw)
+    val second = service.confirmReferral(proposal, chw)
+
+    assertEquals(first.id, second.id)
+    val orders =
+      repository
+        .searchByReferenceParam("ServiceRequest", "subject", "Patient/child-1")
+        .filterIsInstance<ServiceRequest>()
+        .filter { it.intent.value == ServiceRequest.RequestIntent.Order }
+    assertEquals(listOf(first.id), orders.map { it.id })
   }
 }

@@ -46,6 +46,7 @@ import dev.ohs.fhir.workflow.activity.resource.request.CPGServiceRequest
 import dev.ohs.fhir.workflow.activity.resource.request.Status
 import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.generateId
+import dev.ohs.workflow.examples.util.idOf
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.coroutines.sync.Mutex
@@ -102,8 +103,14 @@ class ProtocolService(
 
   /** Turns the protocol's referral proposal into an active order addressed to the facility. */
   suspend fun confirmReferral(proposal: ServiceRequest, context: UserContext): ServiceRequest {
+    val stored =
+      repository.read("ServiceRequest", proposal.id!!) as? ServiceRequest
+        ?: error("This referral is no longer on the device.")
+    if (stored.status.value != ServiceRequest.RequestStatus.Active) {
+      return orderFor(stored) ?: error("This referral was already handled.")
+    }
     val addressed =
-      proposal.copy(performer = listOf(reference("Organization/${context.organizationId}")))
+      stored.copy(performer = listOf(reference("Organization/${context.organizationId}")))
     repository.update(addressed)
     val flow = ActivityFlow.of(repository, CPGServiceRequest(addressed))
     val draft = flow.prepareOrder().getOrThrow()
@@ -172,12 +179,17 @@ class ProtocolService(
   }
 
   /**
-   * Closes the consult; a referral behind it is performed and completed through its ActivityFlow.
+   * Closes the consult; a still-active referral behind it is performed and completed through its
+   * ActivityFlow. Safe to repeat, and to run on a device that never received the consult's
+   * encounter.
    */
   suspend fun completeConsult(task: Task, outcome: String) {
-    val referralId = task.focus?.reference?.value?.removePrefix("ServiceRequest/")
-    if (referralId != null) {
-      val referral = repository.read("ServiceRequest", referralId) as ServiceRequest
+    val current = repository.read("Task", task.id!!) as? Task ?: task
+    if (current.status.value == Task.TaskStatus.Completed) return
+    val referral =
+      current.focus.idOf("ServiceRequest")?.let { repository.read("ServiceRequest", it) }
+        as? ServiceRequest
+    if (referral?.status?.value == ServiceRequest.RequestStatus.Active) {
       val flow = ActivityFlow.of(repository, CPGServiceRequest(referral))
       val event = flow.preparePerform<CPGProcedureEvent>("CPGProcedureEvent").getOrThrow()
       val perform = flow.initiatePerform(event).getOrThrow()
@@ -190,14 +202,26 @@ class ProtocolService(
           .copy(outcome = CodeableConcept(text = FhirString(value = outcome)))
       )
     }
-    repository.update(task.copy(status = Enumeration(value = Task.TaskStatus.Completed)))
-    task.encounter?.reference?.value?.removePrefix("Encounter/")?.let { id ->
-      val encounter = repository.read("Encounter", id) as Encounter
-      repository.update(
-        encounter.copy(status = Enumeration(value = Encounter.EncounterStatus.Finished))
-      )
+    repository.update(current.copy(status = Enumeration(value = Task.TaskStatus.Completed)))
+    val encounter =
+      current.encounter.idOf("Encounter")?.let { repository.read("Encounter", it) } as? Encounter
+    encounter?.let {
+      repository.update(it.copy(status = Enumeration(value = Encounter.EncounterStatus.Finished)))
     }
   }
+
+  private suspend fun orderFor(proposal: ServiceRequest): ServiceRequest? =
+    repository
+      .searchByReferenceParam(
+        "ServiceRequest",
+        "subject",
+        proposal.subject?.reference?.value.orEmpty(),
+      )
+      .filterIsInstance<ServiceRequest>()
+      .firstOrNull { order ->
+        order.intent.value == ServiceRequest.RequestIntent.Order &&
+          order.basedOn.any { it.reference?.value == "ServiceRequest/${proposal.id}" }
+      }
 
   private suspend fun activeReferrals(patient: Patient): List<ServiceRequest> =
     repository

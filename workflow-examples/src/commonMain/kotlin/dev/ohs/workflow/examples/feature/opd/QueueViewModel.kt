@@ -24,9 +24,12 @@ import dev.ohs.fhir.model.r4.Task
 import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.data.repository.FhirRepository
 import dev.ohs.workflow.examples.workflow.ProtocolService
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -50,9 +53,20 @@ class QueueViewModel(
       }
       .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+  private val _error = MutableStateFlow<String?>(null)
+  val error: StateFlow<String?> = _error.asStateFlow()
+
   fun complete(taskId: String, outcome: String): Job =
     viewModelScope.launch {
       val task = repository.get("Task", taskId) as? Task ?: return@launch
-      protocols.completeConsult(task, outcome)
+      _error.value =
+        try {
+          protocols.completeConsult(task, outcome)
+          null
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          e.message ?: "Could not complete the consult."
+        }
     }
 }

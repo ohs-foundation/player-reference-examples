@@ -25,13 +25,6 @@ import dev.ohs.workflow.examples.util.FhirJson
 import dev.ohs.workflow.examples.workflow.AssessmentResult
 import dev.ohs.workflow.examples.workflow.ProtocolService
 import dev.ohs.workflow.examples.workflow.registrationPatient
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import player_reference_examples.workflow_examples.generated.resources.Res
 
@@ -67,10 +60,6 @@ class QuestionnaireService(
 
   private val fhirJson = FhirJson.instance
 
-  /** Launch-context values a questionnaire can opt into prepopulating, by linkId. */
-  private val LAUNCH_CONTEXT_LINK_IDS: Map<String, (QuestionnaireLaunchContext) -> String?> =
-    mapOf("patient-id" to { context -> context.patientId })
-
   /** Reads a Questionnaire from the bundled config files. */
   @OptIn(ExperimentalResourceApi::class)
   suspend fun getQuestionnaire(id: String): QuestionnaireR4 {
@@ -81,24 +70,8 @@ class QuestionnaireService(
     return fhirJson.decodeFromString(QuestionnaireR4.serializer(), json).copy(id = id)
   }
 
-  fun prepareForLaunch(
-    questionnaire: QuestionnaireR4,
-    launchContext: QuestionnaireLaunchContext,
-  ): String {
-    val questionnaireObject =
-      fhirJson.decodeFromString(
-        JsonObject.serializer(),
-        fhirJson.encodeToString(QuestionnaireR4.serializer(), questionnaire),
-      )
-
-    val prepared =
-      LAUNCH_CONTEXT_LINK_IDS.entries.fold(questionnaireObject) { current, (linkId, resolve) ->
-        val value = resolve(launchContext) ?: return@fold current
-        current.withInitialStringAnswer(linkId, value).first
-      }
-
-    return fhirJson.encodeToString(JsonObject.serializer(), prepared)
-  }
+  fun toJson(questionnaire: QuestionnaireR4): String =
+    fhirJson.encodeToString(QuestionnaireR4.serializer(), questionnaire)
 
   suspend fun submit(
     questionnaire: QuestionnaireR4,
@@ -135,28 +108,3 @@ class QuestionnaireService(
 
 private fun QuestionnaireLaunchContext.user(): UserContext =
   user ?: error("This questionnaire needs a signed-in user with a role.")
-
-private fun JsonObject.withInitialStringAnswer(
-  linkId: String,
-  value: String,
-): Pair<JsonObject, Boolean> {
-  var updated = false
-  val mutableNode = toMutableMap()
-
-  if (this["linkId"]?.jsonPrimitive?.contentOrNull == linkId) {
-    mutableNode["initial"] =
-      JsonArray(listOf(JsonObject(mapOf("valueString" to JsonPrimitive(value)))))
-    updated = true
-  }
-
-  this["item"]
-    ?.jsonArray
-    ?.map { element ->
-      val (updatedItem, itemUpdated) = element.jsonObject.withInitialStringAnswer(linkId, value)
-      if (itemUpdated) updated = true
-      updatedItem
-    }
-    ?.let { mutableNode["item"] = JsonArray(it) }
-
-  return JsonObject(mutableNode) to updated
-}

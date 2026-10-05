@@ -61,7 +61,13 @@ import player_reference_examples.workflow_examples.generated.resources.queue_ref
 fun QueueScreen(context: UserContext) {
   val viewModel = koinViewModel<QueueViewModel> { parametersOf(context) }
   val items by viewModel.queue.collectAsStateWithLifecycle()
-  QueueContent(items, onComplete = { taskId, outcome -> viewModel.complete(taskId, outcome) })
+  val error by viewModel.error.collectAsStateWithLifecycle()
+  Column {
+    error?.let {
+      Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
+    }
+    QueueContent(items, onComplete = { taskId, outcome -> viewModel.complete(taskId, outcome) })
+  }
 }
 
 /** The waiting patients; tapping one opens the consult, which closes with a recorded outcome. */
