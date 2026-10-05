@@ -3,39 +3,244 @@
   "type": "transaction",
   "entry": [
     {
-      "fullUrl": "Organization/demo-facility",
+      "fullUrl": "Organization/58de21fd-6a31-4429-883a-9552ff44b133",
       "resource": {
         "resourceType": "Organization",
-        "id": "demo-facility",
+        "id": "58de21fd-6a31-4429-883a-9552ff44b133",
         "active": true,
-        "name": "Demo Health Centre"
+        "name": "Kiambu County Department of Health",
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://ohs.dev/fhir/CodeSystem/organization-level",
+                "code": "county"
+              }
+            ]
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://ohs.dev/identifiers/county-code",
+            "value": "022"
+          }
+        ]
       },
       "request": {
         "method": "PUT",
-        "url": "Organization/demo-facility"
+        "url": "Organization/58de21fd-6a31-4429-883a-9552ff44b133"
       }
     },
     {
-      "fullUrl": "Location/demo-opd",
+      "fullUrl": "Organization/840d81a6-5fda-4585-a125-9bef5a6c8a7e",
       "resource": {
-        "resourceType": "Location",
-        "id": "demo-opd",
-        "status": "active",
-        "name": "Demo Health Centre OPD",
-        "managingOrganization": {
-          "reference": "Organization/demo-facility"
+        "resourceType": "Organization",
+        "id": "840d81a6-5fda-4585-a125-9bef5a6c8a7e",
+        "active": true,
+        "name": "Ruiru Sub-County Health Management Team",
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://ohs.dev/fhir/CodeSystem/organization-level",
+                "code": "sub-county"
+              }
+            ]
+          }
+        ],
+        "partOf": {
+          "reference": "Organization/58de21fd-6a31-4429-883a-9552ff44b133"
         }
       },
       "request": {
         "method": "PUT",
-        "url": "Location/demo-opd"
+        "url": "Organization/840d81a6-5fda-4585-a125-9bef5a6c8a7e"
       }
     },
     {
-      "fullUrl": "Practitioner/demo-chw",
+      "fullUrl": "Organization/8ccec472-e3c6-4de3-a8aa-ed68c5c4e221",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "8ccec472-e3c6-4de3-a8aa-ed68c5c4e221",
+        "active": true,
+        "name": "Kimbo Health Centre",
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://ohs.dev/fhir/CodeSystem/organization-level",
+                "code": "facility"
+              }
+            ]
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://ohs.dev/identifiers/facility-code",
+            "value": "KE-022-0417"
+          }
+        ],
+        "partOf": {
+          "reference": "Organization/840d81a6-5fda-4585-a125-9bef5a6c8a7e"
+        },
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+254 709 410 417",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "Kimbo Road"
+            ],
+            "city": "Ruiru",
+            "district": "Ruiru",
+            "state": "Kiambu",
+            "country": "KE"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Organization/8ccec472-e3c6-4de3-a8aa-ed68c5c4e221"
+      }
+    },
+    {
+      "fullUrl": "Organization/5e608359-ba7d-4a4c-a143-db40f32912a3",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "5e608359-ba7d-4a4c-a143-db40f32912a3",
+        "active": true,
+        "name": "Kimbo Community Health Unit",
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://ohs.dev/fhir/CodeSystem/organization-level",
+                "code": "community-health-unit"
+              }
+            ]
+          }
+        ],
+        "identifier": [
+          {
+            "system": "http://ohs.dev/identifiers/chu-code",
+            "value": "KE-022-0417-01"
+          }
+        ],
+        "partOf": {
+          "reference": "Organization/8ccec472-e3c6-4de3-a8aa-ed68c5c4e221"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Organization/5e608359-ba7d-4a4c-a143-db40f32912a3"
+      }
+    },
+    {
+      "fullUrl": "Location/0de9e6bc-d107-4931-8296-3620e4dc52d5",
+      "resource": {
+        "resourceType": "Location",
+        "id": "0de9e6bc-d107-4931-8296-3620e4dc52d5",
+        "status": "active",
+        "name": "Kimbo Health Centre",
+        "mode": "instance",
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/location-physical-type",
+              "code": "bu",
+              "display": "Building"
+            }
+          ]
+        },
+        "address": {
+          "line": [
+            "Kimbo Road"
+          ],
+          "city": "Ruiru",
+          "district": "Ruiru",
+          "state": "Kiambu",
+          "country": "KE"
+        },
+        "position": {
+          "latitude": -1.152,
+          "longitude": 36.961
+        },
+        "managingOrganization": {
+          "reference": "Organization/8ccec472-e3c6-4de3-a8aa-ed68c5c4e221"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Location/0de9e6bc-d107-4931-8296-3620e4dc52d5"
+      }
+    },
+    {
+      "fullUrl": "Location/bafa01bf-1ceb-4643-9df9-c0cbe122883a",
+      "resource": {
+        "resourceType": "Location",
+        "id": "bafa01bf-1ceb-4643-9df9-c0cbe122883a",
+        "status": "active",
+        "name": "Kimbo Health Centre Outpatient Department",
+        "alias": [
+          "OPD"
+        ],
+        "mode": "instance",
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/location-physical-type",
+              "code": "wi",
+              "display": "Wing"
+            }
+          ]
+        },
+        "partOf": {
+          "reference": "Location/0de9e6bc-d107-4931-8296-3620e4dc52d5"
+        },
+        "managingOrganization": {
+          "reference": "Organization/8ccec472-e3c6-4de3-a8aa-ed68c5c4e221"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Location/bafa01bf-1ceb-4643-9df9-c0cbe122883a"
+      }
+    },
+    {
+      "fullUrl": "Location/fc34795a-610f-44f2-9f34-c919ca5a7f3f",
+      "resource": {
+        "resourceType": "Location",
+        "id": "fc34795a-610f-44f2-9f34-c919ca5a7f3f",
+        "status": "active",
+        "name": "Kimbo Village",
+        "mode": "instance",
+        "physicalType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/location-physical-type",
+              "code": "area",
+              "display": "Area"
+            }
+          ]
+        },
+        "managingOrganization": {
+          "reference": "Organization/5e608359-ba7d-4a4c-a143-db40f32912a3"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Location/fc34795a-610f-44f2-9f34-c919ca5a7f3f"
+      }
+    },
+    {
+      "fullUrl": "Practitioner/bef1044c-9942-4d22-85f5-7616b5cbc549",
       "resource": {
         "resourceType": "Practitioner",
-        "id": "demo-chw",
+        "id": "bef1044c-9942-4d22-85f5-7616b5cbc549",
         "active": true,
         "identifier": [
           {
@@ -45,33 +250,45 @@
         ],
         "name": [
           {
+            "use": "official",
             "given": [
               "Wanjiru"
             ],
             "family": "Kamau"
           }
+        ],
+        "gender": "female",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+254 712 418 205",
+            "use": "mobile"
+          }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "Practitioner/demo-chw"
+        "url": "Practitioner/bef1044c-9942-4d22-85f5-7616b5cbc549"
       }
     },
     {
-      "fullUrl": "PractitionerRole/demo-chw",
+      "fullUrl": "PractitionerRole/6d90cfe8-a702-4ece-8594-45ba1c1c2689",
       "resource": {
         "resourceType": "PractitionerRole",
-        "id": "demo-chw",
+        "id": "6d90cfe8-a702-4ece-8594-45ba1c1c2689",
         "active": true,
+        "period": {
+          "start": "2026-01-05"
+        },
         "practitioner": {
-          "reference": "Practitioner/demo-chw"
+          "reference": "Practitioner/bef1044c-9942-4d22-85f5-7616b5cbc549"
         },
         "organization": {
-          "reference": "Organization/demo-facility"
+          "reference": "Organization/5e608359-ba7d-4a4c-a143-db40f32912a3"
         },
         "location": [
           {
-            "reference": "Location/demo-opd"
+            "reference": "Location/fc34795a-610f-44f2-9f34-c919ca5a7f3f"
           }
         ],
         "code": [
@@ -80,22 +297,23 @@
               {
                 "system": "http://ohs.dev/fhir/CodeSystem/app-role",
                 "code": "chw",
-                "display": "Community Health Worker"
+                "display": "Community Health Promoter"
               }
-            ]
+            ],
+            "text": "Community Health Promoter"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "PractitionerRole/demo-chw"
+        "url": "PractitionerRole/6d90cfe8-a702-4ece-8594-45ba1c1c2689"
       }
     },
     {
-      "fullUrl": "Practitioner/demo-nurse",
+      "fullUrl": "Practitioner/cdf92798-66c2-443b-a07d-a3f09e101670",
       "resource": {
         "resourceType": "Practitioner",
-        "id": "demo-nurse",
+        "id": "cdf92798-66c2-443b-a07d-a3f09e101670",
         "active": true,
         "identifier": [
           {
@@ -105,33 +323,46 @@
         ],
         "name": [
           {
+            "use": "official",
             "given": [
-              "Faith"
+              "Faith",
+              "Achieng"
             ],
-            "family": "Achieng"
+            "family": "Odhiambo"
+          }
+        ],
+        "gender": "female",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+254 722 604 117",
+            "use": "mobile"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "Practitioner/demo-nurse"
+        "url": "Practitioner/cdf92798-66c2-443b-a07d-a3f09e101670"
       }
     },
     {
-      "fullUrl": "PractitionerRole/demo-nurse",
+      "fullUrl": "PractitionerRole/ab4329b1-4425-456a-99ea-fcb3d76fa4e1",
       "resource": {
         "resourceType": "PractitionerRole",
-        "id": "demo-nurse",
+        "id": "ab4329b1-4425-456a-99ea-fcb3d76fa4e1",
         "active": true,
+        "period": {
+          "start": "2026-01-05"
+        },
         "practitioner": {
-          "reference": "Practitioner/demo-nurse"
+          "reference": "Practitioner/cdf92798-66c2-443b-a07d-a3f09e101670"
         },
         "organization": {
-          "reference": "Organization/demo-facility"
+          "reference": "Organization/8ccec472-e3c6-4de3-a8aa-ed68c5c4e221"
         },
         "location": [
           {
-            "reference": "Location/demo-opd"
+            "reference": "Location/bafa01bf-1ceb-4643-9df9-c0cbe122883a"
           }
         ],
         "code": [
@@ -140,22 +371,23 @@
               {
                 "system": "http://ohs.dev/fhir/CodeSystem/app-role",
                 "code": "nurse",
-                "display": "Triage Nurse"
+                "display": "Registered Nurse"
               }
-            ]
+            ],
+            "text": "Registered Nurse"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "PractitionerRole/demo-nurse"
+        "url": "PractitionerRole/ab4329b1-4425-456a-99ea-fcb3d76fa4e1"
       }
     },
     {
-      "fullUrl": "Practitioner/demo-clinician",
+      "fullUrl": "Practitioner/ad70248d-6116-4cc8-90f3-fc7bc0fc1ace",
       "resource": {
         "resourceType": "Practitioner",
-        "id": "demo-clinician",
+        "id": "ad70248d-6116-4cc8-90f3-fc7bc0fc1ace",
         "active": true,
         "identifier": [
           {
@@ -165,33 +397,46 @@
         ],
         "name": [
           {
+            "use": "official",
             "given": [
-              "Daniel"
+              "Daniel",
+              "Kiprop"
             ],
-            "family": "Otieno"
+            "family": "Mutai"
+          }
+        ],
+        "gender": "male",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "+254 733 291 846",
+            "use": "mobile"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "Practitioner/demo-clinician"
+        "url": "Practitioner/ad70248d-6116-4cc8-90f3-fc7bc0fc1ace"
       }
     },
     {
-      "fullUrl": "PractitionerRole/demo-clinician",
+      "fullUrl": "PractitionerRole/2d2b14ee-e7a7-48cc-aaf4-f1938f7221a2",
       "resource": {
         "resourceType": "PractitionerRole",
-        "id": "demo-clinician",
+        "id": "2d2b14ee-e7a7-48cc-aaf4-f1938f7221a2",
         "active": true,
+        "period": {
+          "start": "2026-01-05"
+        },
         "practitioner": {
-          "reference": "Practitioner/demo-clinician"
+          "reference": "Practitioner/ad70248d-6116-4cc8-90f3-fc7bc0fc1ace"
         },
         "organization": {
-          "reference": "Organization/demo-facility"
+          "reference": "Organization/8ccec472-e3c6-4de3-a8aa-ed68c5c4e221"
         },
         "location": [
           {
-            "reference": "Location/demo-opd"
+            "reference": "Location/bafa01bf-1ceb-4643-9df9-c0cbe122883a"
           }
         ],
         "code": [
@@ -202,13 +447,14 @@
                 "code": "clinician",
                 "display": "Clinical Officer"
               }
-            ]
+            ],
+            "text": "Clinical Officer"
           }
         ]
       },
       "request": {
         "method": "PUT",
-        "url": "PractitionerRole/demo-clinician"
+        "url": "PractitionerRole/2d2b14ee-e7a7-48cc-aaf4-f1938f7221a2"
       }
     }
   ]
