@@ -1,0 +1,9 @@
+{
+  "resources": [
+    { "type": "Patient" },
+    { "type": "ServiceRequest", "params": { "requester": "Practitioner/{practitioner}" } },
+    { "type": "MedicationRequest", "params": { "requester": "Practitioner/{practitioner}" } },
+    { "type": "Task", "params": { "owner": "Practitioner/{practitioner}", "status": "requested" } },
+    { "type": "Practitioner", "ids": ["{practitioner}"] }
+  ]
+}
