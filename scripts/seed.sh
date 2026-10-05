@@ -55,9 +55,9 @@ ensure_user() {
   echo "$id"
 }
 
-chw=$(ensure_user chw1 'chw_1234!' Wanjiru Kamau)
-nurse=$(ensure_user nurse1 'nurse_1234!' Faith Odhiambo)
-clinician=$(ensure_user clinician1 'clinician_1234!' Daniel Mutai)
+chw=$(ensure_user chw1 'chw_1234!' Mwanaisha Mwinyi)
+nurse=$(ensure_user nurse1 'nurse_1234!' Kadzo Baya)
+clinician=$(ensure_user clinician1 'clinician_1234!' Hamisi Charo)
 token=$(new_token)
 
 sed -e "s/__CHW_SUB__/$chw/" -e "s/__NURSE_SUB__/$nurse/" -e "s/__CLINICIAN_SUB__/$clinician/" \
