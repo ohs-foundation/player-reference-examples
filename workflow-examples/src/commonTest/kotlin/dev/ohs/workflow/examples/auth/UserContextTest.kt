@@ -18,6 +18,7 @@ package dev.ohs.workflow.examples.auth
 import dev.ohs.fhir.model.r4.Code
 import dev.ohs.fhir.model.r4.CodeableConcept
 import dev.ohs.fhir.model.r4.Coding
+import dev.ohs.fhir.model.r4.Organization
 import dev.ohs.fhir.model.r4.PractitionerRole
 import dev.ohs.fhir.model.r4.Reference
 import dev.ohs.fhir.model.r4.String as FhirString
@@ -34,6 +35,19 @@ class UserContextTest {
       userContextOf("p1", listOf(role("pharmacist", "o0"), role("nurse", "o1", location = "l1")))
 
     assertEquals(UserContext(AppRole.NURSE, "p1", "o1", "l1"), context)
+  }
+
+  @Test
+  fun communityUnitRefersToTheFacilityItBelongsTo() {
+    val unit =
+      Organization(
+        id = "chu-1",
+        partOf = Reference(reference = FhirString(value = "Organization/f1")),
+      )
+
+    val context = userContextOf("p1", listOf(role("chw", "chu-1")), listOf(unit))
+
+    assertEquals("f1", context?.facilityOrganizationId)
   }
 
   @Test

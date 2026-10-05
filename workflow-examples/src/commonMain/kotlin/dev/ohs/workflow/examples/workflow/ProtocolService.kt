@@ -110,7 +110,7 @@ class ProtocolService(
       return orderFor(stored) ?: error("This referral was already handled.")
     }
     val addressed =
-      stored.copy(performer = listOf(reference("Organization/${context.organizationId}")))
+      stored.copy(performer = listOf(reference("Organization/${context.referralOrganizationId}")))
     repository.update(addressed)
     val flow = ActivityFlow.of(repository, CPGServiceRequest(addressed))
     val draft = flow.prepareOrder().getOrThrow()

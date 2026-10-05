@@ -15,6 +15,7 @@
  */
 package dev.ohs.workflow.examples.auth
 
+import dev.ohs.fhir.model.r4.Organization
 import dev.ohs.fhir.model.r4.PractitionerRole
 import dev.ohs.workflow.examples.util.FhirJson
 import io.ktor.client.HttpClient
@@ -51,12 +52,19 @@ internal class PractitionerDetailsApi(
     val details = json.parseToJsonElement(response.bodyAsText()).jsonObject
     val practitionerId =
       details["practitioner"]?.jsonObject?.get("id")?.jsonPrimitive?.content ?: return null
+    val entries = details["practitionerRoles"]?.jsonArray.orEmpty().map { it.jsonObject }
     val roles =
-      details["practitionerRoles"]?.jsonArray.orEmpty().mapNotNull { entry ->
-        (entry.jsonObject["practitionerRole"] as? JsonObject)?.let {
+      entries.mapNotNull { entry ->
+        (entry["practitionerRole"] as? JsonObject)?.let {
           json.decodeFromJsonElement(PractitionerRole.serializer(), it)
         }
       }
-    return userContextOf(practitionerId, roles)
+    val organizations =
+      entries.mapNotNull { entry ->
+        (entry["organization"] as? JsonObject)?.let {
+          json.decodeFromJsonElement(Organization.serializer(), it)
+        }
+      }
+    return userContextOf(practitionerId, roles, organizations)
   }
 }

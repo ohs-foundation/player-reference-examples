@@ -51,7 +51,7 @@ class ProtocolServiceTest {
   private lateinit var repository: EngineWorkflowRepository
   private lateinit var service: ProtocolService
 
-  private val chw = UserContext(AppRole.CHW, "p-chw", "o1", null)
+  private val chw = UserContext(AppRole.CHW, "p-chw", "chu-1", null, facilityOrganizationId = "o1")
   private val nurse = UserContext(AppRole.NURSE, "p-nurse", "o1", "l1")
   private val child = Patient(id = "child-1")
 

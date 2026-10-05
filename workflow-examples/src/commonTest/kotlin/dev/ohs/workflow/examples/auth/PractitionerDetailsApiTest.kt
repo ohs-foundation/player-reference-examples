@@ -49,7 +49,7 @@ class PractitionerDetailsApiTest {
 
     val context = api.fetch("token-1")
 
-    assertEquals(UserContext(AppRole.CHW, "p1", "o1", "l1"), context)
+    assertEquals(UserContext(AppRole.CHW, "p1", "o1", "l1", facilityOrganizationId = "f1"), context)
     assertEquals(
       "https://gateway.example.org/api/practitioner-details" to "Bearer token-1",
       requests.single(),
@@ -82,7 +82,11 @@ class PractitionerDetailsApiTest {
               "organization": { "reference": "Organization/o1" },
               "location": [ { "reference": "Location/l1" } ]
             },
-            "organization": null,
+            "organization": {
+              "resourceType": "Organization",
+              "id": "o1",
+              "partOf": { "reference": "Organization/f1" }
+            },
             "locations": [],
             "careTeams": []
           }
