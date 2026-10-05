@@ -60,7 +60,28 @@ The gateway runs `org_scoped_access` (ohs-player-reference-backend PR #82). It a
 | JDK | 21. Gradle rejects JDK 25, so set `JAVA_HOME` if 25 is your default. |
 | `local.properties` | `cp local.properties.sample local.properties`, then set `OAUTH_ISSUER`, `OAUTH_CLIENT_ID` and `FHIR_BASE_URL`. The redirect scheme defaults to `dev.ohs.player.reference.app`, the value already registered on the shared Keycloak client. |
 | Gateway | It must allow `PATCH`. The engine sends every update (referral confirmed, referral completed, task closed) as `PATCH`, and PR #82's checker currently denies it. |
-| Demo users | `cp scripts/seed.env.sample scripts/seed.env`, fill it in, then run `./scripts/seed.sh`. The script needs a confidential Keycloak client with `manage-users` and `manage-realm`. It creates `chw1`, `nurse1` and `clinician1` with passwords `chw_1234!`, `nurse_1234!` and `clinician_1234!`, together with only what they need to sign in and sync: an organization hierarchy (Kiambu County → Ruiru Sub-County → Kimbo Health Centre → Kimbo Community Health Unit), the facility, OPD and village Locations, and their Practitioners and PractitionerRoles. The CHW belongs to the community unit and refers to its parent facility. All ids are fixed UUIDs, so re-runs update rather than duplicate. It creates no patients or clinical data. It writes through the FHIR gateway, so it gives its own service account `ORG_SCOPE_EXEMPT` and the `GET_`/`PUT_` roles. You can run it again safely. |
+| Demo users | `cp scripts/seed.env.sample scripts/seed.env`, set the Keycloak service-account client (`manage-users`, `manage-realm`), then run `./scripts/seed.sh`. It writes through the gateway and grants its own service account `ORG_SCOPE_EXEMPT`. Safe to re-run. See [Demo data](#demo-data). |
+
+## Demo data
+
+`scripts/seed.sh` creates only what the three users need to sign in and sync. It creates no patients or clinical records. Every id is a fixed UUID in [`scripts/seed-bundle.json`](./scripts/seed-bundle.json), so a re-run updates rather than duplicates.
+
+```
+Kiambu County Department of Health          county code 022
+└─ Ruiru Sub-County Health Management Team
+   └─ Kimbo Health Centre                    KE-022-0417     Locations: building → Outpatient Department
+      └─ Kimbo Community Health Unit         KE-022-0417-01  Location: Kimbo Village
+```
+
+| Username | Password | Practitioner | Role | Organization | Location |
+|---|---|---|---|---|---|
+| `chw1` | `chw_1234!` | Mwanaisha Juma Mwinyi | Community Health Promoter (`chw`) | Kimbo Community Health Unit | Kimbo Village |
+| `nurse1` | `nurse_1234!` | Kadzo Zawadi Baya | Registered Nurse (`nurse`) | Kimbo Health Centre | Outpatient Department |
+| `clinician1` | `clinician_1234!` | Hamisi Kazungu Charo | Clinical Officer (`clinician`) | Kimbo Health Centre | Outpatient Department |
+
+- The CHW's referrals go to Kimbo Health Centre, the community unit's `partOf`. The gateway's `partOf` expansion lets facility staff see the community unit's patients.
+- Codes, phone numbers and names are realistic but fictional. Codes use local `ohs.dev` identifier systems, not KMHFL.
+- The server is public, so these passwords are for demos only.
 
 ## Run
 
