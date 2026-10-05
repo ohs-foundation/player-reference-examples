@@ -1,0 +1,265 @@
+{
+  "resourceType": "Bundle",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "Organization/demo-facility",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "demo-facility",
+        "active": true,
+        "name": "Demo Health Centre"
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Organization/demo-facility"
+      }
+    },
+    {
+      "fullUrl": "Location/demo-opd",
+      "resource": {
+        "resourceType": "Location",
+        "id": "demo-opd",
+        "status": "active",
+        "name": "Demo Health Centre OPD",
+        "managingOrganization": {
+          "reference": "Organization/demo-facility"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Location/demo-opd"
+      }
+    },
+    {
+      "fullUrl": "Practitioner/demo-chw",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "demo-chw",
+        "active": true,
+        "identifier": [
+          {
+            "system": "http://ohs.dev/identifiers/keycloak-user-id",
+            "value": "__CHW_SUB__"
+          }
+        ],
+        "name": [
+          {
+            "given": [
+              "Wanjiru"
+            ],
+            "family": "Kamau"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Practitioner/demo-chw"
+      }
+    },
+    {
+      "fullUrl": "PractitionerRole/demo-chw",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "demo-chw",
+        "active": true,
+        "practitioner": {
+          "reference": "Practitioner/demo-chw"
+        },
+        "organization": {
+          "reference": "Organization/demo-facility"
+        },
+        "location": [
+          {
+            "reference": "Location/demo-opd"
+          }
+        ],
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://ohs.dev/fhir/CodeSystem/app-role",
+                "code": "chw",
+                "display": "Community Health Worker"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "PractitionerRole/demo-chw"
+      }
+    },
+    {
+      "fullUrl": "Practitioner/demo-nurse",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "demo-nurse",
+        "active": true,
+        "identifier": [
+          {
+            "system": "http://ohs.dev/identifiers/keycloak-user-id",
+            "value": "__NURSE_SUB__"
+          }
+        ],
+        "name": [
+          {
+            "given": [
+              "Faith"
+            ],
+            "family": "Achieng"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Practitioner/demo-nurse"
+      }
+    },
+    {
+      "fullUrl": "PractitionerRole/demo-nurse",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "demo-nurse",
+        "active": true,
+        "practitioner": {
+          "reference": "Practitioner/demo-nurse"
+        },
+        "organization": {
+          "reference": "Organization/demo-facility"
+        },
+        "location": [
+          {
+            "reference": "Location/demo-opd"
+          }
+        ],
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://ohs.dev/fhir/CodeSystem/app-role",
+                "code": "nurse",
+                "display": "Triage Nurse"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "PractitionerRole/demo-nurse"
+      }
+    },
+    {
+      "fullUrl": "Practitioner/demo-clinician",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "demo-clinician",
+        "active": true,
+        "identifier": [
+          {
+            "system": "http://ohs.dev/identifiers/keycloak-user-id",
+            "value": "__CLINICIAN_SUB__"
+          }
+        ],
+        "name": [
+          {
+            "given": [
+              "Daniel"
+            ],
+            "family": "Otieno"
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Practitioner/demo-clinician"
+      }
+    },
+    {
+      "fullUrl": "PractitionerRole/demo-clinician",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "demo-clinician",
+        "active": true,
+        "practitioner": {
+          "reference": "Practitioner/demo-clinician"
+        },
+        "organization": {
+          "reference": "Organization/demo-facility"
+        },
+        "location": [
+          {
+            "reference": "Location/demo-opd"
+          }
+        ],
+        "code": [
+          {
+            "coding": [
+              {
+                "system": "http://ohs.dev/fhir/CodeSystem/app-role",
+                "code": "clinician",
+                "display": "Clinical Officer"
+              }
+            ]
+          }
+        ]
+      },
+      "request": {
+        "method": "PUT",
+        "url": "PractitionerRole/demo-clinician"
+      }
+    },
+    {
+      "fullUrl": "Patient/demo-child-1",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "demo-child-1",
+        "active": true,
+        "name": [
+          {
+            "given": [
+              "Amina"
+            ],
+            "family": "Otieno"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "2025-03-14",
+        "managingOrganization": {
+          "reference": "Organization/demo-facility"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/demo-child-1"
+      }
+    },
+    {
+      "fullUrl": "Patient/demo-child-2",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "demo-child-2",
+        "active": true,
+        "name": [
+          {
+            "given": [
+              "Brian"
+            ],
+            "family": "Mwangi"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "2023-11-02",
+        "managingOrganization": {
+          "reference": "Organization/demo-facility"
+        }
+      },
+      "request": {
+        "method": "PUT",
+        "url": "Patient/demo-child-2"
+      }
+    }
+  ]
+}
