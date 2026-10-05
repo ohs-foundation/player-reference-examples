@@ -19,6 +19,7 @@ import dev.ohs.fhir.model.r4.Questionnaire as QuestionnaireR4
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
 import dev.ohs.workflow.examples.data.repository.FhirRepository
 import dev.ohs.workflow.examples.util.FhirJson
+import dev.ohs.workflow.examples.workflow.registrationPatient
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -30,13 +31,24 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import player_reference_examples.workflow_examples.generated.resources.Res
 
 /** Caller-supplied identifiers describing why/for-whom a questionnaire was launched. */
-data class QuestionnaireLaunchContext(val patientId: String? = null)
+data class QuestionnaireLaunchContext(
+  val patientId: String? = null,
+  val organizationId: String? = null,
+)
 
 /** Outcome of submitting a QuestionnaireResponse, ready for the UI to render. */
 data class QuestionnaireSubmissionResult(val successMessage: String)
 
+object QuestionnaireIds {
+  const val PATIENT_REGISTRATION = "patient-registration"
+}
+
 /** Bundled Questionnaire JSON, keyed by the id it should be read under. */
-private val BUNDLED_QUESTIONNAIRE_PATHS: Map<String, String> = emptyMap()
+private val BUNDLED_QUESTIONNAIRE_PATHS: Map<String, String> =
+  mapOf(
+    QuestionnaireIds.PATIENT_REGISTRATION to
+      "files/protocols/Questionnaire-PatientRegistration.json"
+  )
 
 /** Reads bundled Questionnaires and persists what their responses produce via [FhirRepository]. */
 class QuestionnaireService(private val repository: FhirRepository) {
@@ -81,7 +93,15 @@ class QuestionnaireService(private val repository: FhirRepository) {
     response: QuestionnaireResponse,
     launchContext: QuestionnaireLaunchContext,
   ): QuestionnaireSubmissionResult =
-    error("No submission handling is defined for questionnaire '${questionnaire.id}'.")
+    when (questionnaire.id) {
+      QuestionnaireIds.PATIENT_REGISTRATION -> {
+        val organizationId =
+          launchContext.organizationId ?: error("Registering a patient needs an organization.")
+        repository.upsert(registrationPatient(response, organizationId))
+        QuestionnaireSubmissionResult("Patient registered.")
+      }
+      else -> error("No submission handling is defined for questionnaire '${questionnaire.id}'.")
+    }
 }
 
 private fun JsonObject.withInitialStringAnswer(
