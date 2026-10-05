@@ -1,0 +1,66 @@
+# ----------------------------------------------------------------------------
+# local.properties.sample
+#
+# Copy to `local.properties` and fill in your values:
+#
+#   cp local.properties.sample local.properties
+#
+# `local.properties` is git-ignored. The :reference-app `generateAuthConfig`
+# task bakes these into `GeneratedAuthConfig` before Kotlin compilation, so
+# edits here need a rebuild — not just an app restart.
+#
+# Precedence: env var > local.properties > the default shown below. Every key
+# has a working default, so an absent file still builds; it just points the app
+# at a provider that does not exist.
+#
+# Login is OAuth 2.0 Authorization Code + PKCE against a PUBLIC client. There
+# is deliberately no client secret here — never add one.
+#
+# Android Studio writes its own `sdk.dir` entry into local.properties. Keep it:
+# Android builds and `allTests` need it.
+# ----------------------------------------------------------------------------
+
+
+# --- Identity provider -------------------------------------------------------
+# Provider-agnostic. Only the issuer is configured; the app resolves the
+# authorization, token, userinfo and end-session endpoints at runtime from
+# {OAUTH_ISSUER}/.well-known/openid-configuration.
+# Keycloak note: the realm is part of the issuer.
+OAUTH_ISSUER=https://keycloak.example.org/realms/ohs-player
+
+# Public client id registered at the provider, with PKCE required.
+OAUTH_CLIENT_ID=ohs-player-reference-app
+
+# Space-separated scopes. offline_access is what yields a refresh token; drop
+# it and every session ends when the access token expires.
+OAUTH_SCOPES=openid profile email offline_access
+
+
+# --- Redirect URIs -----------------------------------------------------------
+# Each platform uses its own redirect and all of them must be registered as
+# valid redirect URIs on the client above.
+
+# Android and iOS: a custom-scheme deep link, {SCHEME}://{HOST}.
+# Register: dev.ohs.player.examples.app://auth
+# The Android intent-filter picks these up automatically: the build injects them
+# into AndroidManifest.xml as manifest placeholders, so the LoginRedirectActivity
+# deep link always matches whatever is configured here.
+OAUTH_REDIRECT_SCHEME=dev.ohs.player.examples.app
+OAUTH_REDIRECT_HOST=auth
+
+# Desktop (JVM): a loopback HTTP server started for the duration of the flow.
+# Register: http://127.0.0.1:8765/callback
+OAUTH_DESKTOP_REDIRECT_PORT=8765
+
+# Web (JS/Wasm): a full-page redirect back to the app, read on the next load.
+# Register this URL verbatim. It must be a path the server actually serves —
+# the webpack dev server serves the app at the origin root, so prefer
+# http://localhost:8080/ there unless you have configured a fallback.
+OAUTH_WEB_REDIRECT_URL=http://localhost:8080/callback
+
+
+# --- FHIR server -------------------------------------------------------------
+# Base URL synced into the on-device FHIR engine. Requests carry the signed-in
+# session's bearer token (FhirBearerAuthenticator), so this server must accept
+# tokens from OAUTH_ISSUER — or, like the public HAPI sandbox, accept anything.
+FHIR_BASE_URL=https://hapi.fhir.org/baseR4

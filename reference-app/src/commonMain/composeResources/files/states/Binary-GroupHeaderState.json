@@ -1,0 +1,7 @@
+{
+  "resourceType": "http://ohs.dev/StructureDefinition/ViewJoinMap",
+  "name": "groupHeader",
+  "from": "root",
+  "resource": "Group",
+  "view": "Group"
+}

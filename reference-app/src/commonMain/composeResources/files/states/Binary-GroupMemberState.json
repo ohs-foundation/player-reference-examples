@@ -1,0 +1,8 @@
+{
+  "resourceType": "http://ohs.dev/StructureDefinition/ViewJoinMap",
+  "name": "groupMember",
+  "from": "included",
+  "resource": "Patient",
+  "view": "Member",
+  "searchParam": "member"
+}
