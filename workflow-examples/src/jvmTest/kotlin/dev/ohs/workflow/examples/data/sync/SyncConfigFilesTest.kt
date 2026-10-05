@@ -62,4 +62,17 @@ class SyncConfigFilesTest {
       SyncConfigResolver.resolve(config, UserContext(role, "p", "o", "l"))
     }
   }
+
+  @Test
+  fun referralsSyncInEveryStatusSoClosuresElsewhereArrive() {
+    AppRole.entries.forEach { role ->
+      val config =
+        Json.decodeFromString<SyncConfig>(
+          File("src/commonMain/composeResources/files/sync/${role.code}.json").readText()
+        )
+      config.resources
+        .filter { it.type == "ServiceRequest" }
+        .forEach { assertTrue("status" !in it.params, "${role.code}: ${it.params}") }
+    }
+  }
 }

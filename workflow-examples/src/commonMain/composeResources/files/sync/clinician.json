@@ -1,7 +1,7 @@
 {
   "resources": [
     { "type": "Patient" },
-    { "type": "ServiceRequest", "params": { "code": "http://snomed.info/sct|3457005", "status": "active", "intent": "order" } },
+    { "type": "ServiceRequest", "params": { "code": "http://snomed.info/sct|3457005", "intent": "order" } },
     { "type": "Encounter", "params": { "location": "Location/{location}", "status": "arrived" } },
     { "type": "Observation", "params": { "code": "http://loinc.org|59408-5,http://loinc.org|8310-5,http://loinc.org|9279-1" } },
     { "type": "Task", "params": { "owner": "Organization/{organization}", "status": "requested" } },

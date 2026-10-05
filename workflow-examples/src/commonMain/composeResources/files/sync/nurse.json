@@ -1,7 +1,7 @@
 {
   "resources": [
     { "type": "Patient" },
-    { "type": "ServiceRequest", "params": { "code": "http://snomed.info/sct|3457005", "status": "active", "intent": "order" } },
+    { "type": "ServiceRequest", "params": { "code": "http://snomed.info/sct|3457005", "intent": "order" } },
     { "type": "Encounter", "params": { "location": "Location/{location}", "status": "arrived" } },
     { "type": "Practitioner", "ids": ["{practitioner}"] }
   ]
