@@ -58,6 +58,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import player_reference_examples.workflow_examples.generated.resources.Res
 import player_reference_examples.workflow_examples.generated.resources.patient_profile_assess_sick_child
+import player_reference_examples.workflow_examples.generated.resources.patient_profile_check_in
 
 @Composable
 fun App() {
@@ -177,17 +178,21 @@ private fun SignedInApp(context: UserContext, userName: String, onSignOut: () ->
             patientId = patientId,
             onBack = { navController.popBackStack() },
             actions = {
-              if (context.role == AppRole.CHW) {
-                Button(
-                  onClick = {
-                    navController.navigate(
-                      "questionnaireHost/${QuestionnaireIds.ICCM_SICK_CHILD}?patientId=$patientId"
-                    )
-                  },
-                  modifier = Modifier.fillMaxWidth(),
-                ) {
-                  Text(stringResource(Res.string.patient_profile_assess_sick_child))
+              val (questionnaireId, label) =
+                when (context.role) {
+                  AppRole.CHW ->
+                    QuestionnaireIds.ICCM_SICK_CHILD to Res.string.patient_profile_assess_sick_child
+                  AppRole.NURSE ->
+                    QuestionnaireIds.OPD_CHECK_IN to Res.string.patient_profile_check_in
+                  AppRole.CLINICIAN -> return@PatientProfileScreen
                 }
+              Button(
+                onClick = {
+                  navController.navigate("questionnaireHost/$questionnaireId?patientId=$patientId")
+                },
+                modifier = Modifier.fillMaxWidth(),
+              ) {
+                Text(stringResource(label))
               }
             },
           )

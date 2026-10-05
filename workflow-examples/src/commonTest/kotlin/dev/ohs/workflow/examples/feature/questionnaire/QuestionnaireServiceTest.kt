@@ -115,4 +115,36 @@ class QuestionnaireServiceTest {
     assertNotNull(assessment.referral)
     assertNull(assessment.followUp)
   }
+
+  @Test
+  fun checkingInQueuesThePatientByTriagePriority() = runTest {
+    repository.upsert(Patient(id = "patient-1"))
+    val questionnaire = service.getQuestionnaire(QuestionnaireIds.OPD_CHECK_IN)
+    val response =
+      QuestionnaireResponse(
+        status = Enumeration(value = QuestionnaireResponse.QuestionnaireResponseStatus.Completed),
+        item =
+          listOf(
+            QuestionnaireResponse.Item(
+              linkId = FhirString(value = "spo2"),
+              answer =
+                listOf(
+                  QuestionnaireResponse.Item.Answer(value = Value.Integer(Integer(value = 86)))
+                ),
+            )
+          ),
+      )
+
+    val result =
+      service.submit(
+        questionnaire,
+        response,
+        QuestionnaireLaunchContext(
+          patientId = "patient-1",
+          user = UserContext(AppRole.NURSE, "p2", "org-1", "loc-1"),
+        ),
+      )
+
+    assertEquals("Queued for consultation: stat", result.successMessage)
+  }
 }

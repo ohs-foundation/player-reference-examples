@@ -64,6 +64,7 @@
     <string name="patient_profile_back">Back</string>
     <string name="patient_profile_not_found">Patient not found</string>
     <string name="patient_profile_assess_sick_child">Sick-child assessment</string>
+    <string name="patient_profile_check_in">Check in to OPD</string>
 
     <!-- Questionnaire screen -->
     <string name="questionnaire_title">Questionnaire</string>

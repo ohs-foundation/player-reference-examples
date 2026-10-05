@@ -47,6 +47,7 @@ data class QuestionnaireSubmissionResult(
 object QuestionnaireIds {
   const val PATIENT_REGISTRATION = "patient-registration"
   const val ICCM_SICK_CHILD = "iccm-sick-child"
+  const val OPD_CHECK_IN = "opd-check-in"
 }
 
 /** Bundled Questionnaire JSON, keyed by the id it should be read under. */
@@ -55,6 +56,7 @@ private val BUNDLED_QUESTIONNAIRE_PATHS: Map<String, String> =
     QuestionnaireIds.PATIENT_REGISTRATION to
       "files/protocols/Questionnaire-PatientRegistration.json",
     QuestionnaireIds.ICCM_SICK_CHILD to "files/protocols/Questionnaire-IccmSickChild.json",
+    QuestionnaireIds.OPD_CHECK_IN to "files/protocols/Questionnaire-OpdCheckIn.json",
   )
 
 /** Reads bundled Questionnaires and persists what their responses produce via [FhirRepository]. */
@@ -112,6 +114,12 @@ class QuestionnaireService(
         val assessment =
           protocols.assessSickChild(patient(launchContext), response, launchContext.user())
         QuestionnaireSubmissionResult("Assessment saved.", assessment)
+      }
+      QuestionnaireIds.OPD_CHECK_IN -> {
+        val consult = protocols.checkIn(patient(launchContext), response, launchContext.user())
+        QuestionnaireSubmissionResult(
+          "Queued for consultation: ${consult.priority?.value?.code ?: "routine"}"
+        )
       }
       else -> error("No submission handling is defined for questionnaire '${questionnaire.id}'.")
     }
