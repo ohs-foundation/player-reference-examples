@@ -21,6 +21,7 @@ import dev.ohs.fhir.engine.sync.createDataStore
 import dev.ohs.fhir.model.r4.terminologies.ResourceType
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 
@@ -58,5 +59,19 @@ class DataStoreTimestampContextTest {
     context.saveLastUpdatedTimestamp(ResourceType.Patient, null)
 
     assertEquals("2026-07-15T10:00:00Z", context.getLasUpdateTimestamp(ResourceType.Patient))
+  }
+
+  @Test
+  fun initialSyncReset_forgetsCompletionAndEveryCursor() = runTest {
+    val dataStore = testDataStore()
+    val context = DataStoreTimestampContext(dataStore)
+    val initialSync = DataStoreInitialSyncStore(dataStore)
+    context.saveLastUpdatedTimestamp(ResourceType.Task, "2026-07-15T10:00:00Z")
+    initialSync.markComplete()
+
+    initialSync.reset()
+
+    assertFalse(initialSync.isComplete())
+    assertNull(context.getLasUpdateTimestamp(ResourceType.Task))
   }
 }

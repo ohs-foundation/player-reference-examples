@@ -20,24 +20,16 @@ import dev.ohs.fhir.engine.sync.AcceptLocalConflictResolver
 import dev.ohs.fhir.engine.sync.ConflictResolver
 import dev.ohs.fhir.engine.sync.DownloadWorkManager
 import dev.ohs.fhir.engine.sync.FhirSyncTask
-import dev.ohs.fhir.engine.sync.download.ResourceParamsBasedDownloadWorkManager
-import dev.ohs.fhir.engine.sync.download.ResourceSearchParams
 import dev.ohs.fhir.engine.sync.upload.HttpCreateMethod
 import dev.ohs.fhir.engine.sync.upload.HttpUpdateMethod
 import dev.ohs.fhir.engine.sync.upload.UploadStrategy
-import dev.ohs.fhir.model.r4.terminologies.ResourceType
-
-/**
- * Resource types downloaded on every sync, with their search parameters. Empty parameters mean
- * "everything of this type, since the last sync". Adding a resource type later is a new map entry.
- */
-private val SYNC_RESOURCE_PARAMS: ResourceSearchParams = mapOf(ResourceType.Patient to emptyMap())
+import dev.ohs.workflow.examples.auth.SessionRepository
 
 const val SYNC_TIMEOUT_DURATION = 120L
 
 /**
- * This app's [FhirSyncTask]: downloads [SYNC_RESOURCE_PARAMS], resolves conflicts in favor of the
- * local change, and uploads pending local changes as a single bundle request.
+ * This app's [FhirSyncTask]: downloads the signed-in role's sync config, resolves conflicts in
+ * favor of the local change, and uploads pending local changes as a single bundle request.
  */
 class AppFhirSyncTask(private val fhirEngine: FhirEngine) : FhirSyncTask {
   private val timestampContext = DataStoreTimestampContext(createSyncTimestampDataStore())
@@ -45,7 +37,7 @@ class AppFhirSyncTask(private val fhirEngine: FhirEngine) : FhirSyncTask {
   override fun getFhirEngine(): FhirEngine = fhirEngine
 
   override fun getDownloadWorkManager(): DownloadWorkManager =
-    ResourceParamsBasedDownloadWorkManager(SYNC_RESOURCE_PARAMS, timestampContext)
+    RoleDownloadWorkManager(SessionRepository.session.value?.context, timestampContext)
 
   override fun getConflictResolver(): ConflictResolver = AcceptLocalConflictResolver
 

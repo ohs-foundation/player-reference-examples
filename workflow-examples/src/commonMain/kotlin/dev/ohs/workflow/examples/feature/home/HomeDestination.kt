@@ -18,6 +18,7 @@ package dev.ohs.workflow.examples.feature.home
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
+import dev.ohs.workflow.examples.auth.AppRole
 import org.jetbrains.compose.resources.StringResource
 import player_reference_examples.workflow_examples.generated.resources.Res
 import player_reference_examples.workflow_examples.generated.resources.home_destination_patients
@@ -26,3 +27,11 @@ import player_reference_examples.workflow_examples.generated.resources.home_dest
 enum class HomeDestination(val label: StringResource, val icon: ImageVector) {
   Patients(label = Res.string.home_destination_patients, icon = Icons.Filled.Person)
 }
+
+/** The destinations a role works in, the first being where it lands. */
+fun AppRole.destinations(): List<HomeDestination> =
+  when (this) {
+    AppRole.CHW,
+    AppRole.NURSE,
+    AppRole.CLINICIAN -> listOf(HomeDestination.Patients)
+  }

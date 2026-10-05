@@ -31,6 +31,12 @@
     <string name="initial_sync_retry">Retry</string>
     <string name="initial_sync_continue">Continue without syncing</string>
 
+    <!-- Role gate -->
+    <string name="role_none_title">No role assigned</string>
+    <string name="role_none_body">Your account has no CHW, nurse or clinician role. Ask your administrator to assign one, then sign in again.</string>
+    <string name="role_failed_title">Couldn't load your role</string>
+    <string name="role_retry">Retry</string>
+
     <!-- Patient list screen -->
     <string name="patient_list_title">Patients</string>
     <string name="patient_list_empty">No patients</string>

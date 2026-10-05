@@ -75,6 +75,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
+import dev.ohs.workflow.examples.auth.AppRole
 import dev.ohs.workflow.examples.feature.patient.list.PatientListScreen
 import dev.ohs.workflow.examples.feature.patient.profile.PatientProfileScreen
 import kotlinx.coroutines.launch
@@ -95,11 +96,16 @@ import player_reference_examples.workflow_examples.generated.resources.home_sync
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun HomeScreen(userName: String, onPatientClick: (String) -> Unit, onSignOut: () -> Unit) {
+fun HomeScreen(
+  role: AppRole,
+  userName: String,
+  onPatientClick: (String) -> Unit,
+  onSignOut: () -> Unit,
+) {
   val homeViewModel: HomeViewModel = koinViewModel()
   val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
 
-  var selectedDestination by remember { mutableStateOf(HomeDestination.Patients) }
+  var selectedDestination by remember(role) { mutableStateOf(role.destinations().first()) }
   var selectedPatientId by rememberSaveable { mutableStateOf<String?>(null) }
   val drawerState = rememberDrawerState(DrawerValue.Closed)
   val scope = rememberCoroutineScope()
@@ -172,7 +178,7 @@ fun HomeScreen(userName: String, onPatientClick: (String) -> Unit, onSignOut: ()
           color = onDrawer.copy(alpha = 0.7f),
           modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
         )
-        HomeDestination.entries.forEach { destination ->
+        role.destinations().forEach { destination ->
           NavigationDrawerItem(
             label = { Text(stringResource(destination.label)) },
             icon = { Icon(destination.icon, contentDescription = null) },
@@ -295,7 +301,7 @@ fun HomeScreen(userName: String, onPatientClick: (String) -> Unit, onSignOut: ()
           )
         NavigationRail(containerColor = MaterialTheme.colorScheme.primary) {
           val syncInProgressDescription = stringResource(Res.string.home_sync_in_progress)
-          HomeDestination.entries.forEach { destination ->
+          role.destinations().forEach { destination ->
             NavigationRailItem(
               selected = destination == selectedDestination,
               onClick = { selectedDestination = destination },

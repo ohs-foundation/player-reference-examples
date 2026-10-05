@@ -152,6 +152,16 @@ class AuthServiceTest {
   }
 
   @Test
+  fun refreshSuccess_keepsUserContext() = runTest {
+    val context = UserContext(AppRole.CHW, "p1", "o1", "l1")
+    val store = FakeSessionStore(session(expired = true).copy(context = context))
+
+    service(store, apiWith()).ensureFreshSession()
+
+    assertEquals(context, store.session.value?.context)
+  }
+
+  @Test
   fun refreshRejectedByProvider_logsOut() = runTest {
     val store = FakeSessionStore(session(expired = true))
     val api =

@@ -27,6 +27,7 @@ import dev.ohs.fhir.engine.sync.FhirDataStore
 import dev.ohs.fhir.engine.sync.SyncJobStatus
 import dev.ohs.fhir.engine.sync.createDataStore
 import dev.ohs.player.client.registry.LocalViewRegistry
+import dev.ohs.workflow.examples.auth.AppRole
 import dev.ohs.workflow.examples.buildAppViewRegistry
 import dev.ohs.workflow.examples.data.di.repositoryModule
 import dev.ohs.workflow.examples.data.di.viewModelModule
@@ -73,7 +74,14 @@ class HomeScreenTest {
     val registry = buildAppViewRegistry()
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme { HomeScreen(userName = "Test User", onPatientClick = {}, onSignOut = {}) }
+        MaterialTheme {
+          HomeScreen(
+            role = AppRole.CHW,
+            userName = "Test User",
+            onPatientClick = {},
+            onSignOut = {},
+          )
+        }
       }
     }
 
@@ -98,7 +106,14 @@ class HomeScreenTest {
     val registry = buildAppViewRegistry()
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme { HomeScreen(userName = "Test User", onPatientClick = {}, onSignOut = {}) }
+        MaterialTheme {
+          HomeScreen(
+            role = AppRole.CHW,
+            userName = "Test User",
+            onPatientClick = {},
+            onSignOut = {},
+          )
+        }
       }
     }
 
@@ -131,7 +146,14 @@ class HomeScreenTest {
     val registry = buildAppViewRegistry()
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme { HomeScreen(userName = "Test User", onPatientClick = {}, onSignOut = {}) }
+        MaterialTheme {
+          HomeScreen(
+            role = AppRole.CHW,
+            userName = "Test User",
+            onPatientClick = {},
+            onSignOut = {},
+          )
+        }
       }
     }
 
@@ -159,7 +181,14 @@ class HomeScreenTest {
     val registry = buildAppViewRegistry()
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme { HomeScreen(userName = "Test User", onPatientClick = {}, onSignOut = {}) }
+        MaterialTheme {
+          HomeScreen(
+            role = AppRole.CHW,
+            userName = "Test User",
+            onPatientClick = {},
+            onSignOut = {},
+          )
+        }
       }
     }
 

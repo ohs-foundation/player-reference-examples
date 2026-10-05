@@ -63,6 +63,7 @@ data class Session(
   val expiresInSeconds: Long,
   val obtainedAtEpochSeconds: Long,
   val user: UserInfo,
+  val context: UserContext? = null,
 ) {
   /** True when the access token has expired (with a small safety skew). */
   fun isAccessTokenExpired(nowEpochSeconds: Long, skewSeconds: Long = 30): Boolean =

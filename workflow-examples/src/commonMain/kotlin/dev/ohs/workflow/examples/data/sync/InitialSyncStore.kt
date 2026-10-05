@@ -31,6 +31,9 @@ interface InitialSyncStore {
   suspend fun isComplete(): Boolean
 
   suspend fun markComplete()
+
+  /** Forgets the first sync and every download cursor, so the next sync downloads everything. */
+  suspend fun reset()
 }
 
 internal class DataStoreInitialSyncStore(private val dataStore: DataStore<Preferences>) :
@@ -40,6 +43,10 @@ internal class DataStoreInitialSyncStore(private val dataStore: DataStore<Prefer
 
   override suspend fun markComplete() {
     dataStore.edit { it[INITIAL_SYNC_COMPLETE_KEY] = true }
+  }
+
+  override suspend fun reset() {
+    dataStore.edit { it.clear() }
   }
 
   private companion object {

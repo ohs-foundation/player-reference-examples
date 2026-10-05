@@ -134,7 +134,7 @@ internal class AuthService(
         }
     return try {
       val tokens = api.refresh(refreshToken)
-      tokens.toSession(session.user).also { repository.save(it) }
+      tokens.toSession(session.user).copy(context = session.context).also { repository.save(it) }
     } catch (cancellation: CancellationException) {
       throw cancellation
     } catch (rejected: AuthException) {

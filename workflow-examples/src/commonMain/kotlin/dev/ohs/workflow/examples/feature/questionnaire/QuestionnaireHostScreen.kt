@@ -68,9 +68,13 @@ import player_reference_examples.workflow_examples.generated.resources.questionn
 fun QuestionnaireHostScreen(
   questionnaireId: String,
   patientId: String? = null,
+  organizationId: String? = null,
   onBack: () -> Unit,
 ) {
-  val launchContext = remember(patientId) { QuestionnaireLaunchContext(patientId = patientId) }
+  val launchContext =
+    remember(patientId, organizationId) {
+      QuestionnaireLaunchContext(patientId = patientId, organizationId = organizationId)
+    }
   val viewItemMatchersProvider = remember {
     object : QuestionnaireItemViewFactoryMatchersProvider {
       override fun get(): List<QuestionnaireItemViewFactoryMatcher> = listOf()

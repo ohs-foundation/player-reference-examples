@@ -31,6 +31,10 @@ private class FakeInitialSyncStore(private var complete: Boolean = false) : Init
   override suspend fun markComplete() {
     complete = true
   }
+
+  override suspend fun reset() {
+    complete = false
+  }
 }
 
 class InitialSyncViewModelTest {

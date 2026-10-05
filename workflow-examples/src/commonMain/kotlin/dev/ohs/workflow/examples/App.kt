@@ -35,11 +35,15 @@ import androidx.savedstate.read
 import dev.ohs.player.client.registry.LocalViewRegistry
 import dev.ohs.workflow.examples.auth.AuthState
 import dev.ohs.workflow.examples.auth.AuthViewModel
+import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.auth.rememberAuthorizationLauncher
 import dev.ohs.workflow.examples.feature.home.HomeScreen
 import dev.ohs.workflow.examples.feature.login.LoginScreen
 import dev.ohs.workflow.examples.feature.patient.profile.PatientProfileScreen
 import dev.ohs.workflow.examples.feature.questionnaire.QuestionnaireHostScreen
+import dev.ohs.workflow.examples.feature.role.NoRoleScreen
+import dev.ohs.workflow.examples.feature.role.UserContextState
+import dev.ohs.workflow.examples.feature.role.UserContextViewModel
 import dev.ohs.workflow.examples.feature.sync.InitialSyncGateState
 import dev.ohs.workflow.examples.feature.sync.InitialSyncScreen
 import dev.ohs.workflow.examples.feature.sync.InitialSyncViewModel
@@ -77,65 +81,88 @@ fun App() {
           val session = (authState as AuthState.Authenticated).session
           val userName =
             session.user.fullName.ifBlank { session.user.username }.ifBlank { session.user.email }
-          val initialSyncViewModel: InitialSyncViewModel = koinViewModel()
-          val gateState by initialSyncViewModel.state.collectAsStateWithLifecycle()
-          LaunchedEffect(Unit) { initialSyncViewModel.start() }
+          val contextViewModel: UserContextViewModel = koinViewModel(key = session.user.subject)
+          val contextState by contextViewModel.state.collectAsStateWithLifecycle()
+          LaunchedEffect(session.accessToken) { contextViewModel.resolve() }
 
-          when (gateState) {
-            InitialSyncGateState.Checking,
-            InitialSyncGateState.Syncing,
-            is InitialSyncGateState.Failed ->
-              InitialSyncScreen(
-                state = gateState,
-                onRetry = { initialSyncViewModel.retry() },
-                onContinueAnyway = { initialSyncViewModel.continueAnyway() },
-              )
-            InitialSyncGateState.Passed -> {
-              val navController = rememberNavController()
-              NavHost(navController = navController, startDestination = "home") {
-                composable("home") {
-                  HomeScreen(
-                    userName = userName,
-                    onPatientClick = { id -> navController.navigate("patientProfile/$id") },
-                    onSignOut = { authViewModel.logout() },
-                  )
-                }
-
-                composable(
-                  route = "questionnaireHost/{questionnaireId}?patientId={patientId}",
-                  arguments =
-                    listOf(
-                      navArgument("questionnaireId") { type = NavType.StringType },
-                      navArgument("patientId") {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                      },
-                    ),
-                ) { back ->
-                  val questionnaireId =
-                    back.arguments?.read { getStringOrNull("questionnaireId") }.orEmpty()
-                  val patientId = back.arguments?.read { getStringOrNull("patientId") }
-                  QuestionnaireHostScreen(
-                    questionnaireId = questionnaireId,
-                    patientId = patientId,
-                    onBack = { navController.popBackStack() },
-                  )
-                }
-
-                composable(
-                  route = "patientProfile/{patientId}",
-                  arguments = listOf(navArgument("patientId") { type = NavType.StringType }),
-                ) { back ->
-                  val patientId = back.arguments?.read { getStringOrNull("patientId") }.orEmpty()
-                  PatientProfileScreen(
-                    patientId = patientId,
-                    onBack = { navController.popBackStack() },
-                  )
-                }
+          when (val state = contextState) {
+            UserContextState.Loading ->
+              Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
               }
-            }
+            UserContextState.NoRole ->
+              NoRoleScreen(message = null, onRetry = null, onSignOut = { authViewModel.logout() })
+            is UserContextState.Failed ->
+              NoRoleScreen(
+                message = state.message,
+                onRetry = { contextViewModel.resolve() },
+                onSignOut = { authViewModel.logout() },
+              )
+            is UserContextState.Ready ->
+              SignedInApp(state.context, userName, onSignOut = { authViewModel.logout() })
           }
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun SignedInApp(context: UserContext, userName: String, onSignOut: () -> Unit) {
+  val initialSyncViewModel: InitialSyncViewModel = koinViewModel()
+  val gateState by initialSyncViewModel.state.collectAsStateWithLifecycle()
+  LaunchedEffect(Unit) { initialSyncViewModel.start() }
+
+  when (gateState) {
+    InitialSyncGateState.Checking,
+    InitialSyncGateState.Syncing,
+    is InitialSyncGateState.Failed ->
+      InitialSyncScreen(
+        state = gateState,
+        onRetry = { initialSyncViewModel.retry() },
+        onContinueAnyway = { initialSyncViewModel.continueAnyway() },
+      )
+    InitialSyncGateState.Passed -> {
+      val navController = rememberNavController()
+      NavHost(navController = navController, startDestination = "home") {
+        composable("home") {
+          HomeScreen(
+            role = context.role,
+            userName = userName,
+            onPatientClick = { id -> navController.navigate("patientProfile/$id") },
+            onSignOut = onSignOut,
+          )
+        }
+
+        composable(
+          route = "questionnaireHost/{questionnaireId}?patientId={patientId}",
+          arguments =
+            listOf(
+              navArgument("questionnaireId") { type = NavType.StringType },
+              navArgument("patientId") {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+              },
+            ),
+        ) { back ->
+          val questionnaireId =
+            back.arguments?.read { getStringOrNull("questionnaireId") }.orEmpty()
+          val patientId = back.arguments?.read { getStringOrNull("patientId") }
+          QuestionnaireHostScreen(
+            questionnaireId = questionnaireId,
+            patientId = patientId,
+            organizationId = context.organizationId,
+            onBack = { navController.popBackStack() },
+          )
+        }
+
+        composable(
+          route = "patientProfile/{patientId}",
+          arguments = listOf(navArgument("patientId") { type = NavType.StringType }),
+        ) { back ->
+          val patientId = back.arguments?.read { getStringOrNull("patientId") }.orEmpty()
+          PatientProfileScreen(patientId = patientId, onBack = { navController.popBackStack() })
         }
       }
     }
