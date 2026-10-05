@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -41,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.ohs.player.client.registry.LocalViewRegistry
 import dev.ohs.player.client.registry.componentRenderer
+import dev.ohs.player.client.registry.layoutRenderer
 import dev.ohs.player.client.renderer.RenderOptions
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.player.generated.viewtype.ViewTypeCS
@@ -117,6 +119,22 @@ fun PatientProfileScreen(
     ) {
       item(key = "patient_header") { headerRenderer.Render(s.patient, RenderOptions()) }
       item(key = "actions") { actions() }
+      careSection(s.referrals, "referrals")
+      careSection(s.outcomes, "outcomes")
+      careSection(s.treatments, "treatments")
+      careSection(s.followUps, "followUps")
+      careSection(s.visits, "visits")
+      careSection(s.vitals, "vitals")
     }
+  }
+}
+
+private inline fun <reified T : Any> LazyListScope.careSection(items: List<T>, key: String) {
+  if (items.isEmpty()) return
+  item(key = key) {
+    val registry = LocalViewRegistry.current
+    val section = remember(registry) { registry.layoutRenderer<T>(ViewTypeCS.SectionCard) }
+    val row = remember(registry) { registry.componentRenderer<T>(ViewTypeCS.CareItem) }
+    section.Render(items = items, component = row, onItemClick = {})
   }
 }

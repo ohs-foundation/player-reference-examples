@@ -15,6 +15,20 @@
  */
 package dev.ohs.workflow.examples.feature.patient.profile
 
+import dev.ohs.player.generated.state.PatientFacilityVisitState
+import dev.ohs.player.generated.state.PatientFollowUpState
+import dev.ohs.player.generated.state.PatientReferralOutcomeState
+import dev.ohs.player.generated.state.PatientReferralState
 import dev.ohs.player.generated.state.PatientSummaryState
+import dev.ohs.player.generated.state.PatientTreatmentState
+import dev.ohs.player.generated.state.PatientVitalState
 
-data class ProfileUiState(val patient: PatientSummaryState? = null)
+data class ProfileUiState(
+  val patient: PatientSummaryState? = null,
+  val referrals: List<PatientReferralState> = emptyList(),
+  val outcomes: List<PatientReferralOutcomeState> = emptyList(),
+  val treatments: List<PatientTreatmentState> = emptyList(),
+  val followUps: List<PatientFollowUpState> = emptyList(),
+  val visits: List<PatientFacilityVisitState> = emptyList(),
+  val vitals: List<PatientVitalState> = emptyList(),
+)

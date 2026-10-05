@@ -1,0 +1,1 @@
+{"resourceType": "http://ohs.dev/StructureDefinition/ViewJoinMap", "name": "patientReferralOutcome", "from": "revIncluded", "resource": "Procedure", "view": "ReferralOutcome", "searchParam": "subject"}

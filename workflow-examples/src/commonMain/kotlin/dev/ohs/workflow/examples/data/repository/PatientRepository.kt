@@ -18,6 +18,7 @@ package dev.ohs.workflow.examples.data.repository
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.workflow.examples.data.Extraction.extractor
 import dev.ohs.workflow.examples.data.datasource.allPatientIds
+import dev.ohs.workflow.examples.data.datasource.patientProfileSearchResult
 import dev.ohs.workflow.examples.data.datasource.patientSummarySearchResult
 import dev.ohs.workflow.examples.feature.patient.profile.ProfileUiState
 import kotlinx.coroutines.Dispatchers
@@ -49,8 +50,17 @@ class PatientRepository(private val fhirRepository: FhirRepository) {
 
   suspend fun getPatientProfile(patientId: String): ProfileUiState =
     withContext(extractorDispatcher) {
-      val result =
+      val summary =
         patientSummarySearchResult(patientId, fhirRepository) ?: return@withContext ProfileUiState()
-      ProfileUiState(patient = extractor.extract<PatientSummaryState>(result).firstOrNull())
+      val record = patientProfileSearchResult(patientId, fhirRepository)!!
+      ProfileUiState(
+        patient = extractor.extract<PatientSummaryState>(summary).firstOrNull(),
+        referrals = extractor.extract(record),
+        outcomes = extractor.extract(record),
+        treatments = extractor.extract(record),
+        followUps = extractor.extract(record),
+        visits = extractor.extract(record),
+        vitals = extractor.extract(record),
+      )
     }
 }

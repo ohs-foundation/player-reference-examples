@@ -64,4 +64,21 @@ class PatientProfileScreenTest {
     }
     assertTrue(onAllNodesWithText("Amina Diallo").fetchSemanticsNodes().isNotEmpty())
   }
+
+  @Test
+  fun profileShowsCareActivitySections() = runComposeUiTest {
+    val registry = buildAppViewRegistry()
+    setContent {
+      CompositionLocalProvider(LocalViewRegistry provides registry) {
+        MaterialTheme { PatientProfileScreen(patientId = "p1", onBack = {}) }
+      }
+    }
+
+    waitUntil(timeoutMillis = 5_000L) {
+      onAllNodesWithText("Waiting at facility").fetchSemanticsNodes().isNotEmpty()
+    }
+    assertTrue(
+      onAllNodesWithText("Amoxicillin 250 mg dispersible").fetchSemanticsNodes().isNotEmpty()
+    )
+  }
 }

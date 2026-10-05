@@ -64,6 +64,20 @@
     <string name="queue_complete">Complete</string>
     <string name="queue_cancel">Cancel</string>
 
+    <!-- Care record -->
+    <string name="section_collapse">Collapse section</string>
+    <string name="section_expand">Expand section</string>
+    <string name="care_referral_title">Referral to facility</string>
+    <string name="care_referred_on">Referred %1$s</string>
+    <string name="care_given_on">Given %1$s</string>
+    <string name="care_due_on">Due %1$s</string>
+    <string name="care_arrived_on">Arrived %1$s</string>
+    <string name="care_seen_on">Seen %1$s</string>
+    <string name="care_status_done">Done</string>
+    <string name="care_status_waiting">Waiting</string>
+    <string name="care_status_seen">Seen</string>
+    <string name="care_opd_visit">OPD visit</string>
+
     <!-- Patient list screen -->
     <string name="patient_list_empty">No patients</string>
     <string name="patient_list_register">Register patient</string>

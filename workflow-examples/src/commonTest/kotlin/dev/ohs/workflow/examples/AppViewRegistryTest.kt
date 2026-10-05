@@ -20,7 +20,13 @@ import dev.ohs.player.client.layout.HorizontalListRenderer
 import dev.ohs.player.client.layout.VerticalListRenderer
 import dev.ohs.player.client.registry.componentRenderer
 import dev.ohs.player.client.registry.layoutRenderer
+import dev.ohs.player.generated.state.PatientFacilityVisitState
+import dev.ohs.player.generated.state.PatientFollowUpState
+import dev.ohs.player.generated.state.PatientReferralOutcomeState
+import dev.ohs.player.generated.state.PatientReferralState
 import dev.ohs.player.generated.state.PatientSummaryState
+import dev.ohs.player.generated.state.PatientTreatmentState
+import dev.ohs.player.generated.state.PatientVitalState
 import dev.ohs.player.generated.viewtype.ViewTypeCS
 import kotlin.test.Test
 
@@ -38,5 +44,15 @@ class AppViewRegistryTest {
 
     // Patient profile header
     registry.componentRenderer<PatientSummaryState>(ViewTypeCS.PatientHeader)
+
+    // Care record sections
+    registry.componentRenderer<PatientReferralState>(ViewTypeCS.CareItem)
+    registry.layoutRenderer<PatientReferralState>(ViewTypeCS.SectionCard)
+    registry.componentRenderer<PatientReferralOutcomeState>(ViewTypeCS.CareItem)
+    registry.componentRenderer<PatientTreatmentState>(ViewTypeCS.CareItem)
+    registry.componentRenderer<PatientFollowUpState>(ViewTypeCS.CareItem)
+    registry.componentRenderer<PatientFacilityVisitState>(ViewTypeCS.CareItem)
+    registry.componentRenderer<PatientVitalState>(ViewTypeCS.CareItem)
+    registry.layoutRenderer<PatientVitalState>(ViewTypeCS.SectionCard)
   }
 }

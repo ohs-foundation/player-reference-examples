@@ -15,6 +15,7 @@
  */
 package dev.ohs.workflow.examples.util
 
+import dev.ohs.fhir.model.r4.FhirDateTime
 import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.Reference
 
@@ -27,3 +28,11 @@ fun Patient?.displayName(): String =
 /** The id in a relative reference of [type], e.g. "p1" from "Patient/p1"; null for any other. */
 fun Reference?.idOf(type: String): String? =
   this?.reference?.value?.takeIf { it.startsWith("$type/") }?.removePrefix("$type/")
+
+/** The calendar day of a FHIR date-time, e.g. "2026-10-05", or null when it is not that precise. */
+fun FhirDateTime?.calendarDate(): String? =
+  when (this) {
+    is FhirDateTime.Date -> "$date"
+    is FhirDateTime.DateTime -> "${dateTime.date}"
+    else -> null
+  }
