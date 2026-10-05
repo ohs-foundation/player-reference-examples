@@ -103,6 +103,7 @@ kotlin {
       implementation(libs.koin.compose)
       implementation(libs.koin.composeViewmodel)
       implementation(libs.ohs.fhir.engine)
+      implementation(libs.ohs.fhir.workflow)
       implementation(libs.ohs.fhir.model.r4)
       implementation(libs.fhir.data.capture)
       // Auth: shared OAuth2/PKCE client, secure session storage, SHA-256 for PKCE.
