@@ -17,6 +17,7 @@ package dev.ohs.workflow.examples.workflow
 
 import dev.ohs.fhir.model.r4.Date
 import dev.ohs.fhir.model.r4.Enumeration
+import dev.ohs.fhir.model.r4.FhirDecimal
 import dev.ohs.fhir.model.r4.HumanName
 import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
@@ -46,6 +47,9 @@ fun QuestionnaireResponse.code(linkId: String): String? =
   (answer(linkId) as? Value.Coding)?.value?.code?.value
 
 fun QuestionnaireResponse.date(linkId: String): Date? = (answer(linkId) as? Value.Date)?.value
+
+fun QuestionnaireResponse.decimal(linkId: String): FhirDecimal? =
+  (answer(linkId) as? Value.Decimal)?.value?.value
 
 /**
  * The Patient a registration response describes, managed by the registering user's organization.

@@ -16,6 +16,7 @@
 package dev.ohs.workflow.examples.data.di
 
 import dev.ohs.fhir.engine.FhirEngineProvider
+import dev.ohs.fhir.workflow.FhirOperator
 import dev.ohs.workflow.examples.auth.AuthService
 import dev.ohs.workflow.examples.auth.AuthViewModel
 import dev.ohs.workflow.examples.auth.OAuthConfig
@@ -37,6 +38,9 @@ import dev.ohs.workflow.examples.feature.questionnaire.QuestionnaireLaunchContex
 import dev.ohs.workflow.examples.feature.questionnaire.QuestionnaireService
 import dev.ohs.workflow.examples.feature.role.UserContextViewModel
 import dev.ohs.workflow.examples.feature.sync.InitialSyncViewModel
+import dev.ohs.workflow.examples.workflow.BundledProtocols
+import dev.ohs.workflow.examples.workflow.EngineWorkflowRepository
+import dev.ohs.workflow.examples.workflow.ProtocolService
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -55,7 +59,13 @@ internal val fhirEngineRepositoryModule = module {
  */
 internal val repositoryModule = module { single { PatientRepository(get()) } }
 
-internal val serviceModule = module { factory { QuestionnaireService(get()) } }
+internal val serviceModule = module {
+  factory { QuestionnaireService(get()) }
+  single {
+    val repository = EngineWorkflowRepository(get())
+    ProtocolService(repository, { FhirOperator(repository, resolver = BundledProtocols.load()) })
+  }
+}
 
 /**
  * [SyncManager] isn't bound here — each platform's `initKoin` caller supplies its own
