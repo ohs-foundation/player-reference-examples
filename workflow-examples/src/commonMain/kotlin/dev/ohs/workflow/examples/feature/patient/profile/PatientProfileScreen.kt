@@ -54,7 +54,11 @@ import player_reference_examples.workflow_examples.generated.resources.patient_p
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PatientProfileScreen(patientId: String, onBack: () -> Unit) {
+fun PatientProfileScreen(
+  patientId: String,
+  onBack: () -> Unit,
+  actions: @Composable () -> Unit = {},
+) {
   val viewModel =
     koinViewModel<PatientProfileViewModel>(key = patientId) { parametersOf(patientId) }
   val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -112,6 +116,7 @@ fun PatientProfileScreen(patientId: String, onBack: () -> Unit) {
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
       item(key = "patient_header") { headerRenderer.Render(s.patient, RenderOptions()) }
+      item(key = "actions") { actions() }
     }
   }
 }

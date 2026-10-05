@@ -17,8 +17,13 @@ package dev.ohs.workflow.examples.feature.patient.list
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -27,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.ohs.player.client.layout.VerticalListRenderer
 import dev.ohs.player.client.scaffold.ListScaffold
@@ -36,11 +42,12 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import player_reference_examples.workflow_examples.generated.resources.Res
 import player_reference_examples.workflow_examples.generated.resources.patient_list_empty
+import player_reference_examples.workflow_examples.generated.resources.patient_list_register
 import player_reference_examples.workflow_examples.generated.resources.patient_list_title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PatientListScreen(onPatientClick: (String) -> Unit) {
+fun PatientListScreen(onPatientClick: (String) -> Unit, onRegister: () -> Unit) {
   val viewModel: PatientListViewModel = koinViewModel()
   val patients by viewModel.patients.collectAsStateWithLifecycle()
 
@@ -51,23 +58,31 @@ fun PatientListScreen(onPatientClick: (String) -> Unit) {
     return
   }
 
-  ListScaffold<PatientSummaryState>(
-    items = patients!!,
-    onItemClick = { onPatientClick(it.patientId ?: "") },
-    key = { it.patientId ?: it.hashCode().toString() },
-  ) {
-    component(ViewTypeCS.PatientCard)
-    layout(VerticalListRenderer.VIEW_TYPE)
-    topBar {
-      TopAppBar(
-        title = { Text(stringResource(Res.string.patient_list_title)) },
-        colors =
-          TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-          ),
-      )
+  Box(modifier = Modifier.fillMaxSize()) {
+    ListScaffold<PatientSummaryState>(
+      items = patients!!,
+      onItemClick = { onPatientClick(it.patientId ?: "") },
+      key = { it.patientId ?: it.hashCode().toString() },
+    ) {
+      component(ViewTypeCS.PatientCard)
+      layout(VerticalListRenderer.VIEW_TYPE)
+      topBar {
+        TopAppBar(
+          title = { Text(stringResource(Res.string.patient_list_title)) },
+          colors =
+            TopAppBarDefaults.topAppBarColors(
+              containerColor = MaterialTheme.colorScheme.primary,
+              titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+        )
+      }
+      emptyState { Text(stringResource(Res.string.patient_list_empty)) }
     }
-    emptyState { Text(stringResource(Res.string.patient_list_empty)) }
+    FloatingActionButton(
+      onClick = onRegister,
+      modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+    ) {
+      Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.patient_list_register))
+    }
   }
 }

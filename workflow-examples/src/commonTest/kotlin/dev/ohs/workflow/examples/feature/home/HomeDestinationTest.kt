@@ -13,20 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.ohs.workflow.examples.feature.questionnaire
+package dev.ohs.workflow.examples.feature.home
 
-sealed interface QuestionnaireHostUiState {
-  data object Loading : QuestionnaireHostUiState
+import dev.ohs.workflow.examples.auth.AppRole
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-  data class Ready(val questionnaireJson: String, val title: String?) : QuestionnaireHostUiState
+class HomeDestinationTest {
 
-  data class Submitting(val questionnaireJson: String, val title: String?) :
-    QuestionnaireHostUiState
+  @Test
+  fun chwWorksPatientsFollowUpsAndReferrals() {
+    assertEquals(
+      listOf(HomeDestination.Patients, HomeDestination.FollowUps, HomeDestination.Referrals),
+      AppRole.CHW.destinations(),
+    )
+  }
 
-  data class Submitted(
-    val result: QuestionnaireSubmissionResult,
-    val referralSent: Boolean = false,
-  ) : QuestionnaireHostUiState
-
-  data class Error(val message: String) : QuestionnaireHostUiState
+  @Test
+  fun nurseWorksPatients() {
+    assertEquals(listOf(HomeDestination.Patients), AppRole.NURSE.destinations())
+  }
 }

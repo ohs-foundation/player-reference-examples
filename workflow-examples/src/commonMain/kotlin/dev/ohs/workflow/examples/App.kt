@@ -17,7 +17,10 @@ package dev.ohs.workflow.examples
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +36,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.savedstate.read
 import dev.ohs.player.client.registry.LocalViewRegistry
+import dev.ohs.workflow.examples.auth.AppRole
 import dev.ohs.workflow.examples.auth.AuthState
 import dev.ohs.workflow.examples.auth.AuthViewModel
 import dev.ohs.workflow.examples.auth.UserContext
@@ -41,6 +45,7 @@ import dev.ohs.workflow.examples.feature.home.HomeScreen
 import dev.ohs.workflow.examples.feature.login.LoginScreen
 import dev.ohs.workflow.examples.feature.patient.profile.PatientProfileScreen
 import dev.ohs.workflow.examples.feature.questionnaire.QuestionnaireHostScreen
+import dev.ohs.workflow.examples.feature.questionnaire.QuestionnaireIds
 import dev.ohs.workflow.examples.feature.role.NoRoleScreen
 import dev.ohs.workflow.examples.feature.role.UserContextState
 import dev.ohs.workflow.examples.feature.role.UserContextViewModel
@@ -49,7 +54,10 @@ import dev.ohs.workflow.examples.feature.sync.InitialSyncScreen
 import dev.ohs.workflow.examples.feature.sync.InitialSyncViewModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import player_reference_examples.workflow_examples.generated.resources.Res
+import player_reference_examples.workflow_examples.generated.resources.patient_profile_assess_sick_child
 
 @Composable
 fun App() {
@@ -127,9 +135,12 @@ private fun SignedInApp(context: UserContext, userName: String, onSignOut: () ->
       NavHost(navController = navController, startDestination = "home") {
         composable("home") {
           HomeScreen(
-            role = context.role,
+            context = context,
             userName = userName,
             onPatientClick = { id -> navController.navigate("patientProfile/$id") },
+            onRegisterPatient = {
+              navController.navigate("questionnaireHost/${QuestionnaireIds.PATIENT_REGISTRATION}")
+            },
             onSignOut = onSignOut,
           )
         }
@@ -152,7 +163,7 @@ private fun SignedInApp(context: UserContext, userName: String, onSignOut: () ->
           QuestionnaireHostScreen(
             questionnaireId = questionnaireId,
             patientId = patientId,
-            organizationId = context.organizationId,
+            user = context,
             onBack = { navController.popBackStack() },
           )
         }
@@ -162,7 +173,24 @@ private fun SignedInApp(context: UserContext, userName: String, onSignOut: () ->
           arguments = listOf(navArgument("patientId") { type = NavType.StringType }),
         ) { back ->
           val patientId = back.arguments?.read { getStringOrNull("patientId") }.orEmpty()
-          PatientProfileScreen(patientId = patientId, onBack = { navController.popBackStack() })
+          PatientProfileScreen(
+            patientId = patientId,
+            onBack = { navController.popBackStack() },
+            actions = {
+              if (context.role == AppRole.CHW) {
+                Button(
+                  onClick = {
+                    navController.navigate(
+                      "questionnaireHost/${QuestionnaireIds.ICCM_SICK_CHILD}?patientId=$patientId"
+                    )
+                  },
+                  modifier = Modifier.fillMaxWidth(),
+                ) {
+                  Text(stringResource(Res.string.patient_profile_assess_sick_child))
+                }
+              }
+            },
+          )
         }
       }
     }

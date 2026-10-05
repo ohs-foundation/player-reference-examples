@@ -11,6 +11,8 @@
 
     <!-- Home screen -->
     <string name="home_destination_patients">Patients</string>
+    <string name="home_destination_follow_ups">Follow-ups</string>
+    <string name="home_destination_referrals">Referrals</string>
     <string name="home_registers">Registers</string>
     <string name="home_signed_in">Signed in</string>
     <string name="home_last_synced">Last synced: %1$s</string>
@@ -21,7 +23,6 @@
     <string name="home_open_navigation_menu">Open navigation menu</string>
     <string name="home_sync_failed">Sync failed. Please try again.</string>
     <string name="home_sync_cancelled">Sync cancelled.</string>
-    <string name="home_select_patient">Select a patient to view details</string>
 
     <!-- Initial sync screen -->
     <string name="initial_sync_title">Setting up your data…</string>
@@ -37,14 +38,32 @@
     <string name="role_failed_title">Couldn't load your role</string>
     <string name="role_retry">Retry</string>
 
+    <!-- Sick-child assessment result -->
+    <string name="assessment_refer">Refer urgently to the health facility</string>
+    <string name="assessment_follow_up">Follow up on day 3</string>
+    <string name="assessment_home_care">No danger signs, malaria or fast breathing. Advise home care.</string>
+    <string name="assessment_confirm_referral">Confirm referral</string>
+    <string name="assessment_referral_sent">Referral sent to the facility</string>
+    <string name="assessment_done">Done</string>
+
+    <!-- Worklists -->
+    <string name="work_due">Due %1$s</string>
+    <string name="work_waiting_at_facility">Waiting at facility</string>
+    <string name="work_seen_at_facility">Seen at facility</string>
+    <string name="follow_ups_empty">No follow-ups due</string>
+    <string name="follow_up_done">Done</string>
+    <string name="referrals_empty">No referrals sent</string>
+
     <!-- Patient list screen -->
     <string name="patient_list_title">Patients</string>
     <string name="patient_list_empty">No patients</string>
+    <string name="patient_list_register">Register patient</string>
 
     <!-- Patient profile screen -->
     <string name="patient_profile_default_name">Patient</string>
     <string name="patient_profile_back">Back</string>
     <string name="patient_profile_not_found">Patient not found</string>
+    <string name="patient_profile_assess_sick_child">Sick-child assessment</string>
 
     <!-- Questionnaire screen -->
     <string name="questionnaire_title">Questionnaire</string>

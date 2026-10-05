@@ -28,6 +28,7 @@ import dev.ohs.fhir.engine.sync.SyncJobStatus
 import dev.ohs.fhir.engine.sync.createDataStore
 import dev.ohs.player.client.registry.LocalViewRegistry
 import dev.ohs.workflow.examples.auth.AppRole
+import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.buildAppViewRegistry
 import dev.ohs.workflow.examples.data.di.repositoryModule
 import dev.ohs.workflow.examples.data.di.viewModelModule
@@ -76,9 +77,10 @@ class HomeScreenTest {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
         MaterialTheme {
           HomeScreen(
-            role = AppRole.CHW,
+            context = UserContext(AppRole.NURSE, "p1", "o1", "l1"),
             userName = "Test User",
             onPatientClick = {},
+            onRegisterPatient = {},
             onSignOut = {},
           )
         }
@@ -108,9 +110,10 @@ class HomeScreenTest {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
         MaterialTheme {
           HomeScreen(
-            role = AppRole.CHW,
+            context = UserContext(AppRole.NURSE, "p1", "o1", "l1"),
             userName = "Test User",
             onPatientClick = {},
+            onRegisterPatient = {},
             onSignOut = {},
           )
         }
@@ -148,9 +151,10 @@ class HomeScreenTest {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
         MaterialTheme {
           HomeScreen(
-            role = AppRole.CHW,
+            context = UserContext(AppRole.NURSE, "p1", "o1", "l1"),
             userName = "Test User",
             onPatientClick = {},
+            onRegisterPatient = {},
             onSignOut = {},
           )
         }
@@ -183,9 +187,10 @@ class HomeScreenTest {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
         MaterialTheme {
           HomeScreen(
-            role = AppRole.CHW,
+            context = UserContext(AppRole.NURSE, "p1", "o1", "l1"),
             userName = "Test User",
             onPatientClick = {},
+            onRegisterPatient = {},
             onSignOut = {},
           )
         }

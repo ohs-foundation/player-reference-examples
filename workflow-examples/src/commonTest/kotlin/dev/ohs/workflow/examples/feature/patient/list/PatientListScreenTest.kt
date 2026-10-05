@@ -58,7 +58,7 @@ class PatientListScreenTest {
     var clickedId: String? = null
     setContent {
       CompositionLocalProvider(LocalViewRegistry provides registry) {
-        MaterialTheme { PatientListScreen(onPatientClick = { clickedId = it }) }
+        MaterialTheme { PatientListScreen(onPatientClick = { clickedId = it }, onRegister = {}) }
       }
     }
 

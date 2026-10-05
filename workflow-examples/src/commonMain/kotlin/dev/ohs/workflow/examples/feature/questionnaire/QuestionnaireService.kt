@@ -15,10 +15,15 @@
  */
 package dev.ohs.workflow.examples.feature.questionnaire
 
+import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.Questionnaire as QuestionnaireR4
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
+import dev.ohs.fhir.model.r4.ServiceRequest
+import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.data.repository.FhirRepository
 import dev.ohs.workflow.examples.util.FhirJson
+import dev.ohs.workflow.examples.workflow.AssessmentResult
+import dev.ohs.workflow.examples.workflow.ProtocolService
 import dev.ohs.workflow.examples.workflow.registrationPatient
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
@@ -31,27 +36,32 @@ import org.jetbrains.compose.resources.ExperimentalResourceApi
 import player_reference_examples.workflow_examples.generated.resources.Res
 
 /** Caller-supplied identifiers describing why/for-whom a questionnaire was launched. */
-data class QuestionnaireLaunchContext(
-  val patientId: String? = null,
-  val organizationId: String? = null,
-)
+data class QuestionnaireLaunchContext(val patientId: String? = null, val user: UserContext? = null)
 
 /** Outcome of submitting a QuestionnaireResponse, ready for the UI to render. */
-data class QuestionnaireSubmissionResult(val successMessage: String)
+data class QuestionnaireSubmissionResult(
+  val successMessage: String,
+  val assessment: AssessmentResult? = null,
+)
 
 object QuestionnaireIds {
   const val PATIENT_REGISTRATION = "patient-registration"
+  const val ICCM_SICK_CHILD = "iccm-sick-child"
 }
 
 /** Bundled Questionnaire JSON, keyed by the id it should be read under. */
 private val BUNDLED_QUESTIONNAIRE_PATHS: Map<String, String> =
   mapOf(
     QuestionnaireIds.PATIENT_REGISTRATION to
-      "files/protocols/Questionnaire-PatientRegistration.json"
+      "files/protocols/Questionnaire-PatientRegistration.json",
+    QuestionnaireIds.ICCM_SICK_CHILD to "files/protocols/Questionnaire-IccmSickChild.json",
   )
 
 /** Reads bundled Questionnaires and persists what their responses produce via [FhirRepository]. */
-class QuestionnaireService(private val repository: FhirRepository) {
+class QuestionnaireService(
+  private val repository: FhirRepository,
+  private val protocols: ProtocolService,
+) {
 
   private val fhirJson = FhirJson.instance
 
@@ -95,14 +105,28 @@ class QuestionnaireService(private val repository: FhirRepository) {
   ): QuestionnaireSubmissionResult =
     when (questionnaire.id) {
       QuestionnaireIds.PATIENT_REGISTRATION -> {
-        val organizationId =
-          launchContext.organizationId ?: error("Registering a patient needs an organization.")
-        repository.upsert(registrationPatient(response, organizationId))
+        repository.upsert(registrationPatient(response, launchContext.user().organizationId))
         QuestionnaireSubmissionResult("Patient registered.")
+      }
+      QuestionnaireIds.ICCM_SICK_CHILD -> {
+        val assessment =
+          protocols.assessSickChild(patient(launchContext), response, launchContext.user())
+        QuestionnaireSubmissionResult("Assessment saved.", assessment)
       }
       else -> error("No submission handling is defined for questionnaire '${questionnaire.id}'.")
     }
+
+  suspend fun confirmReferral(proposal: ServiceRequest, launchContext: QuestionnaireLaunchContext) {
+    protocols.confirmReferral(proposal, launchContext.user())
+  }
+
+  private suspend fun patient(launchContext: QuestionnaireLaunchContext): Patient =
+    launchContext.patientId?.let { repository.get("Patient", it) } as? Patient
+      ?: error("This questionnaire needs a patient.")
 }
+
+private fun QuestionnaireLaunchContext.user(): UserContext =
+  user ?: error("This questionnaire needs a signed-in user with a role.")
 
 private fun JsonObject.withInitialStringAnswer(
   linkId: String,

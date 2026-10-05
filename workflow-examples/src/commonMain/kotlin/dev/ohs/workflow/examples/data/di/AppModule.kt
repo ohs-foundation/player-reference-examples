@@ -24,12 +24,14 @@ import dev.ohs.workflow.examples.auth.OidcAuthApi
 import dev.ohs.workflow.examples.auth.PractitionerDetailsApi
 import dev.ohs.workflow.examples.auth.SessionRepository
 import dev.ohs.workflow.examples.auth.SessionStore
+import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.data.repository.FhirEngineRepository
 import dev.ohs.workflow.examples.data.repository.FhirRepository
 import dev.ohs.workflow.examples.data.repository.PatientRepository
 import dev.ohs.workflow.examples.data.sync.DataStoreInitialSyncStore
 import dev.ohs.workflow.examples.data.sync.InitialSyncStore
 import dev.ohs.workflow.examples.data.sync.createSyncTimestampDataStore
+import dev.ohs.workflow.examples.feature.chw.ChwWorklistViewModel
 import dev.ohs.workflow.examples.feature.home.HomeViewModel
 import dev.ohs.workflow.examples.feature.patient.list.PatientListViewModel
 import dev.ohs.workflow.examples.feature.patient.profile.PatientProfileViewModel
@@ -60,7 +62,7 @@ internal val fhirEngineRepositoryModule = module {
 internal val repositoryModule = module { single { PatientRepository(get()) } }
 
 internal val serviceModule = module {
-  factory { QuestionnaireService(get()) }
+  factory { QuestionnaireService(get(), get()) }
   single {
     val repository = EngineWorkflowRepository(get())
     ProtocolService(repository, { FhirOperator(repository, resolver = BundledProtocols.load()) })
@@ -93,6 +95,7 @@ internal val authModule = module {
 internal val viewModelModule = module {
   viewModel { PatientListViewModel(get()) }
   viewModel { (patientId: String) -> PatientProfileViewModel(patientId, get()) }
+  viewModel { (context: UserContext) -> ChwWorklistViewModel(context, get()) }
   viewModel { (questionnaireId: String, launchContext: QuestionnaireLaunchContext) ->
     QuestionnaireHostViewModel(questionnaireId, launchContext, get())
   }

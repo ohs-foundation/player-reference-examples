@@ -61,6 +61,19 @@ class QuestionnaireHostViewModel(
     }
   }
 
+  fun confirmReferral() {
+    val submitted = _uiState.value as? QuestionnaireHostUiState.Submitted ?: return
+    val referral = submitted.result.assessment?.referral ?: return
+    viewModelScope.launch {
+      runCatching { questionnaireService.confirmReferral(referral, launchContext) }
+        .onSuccess { _uiState.value = submitted.copy(referralSent = true) }
+        .onFailure { throwable ->
+          _uiState.value =
+            QuestionnaireHostUiState.Error(throwable.message ?: "Failed to send the referral.")
+        }
+    }
+  }
+
   fun onSubmit(response: QuestionnaireResponse) {
     val questionnaire = loadedQuestionnaire ?: return
     val current = _uiState.value as? QuestionnaireHostUiState.Ready ?: return

@@ -52,6 +52,8 @@ import dev.ohs.fhir.datacapture.Questionnaire
 import dev.ohs.fhir.datacapture.QuestionnaireConfig
 import dev.ohs.fhir.datacapture.QuestionnaireItemViewFactoryMatcher
 import dev.ohs.fhir.datacapture.QuestionnaireItemViewFactoryMatchersProvider
+import dev.ohs.workflow.examples.auth.UserContext
+import dev.ohs.workflow.examples.feature.chw.AssessmentResultContent
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -68,13 +70,11 @@ import player_reference_examples.workflow_examples.generated.resources.questionn
 fun QuestionnaireHostScreen(
   questionnaireId: String,
   patientId: String? = null,
-  organizationId: String? = null,
+  user: UserContext? = null,
   onBack: () -> Unit,
 ) {
   val launchContext =
-    remember(patientId, organizationId) {
-      QuestionnaireLaunchContext(patientId = patientId, organizationId = organizationId)
-    }
+    remember(patientId, user) { QuestionnaireLaunchContext(patientId = patientId, user = user) }
   val viewItemMatchersProvider = remember {
     object : QuestionnaireItemViewFactoryMatchersProvider {
       override fun get(): List<QuestionnaireItemViewFactoryMatcher> = listOf()
@@ -89,7 +89,8 @@ fun QuestionnaireHostScreen(
   val coroutineScope = rememberCoroutineScope()
 
   LaunchedEffect(uiState) {
-    if (uiState !is QuestionnaireHostUiState.Submitted) return@LaunchedEffect
+    val submitted = uiState as? QuestionnaireHostUiState.Submitted ?: return@LaunchedEffect
+    if (submitted.result.assessment != null) return@LaunchedEffect
     delay(2_000.milliseconds)
     onBack()
   }
@@ -203,7 +204,15 @@ fun QuestionnaireHostScreen(
               )
             }
 
-            is QuestionnaireHostUiState.Submitted -> Unit
+            is QuestionnaireHostUiState.Submitted ->
+              state.result.assessment?.let {
+                AssessmentResultContent(
+                  assessment = it,
+                  referralSent = state.referralSent,
+                  onConfirmReferral = viewModel::confirmReferral,
+                  onDone = onBack,
+                )
+              }
           }
         }
       }

@@ -62,7 +62,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,13 +70,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.core.layout.WindowSizeClass
-import dev.ohs.workflow.examples.auth.AppRole
+import dev.ohs.workflow.examples.auth.UserContext
+import dev.ohs.workflow.examples.feature.chw.FollowUpsScreen
+import dev.ohs.workflow.examples.feature.chw.ReferralsScreen
 import dev.ohs.workflow.examples.feature.patient.list.PatientListScreen
-import dev.ohs.workflow.examples.feature.patient.profile.PatientProfileScreen
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -86,7 +85,6 @@ import player_reference_examples.workflow_examples.generated.resources.home_canc
 import player_reference_examples.workflow_examples.generated.resources.home_last_synced
 import player_reference_examples.workflow_examples.generated.resources.home_open_navigation_menu
 import player_reference_examples.workflow_examples.generated.resources.home_registers
-import player_reference_examples.workflow_examples.generated.resources.home_select_patient
 import player_reference_examples.workflow_examples.generated.resources.home_sign_out
 import player_reference_examples.workflow_examples.generated.resources.home_signed_in
 import player_reference_examples.workflow_examples.generated.resources.home_sync_cancelled
@@ -97,16 +95,17 @@ import player_reference_examples.workflow_examples.generated.resources.home_sync
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun HomeScreen(
-  role: AppRole,
+  context: UserContext,
   userName: String,
   onPatientClick: (String) -> Unit,
+  onRegisterPatient: () -> Unit,
   onSignOut: () -> Unit,
 ) {
   val homeViewModel: HomeViewModel = koinViewModel()
   val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
 
-  var selectedDestination by remember(role) { mutableStateOf(role.destinations().first()) }
-  var selectedPatientId by rememberSaveable { mutableStateOf<String?>(null) }
+  val destinations = context.role.destinations()
+  var selectedDestination by remember(context.role) { mutableStateOf(destinations.first()) }
   val drawerState = rememberDrawerState(DrawerValue.Closed)
   val scope = rememberCoroutineScope()
   val snackbarHostState = remember { SnackbarHostState() }
@@ -178,7 +177,7 @@ fun HomeScreen(
           color = onDrawer.copy(alpha = 0.7f),
           modifier = Modifier.padding(start = 16.dp, bottom = 8.dp),
         )
-        role.destinations().forEach { destination ->
+        destinations.forEach { destination ->
           NavigationDrawerItem(
             label = { Text(stringResource(destination.label)) },
             icon = { Icon(destination.icon, contentDescription = null) },
@@ -253,26 +252,9 @@ fun HomeScreen(
     val content: @Composable () -> Unit = {
       when (selectedDestination) {
         HomeDestination.Patients ->
-          if (isExpandedWidth) {
-            Row(modifier = Modifier.fillMaxSize()) {
-              Box(modifier = Modifier.weight(1f).fillMaxSize()) {
-                PatientListScreen(onPatientClick = { selectedPatientId = it })
-              }
-              VerticalDivider()
-              Box(modifier = Modifier.weight(1.5f).fillMaxSize()) {
-                when (val patientId = selectedPatientId) {
-                  null -> EmptyDetailPlaceholder()
-                  else ->
-                    PatientProfileScreen(
-                      patientId = patientId,
-                      onBack = { selectedPatientId = null },
-                    )
-                }
-              }
-            }
-          } else {
-            PatientListScreen(onPatientClick = onPatientClick)
-          }
+          PatientListScreen(onPatientClick = onPatientClick, onRegister = onRegisterPatient)
+        HomeDestination.FollowUps -> FollowUpsScreen(context, onPatientClick)
+        HomeDestination.Referrals -> ReferralsScreen(context, onPatientClick)
       }
     }
 
@@ -301,7 +283,7 @@ fun HomeScreen(
           )
         NavigationRail(containerColor = MaterialTheme.colorScheme.primary) {
           val syncInProgressDescription = stringResource(Res.string.home_sync_in_progress)
-          role.destinations().forEach { destination ->
+          destinations.forEach { destination ->
             NavigationRailItem(
               selected = destination == selectedDestination,
               onClick = { selectedDestination = destination },
@@ -381,17 +363,5 @@ fun HomeScreen(
         }
       }
     }
-  }
-}
-
-@Composable
-private fun EmptyDetailPlaceholder() {
-  Box(modifier = Modifier.fillMaxSize().padding(24.dp), contentAlignment = Alignment.Center) {
-    Text(
-      text = stringResource(Res.string.home_select_patient),
-      style = MaterialTheme.typography.bodyLarge,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
-      textAlign = TextAlign.Center,
-    )
   }
 }

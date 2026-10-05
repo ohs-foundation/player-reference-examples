@@ -39,6 +39,7 @@ import dev.ohs.fhir.model.r4.String as FhirString
 import dev.ohs.fhir.model.r4.Task
 import dev.ohs.fhir.model.r4.Uri
 import dev.ohs.fhir.workflow.FhirOperator
+import dev.ohs.fhir.workflow.WorkflowRepository
 import dev.ohs.fhir.workflow.activity.ActivityFlow
 import dev.ohs.fhir.workflow.activity.resource.event.CPGProcedureEvent
 import dev.ohs.fhir.workflow.activity.resource.request.CPGServiceRequest
@@ -69,7 +70,7 @@ data class AssessmentResult(
  * ActivityFlow. Protocol output is stored as standalone resources; the CarePlan wrapper is not.
  */
 class ProtocolService(
-  private val repository: EngineWorkflowRepository,
+  private val repository: WorkflowRepository,
   private val operatorFactory: suspend () -> FhirOperator,
   private val now: () -> Instant = { Clock.System.now() },
 ) {
