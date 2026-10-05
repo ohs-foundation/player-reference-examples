@@ -1,0 +1,48 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "iccm-follow-up",
+  "status": "active",
+  "title": "Follow-up visit",
+  "item": [
+    {
+      "linkId": "condition",
+      "text": "How is the child now?",
+      "type": "choice",
+      "required": true,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://ohs.dev/fhir/CodeSystem/follow-up-condition",
+            "code": "better",
+            "display": "Better"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://ohs.dev/fhir/CodeSystem/follow-up-condition",
+            "code": "same",
+            "display": "The same"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://ohs.dev/fhir/CodeSystem/follow-up-condition",
+            "code": "worse",
+            "display": "Worse"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "danger-sign",
+      "text": "Any danger sign now?",
+      "type": "boolean",
+      "required": true
+    },
+    {
+      "linkId": "completed-treatment",
+      "text": "Completed the treatment?",
+      "type": "boolean"
+    }
+  ]
+}

@@ -59,6 +59,7 @@ import kotlinx.datetime.toLocalDateTime
 const val ICCM_SICK_CHILD = "http://ohs.dev/fhir/PlanDefinition/iccm-sick-child"
 const val OPD_TRIAGE = "http://ohs.dev/fhir/PlanDefinition/opd-triage"
 const val REFERRAL_FOLLOW_UP = "http://ohs.dev/fhir/PlanDefinition/referral-follow-up"
+const val ICCM_FOLLOW_UP_VISIT = "http://ohs.dev/fhir/PlanDefinition/iccm-follow-up-visit"
 const val REFERRAL_CODE = "3457005"
 private const val HOME_TREATMENT_FOLLOW_UP_DAYS = 3
 private const val AFTER_FACILITY_FOLLOW_UP_DAYS = 2
@@ -103,6 +104,32 @@ class ProtocolService(
       referral = requests.filterIsInstance<ServiceRequest>().firstOrNull(),
       medications = requests.filterIsInstance<MedicationRequest>(),
       followUp = requests.filterIsInstance<Task>().firstOrNull(),
+    )
+  }
+
+  /**
+   * Records the CHW's follow-up visit and closes its task. A child who is not better, or shows a
+   * danger sign, gets a new referral proposal, which starts the loop again.
+   */
+  suspend fun recordFollowUp(
+    patient: Patient,
+    response: QuestionnaireResponse,
+    followUpTaskId: String,
+    context: UserContext,
+  ): AssessmentResult {
+    store(response, patient)
+    val chw = reference("Practitioner/${context.practitionerId}")
+    val requests =
+      apply(ICCM_FOLLOW_UP_VISIT, patient, mapOf("visit" to collection(listOf(response)))) {
+        if (it is ServiceRequest) it.copy(requester = chw) else it
+      }
+    (repository.read("Task", followUpTaskId) as? Task)?.let {
+      repository.update(it.copy(status = Enumeration(value = Task.TaskStatus.Completed)))
+    }
+    return AssessmentResult(
+      requests.filterIsInstance<ServiceRequest>().firstOrNull(),
+      emptyList(),
+      null,
     )
   }
 

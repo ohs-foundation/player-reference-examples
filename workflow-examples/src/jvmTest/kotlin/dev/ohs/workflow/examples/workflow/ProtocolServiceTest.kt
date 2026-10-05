@@ -337,4 +337,75 @@ class ProtocolServiceTest {
       }
     )
   }
+
+  @Test
+  fun followUpVisitClosesTheTaskAndRefersAWorseningChild() = runTest {
+    val followUp =
+      service
+        .assessSickChild(
+          child,
+          response(
+            number("age-months", 30),
+            *noDangerSigns,
+            yes("fever"),
+            "rdt-result" to Value.Coding(Coding(code = Code(value = "positive"))),
+            no("cough"),
+          ),
+          chw,
+        )
+        .followUp!!
+
+    val visit =
+      service.recordFollowUp(
+        child,
+        response(
+          "condition" to Value.Coding(Coding(code = Code(value = "worse"))),
+          no("danger-sign"),
+        ),
+        followUp.id!!,
+        chw,
+      )
+
+    assertEquals(
+      Task.TaskStatus.Completed,
+      (repository.read("Task", followUp.id!!) as Task).status.value,
+    )
+    assertEquals(ServiceRequest.RequestIntent.Proposal, visit.referral?.intent?.value)
+    assertEquals("Practitioner/p-chw", visit.referral?.requester?.reference?.value)
+  }
+
+  @Test
+  fun followUpVisitOfARecoveredChildOnlyClosesTheTask() = runTest {
+    val followUp =
+      service
+        .assessSickChild(
+          child,
+          response(
+            number("age-months", 30),
+            *noDangerSigns,
+            yes("fever"),
+            "rdt-result" to Value.Coding(Coding(code = Code(value = "positive"))),
+            no("cough"),
+          ),
+          chw,
+        )
+        .followUp!!
+
+    val visit =
+      service.recordFollowUp(
+        child,
+        response(
+          "condition" to Value.Coding(Coding(code = Code(value = "better"))),
+          no("danger-sign"),
+        ),
+        followUp.id!!,
+        chw,
+      )
+
+    assertNull(visit.referral)
+    assertEquals(
+      Task.TaskStatus.Completed,
+      (repository.read("Task", followUp.id!!) as Task).status.value,
+    )
+  }
 }
