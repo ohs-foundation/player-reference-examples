@@ -65,6 +65,7 @@ class PatientListScreenTest {
     waitUntil(timeoutMillis = 5_000L) {
       onAllNodesWithText("Amina Diallo").fetchSemanticsNodes().isNotEmpty()
     }
+    onNodeWithText("Referred").assertExists()
     onNodeWithText("Amina Diallo").performClick()
     assertEquals("p1", clickedId)
   }

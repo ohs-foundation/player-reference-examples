@@ -35,7 +35,8 @@ import dev.ohs.player.client.renderer.ComponentRenderer
 import dev.ohs.player.client.renderer.RenderOptions
 import dev.ohs.player.generated.config.PatientHeaderConfig
 import dev.ohs.player.generated.state.PatientSummaryState
-import dev.ohs.workflow.examples.feature.component.common.StatusChip
+import dev.ohs.workflow.examples.feature.patient.CareStatusChip
+import dev.ohs.workflow.examples.feature.patient.careStatus
 import dev.ohs.workflow.examples.feature.patient.list.calculateAge
 import org.jetbrains.compose.resources.stringResource
 import player_reference_examples.workflow_examples.generated.resources.Res
@@ -115,7 +116,7 @@ fun PatientHeaderCard(
         )
       }
       if (config.showStatus != false) {
-        StatusChip(isActive = patient.active ?: false)
+        patient.careStatus()?.let { CareStatusChip(it) }
       }
     }
   }

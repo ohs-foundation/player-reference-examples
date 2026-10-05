@@ -74,6 +74,8 @@
     <string name="care_arrived_on">Arrived %1$s</string>
     <string name="care_seen_on">Seen %1$s</string>
     <string name="care_status_done">Done</string>
+    <string name="care_status_referred">Referred</string>
+    <string name="care_status_follow_up_due">Follow-up due</string>
     <string name="care_status_waiting">Waiting</string>
     <string name="care_status_seen">Seen</string>
     <string name="care_opd_visit">OPD visit</string>

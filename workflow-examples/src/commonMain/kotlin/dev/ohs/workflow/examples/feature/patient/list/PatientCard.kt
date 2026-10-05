@@ -36,7 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.PatientCardConfig
 import dev.ohs.player.generated.state.PatientSummaryState
-import dev.ohs.workflow.examples.feature.component.common.StatusChip
+import dev.ohs.workflow.examples.feature.patient.CareStatusChip
+import dev.ohs.workflow.examples.feature.patient.careStatus
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -116,7 +117,7 @@ fun PatientCard(
       }
     }
     if (config.showStatusChip != false) {
-      StatusChip(isActive = patient.active ?: false)
+      patient.careStatus()?.let { CareStatusChip(it) }
     }
   }
 }
