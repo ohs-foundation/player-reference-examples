@@ -38,6 +38,8 @@ All protocol content ships in [`files/protocols/`](./workflow-examples/src/commo
 
 | PlanDefinition | Variables | Produces |
 |---|---|---|
+| `referral-follow-up` | `%referral`: the closed referral | A follow-up `Task` for the referring CHW, due in 2 days, carrying the facility outcome |
+| `iccm-follow-up-visit` | `%visit`: the follow-up response | A new urgent referral when the child is the same, worse, or shows a danger sign; nothing when better |
 | `iccm-sick-child` | `%assessment`: the assessment response | `ServiceRequest` referral (SNOMED 3457005, urgent) on any danger sign. Otherwise, `MedicationRequest` for malaria or fast breathing, plus a follow-up `Task` |
 | `opd-triage` | `%vitals`, `%referrals` | One `opd-consult` `Task` whose `priority` is `stat` if SpO₂ < 90 or the referral is urgent, `urgent` for any other referral, and `routine` otherwise |
 
@@ -109,7 +111,10 @@ Kiambu County Department of Health          county code 022
 1. Sign in as **chw1**. Tap **+** to register *Amina Otieno*, a child born 14 months ago, then open her and choose *Sick-child assessment*. Answer *Chest indrawing* = yes, then submit. The result says *Refer urgently to the health facility*. Choose **Confirm referral**, then sync.
 2. Sign in as **nurse1**. Open *Amina* and choose *Check in to OPD*, entering SpO₂ 95. The app shows *Queued for consultation: stat*, because the referral is urgent. Sync.
 3. Sign in as **clinician1**. *Amina* is at the top of the OPD queue, marked *Community referral*. Open her entry, enter an outcome, and choose **Complete**. Sync.
-4. Sign in as **chw1** and sync. Under *Referrals*, Amina now shows *Seen at facility*.
+4. Sign in as **chw1** and sync. Amina's row shows **Follow-up due**. Completing the consult ran the `referral-follow-up` PlanDefinition, which handed her back to the CHW with a visit due in two days.
+5. Open *Follow-ups* and tap Amina to record the home visit. **Better** closes the follow-up and clears her chip. **The same**, **worse**, or any danger sign creates a new urgent referral (`iccm-follow-up-visit`), which goes back to the facility.
+
+The patient list chip shows where each child stands: **Referred** → **Seen at facility** → **Follow-up due** → no chip once the loop is closed. Each profile shows the care record, rendered from ViewDefinition configs: referrals, facility outcome, treatment, follow-ups, facility visits and vitals.
 
 A walk-in follows the same facility path without a referral. **nurse1** opens or registers the patient, then checks them in with a reason and vitals. Triage queues them `routine`, or `stat` when SpO₂ is below 90, and **clinician1** sees them in the OPD queue after a sync.
 
