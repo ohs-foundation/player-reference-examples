@@ -21,13 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,9 +39,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import player_reference_examples.workflow_examples.generated.resources.Res
 import player_reference_examples.workflow_examples.generated.resources.patient_list_empty
 import player_reference_examples.workflow_examples.generated.resources.patient_list_register
-import player_reference_examples.workflow_examples.generated.resources.patient_list_title
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatientListScreen(onPatientClick: (String) -> Unit, onRegister: () -> Unit) {
   val viewModel: PatientListViewModel = koinViewModel()
@@ -66,16 +60,6 @@ fun PatientListScreen(onPatientClick: (String) -> Unit, onRegister: () -> Unit) 
     ) {
       component(ViewTypeCS.PatientCard)
       layout(VerticalListRenderer.VIEW_TYPE)
-      topBar {
-        TopAppBar(
-          title = { Text(stringResource(Res.string.patient_list_title)) },
-          colors =
-            TopAppBarDefaults.topAppBarColors(
-              containerColor = MaterialTheme.colorScheme.primary,
-              titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            ),
-        )
-      }
       emptyState { Text(stringResource(Res.string.patient_list_empty)) }
     }
     FloatingActionButton(

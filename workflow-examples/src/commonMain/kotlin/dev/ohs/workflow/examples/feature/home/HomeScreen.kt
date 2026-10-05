@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -270,7 +271,7 @@ fun HomeScreen(
         }
         VerticalDivider()
         Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
-          Box(modifier = Modifier.padding(padding)) { content() }
+          Box(modifier = Modifier.padding(padding).consumeWindowInsets(padding)) { content() }
         }
       }
     } else if (isMediumWidth) {
@@ -330,7 +331,7 @@ fun HomeScreen(
         }
         VerticalDivider()
         Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
-          Box(modifier = Modifier.padding(padding)) { content() }
+          Box(modifier = Modifier.padding(padding).consumeWindowInsets(padding)) { content() }
         }
       }
     } else {
@@ -361,7 +362,7 @@ fun HomeScreen(
           },
           snackbarHost = { SnackbarHost(snackbarHostState) },
         ) { padding ->
-          Box(modifier = Modifier.padding(padding)) { content() }
+          Box(modifier = Modifier.padding(padding).consumeWindowInsets(padding)) { content() }
         }
       }
     }

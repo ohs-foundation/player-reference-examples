@@ -66,7 +66,6 @@
     <string name="queue_cancel">Cancel</string>
 
     <!-- Patient list screen -->
-    <string name="patient_list_title">Patients</string>
     <string name="patient_list_empty">No patients</string>
     <string name="patient_list_register">Register patient</string>
 
