@@ -14,6 +14,7 @@ types=(Patient Encounter Observation QuestionnaireResponse ServiceRequest Medica
   Task Procedure Practitioner PractitionerRole Location Organization Questionnaire)
 verbs=(GET POST PUT PATCH DELETE)
 api="$KEYCLOAK_URL/admin/realms/$KEYCLOAK_REALM"
+fhir_base="${FHIR_URL%/}"
 
 new_token() {
   curl -fsS \
@@ -62,11 +63,11 @@ token=$(new_token)
 
 sed -e "s/__CHW_SUB__/$chw/" -e "s/__NURSE_SUB__/$nurse/" -e "s/__CLINICIAN_SUB__/$clinician/" \
   "$here/seed-bundle.json" |
-  fhir -X POST "$FHIR_URL" --data-binary @- |
+  fhir -X POST "$fhir_base/" --data-binary @- |
   jq -r '.entry[].response.status' | sort | uniq -c
 
 printf '%-12s %-10s %-28s %s\n' practitioner role organization location
 for id in $(jq -r '.entry[].resource | select(.resourceType == "PractitionerRole") | .id' "$here/seed-bundle.json"); do
-  fhir "$FHIR_URL/PractitionerRole/$id" |
+  fhir "$fhir_base/PractitionerRole/$id" |
     jq -r '[.practitioner.reference, .code[0].coding[0].code, .organization.reference, .location[0].reference] | @tsv'
 done

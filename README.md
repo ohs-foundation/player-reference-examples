@@ -60,7 +60,19 @@ The gateway runs `org_scoped_access` (ohs-player-reference-backend PR #82). It a
 | JDK | 21. Gradle rejects JDK 25, so set `JAVA_HOME` if 25 is your default. |
 | `local.properties` | `cp local.properties.sample local.properties`, then set `OAUTH_ISSUER`, `OAUTH_CLIENT_ID` and `FHIR_BASE_URL`. The redirect scheme defaults to `dev.ohs.player.reference.app`, the value already registered on the shared Keycloak client. |
 | Gateway | It must allow `PATCH`. The engine sends every update (referral confirmed, referral completed, task closed) as `PATCH`, and PR #82's checker currently denies it. |
-| Demo users | `cp scripts/seed.env.sample scripts/seed.env`, set the Keycloak service-account client (`manage-users`, `manage-realm`), then run `./scripts/seed.sh`. It writes through the gateway and grants its own service account `ORG_SCOPE_EXEMPT`. Safe to re-run. See [Demo data](#demo-data). |
+| Demo users | Create the [seed service account](#seed-service-account), fill in `scripts/seed.env` from `scripts/seed.env.sample`, then run `./scripts/seed.sh`. See [Demo data](#demo-data). |
+
+## Seed service account
+
+`scripts/seed.sh` authenticates as a Keycloak service account in the **same realm as the app** (`ohs-player`).
+
+1. **Clients → Create client.** Type *OpenID Connect*. Client ID e.g. `seed-service`.
+2. **Capability config.** Turn *Client authentication* **on** and tick *Service accounts roles*. Leave the other flows off. Save.
+3. **Credentials tab.** Copy the *Client secret*.
+4. **Service accounts roles tab → Assign role → Filter by clients.** Add `realm-management` → `manage-users` and `manage-realm`.
+5. **`scripts/seed.env`.** Set `SEED_CLIENT_ID` and `SEED_CLIENT_SECRET`. The file is git-ignored.
+
+On each run the script gives the service account `ORG_SCOPE_EXEMPT` and the `GET_*`/`PUT_*` realm roles. The gateway needs these to accept the Organization and Location writes.
 
 ## Demo data
 
