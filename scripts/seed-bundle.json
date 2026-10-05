@@ -210,56 +210,6 @@
         "method": "PUT",
         "url": "PractitionerRole/demo-clinician"
       }
-    },
-    {
-      "fullUrl": "Patient/demo-child-1",
-      "resource": {
-        "resourceType": "Patient",
-        "id": "demo-child-1",
-        "active": true,
-        "name": [
-          {
-            "given": [
-              "Amina"
-            ],
-            "family": "Otieno"
-          }
-        ],
-        "gender": "female",
-        "birthDate": "2025-03-14",
-        "managingOrganization": {
-          "reference": "Organization/demo-facility"
-        }
-      },
-      "request": {
-        "method": "PUT",
-        "url": "Patient/demo-child-1"
-      }
-    },
-    {
-      "fullUrl": "Patient/demo-child-2",
-      "resource": {
-        "resourceType": "Patient",
-        "id": "demo-child-2",
-        "active": true,
-        "name": [
-          {
-            "given": [
-              "Brian"
-            ],
-            "family": "Mwangi"
-          }
-        ],
-        "gender": "male",
-        "birthDate": "2023-11-02",
-        "managingOrganization": {
-          "reference": "Organization/demo-facility"
-        }
-      },
-      "request": {
-        "method": "PUT",
-        "url": "Patient/demo-child-2"
-      }
     }
   ]
 }

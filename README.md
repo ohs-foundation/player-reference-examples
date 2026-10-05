@@ -60,7 +60,7 @@ The gateway runs `org_scoped_access` (ohs-player-reference-backend PR #82). It a
 | JDK | 21. Gradle rejects JDK 25, so set `JAVA_HOME` if 25 is your default. |
 | `local.properties` | `cp local.properties.sample local.properties`, then set `OAUTH_ISSUER`, `OAUTH_CLIENT_ID` and `FHIR_BASE_URL`. The redirect scheme defaults to `dev.ohs.player.reference.app`, the value already registered on the shared Keycloak client. |
 | Gateway | It must allow `PATCH`. The engine sends every update (referral confirmed, referral completed, task closed) as `PATCH`, and PR #82's checker currently denies it. |
-| Demo users and data | `cp scripts/seed.env.sample scripts/seed.env`, fill it in, then run `./scripts/seed.sh`. The script needs a confidential Keycloak client with `manage-users` and `manage-realm`, plus direct access to HAPI. It creates `chw1`, `nurse1` and `clinician1`, their Practitioners and PractitionerRoles, one facility and two children. You can run it again safely. |
+| Demo users | `cp scripts/seed.env.sample scripts/seed.env`, fill it in, then run `./scripts/seed.sh`. The script needs a confidential Keycloak client with `manage-users` and `manage-realm`. It creates `chw1`, `nurse1` and `clinician1`, together with only what they need to sign in and sync: their Practitioners and PractitionerRoles, one facility Organization and its OPD Location. It creates no patients or clinical data. It writes through the FHIR gateway, so it gives its own service account `ORG_SCOPE_EXEMPT` and the `GET_`/`PUT_` roles. You can run it again safely. |
 
 ## Run
 
@@ -73,12 +73,12 @@ The gateway runs `org_scoped_access` (ohs-player-reference-backend PR #82). It a
 
 ## Walkthrough
 
-1. Sign in as **chw1**. Open *Amina Otieno* and choose *Sick-child assessment*. Answer *Chest indrawing* = yes, then submit. The result says *Refer urgently to the health facility*. Choose **Confirm referral**, then sync.
+1. Sign in as **chw1**. Tap **+** to register *Amina Otieno*, a child born 14 months ago, then open her and choose *Sick-child assessment*. Answer *Chest indrawing* = yes, then submit. The result says *Refer urgently to the health facility*. Choose **Confirm referral**, then sync.
 2. Sign in as **nurse1**. Open *Amina* and choose *Check in to OPD*, entering SpO₂ 95. The app shows *Queued for consultation: stat*, because the referral is urgent. Sync.
 3. Sign in as **clinician1**. *Amina* is at the top of the OPD queue, marked *Community referral*. Open her entry, enter an outcome, and choose **Complete**. Sync.
 4. Sign in as **chw1** and sync. Under *Referrals*, Amina now shows *Seen at facility*.
 
-To see the home-treatment path, assess *Brian Mwangi* with fever and a positive RDT. The result lists artemether-lumefantrine and a day-3 follow-up, which then appears under *Follow-ups*.
+To see the home-treatment path, register a second child, then assess them with fever and a positive RDT. The result lists artemether-lumefantrine and a day-3 follow-up, which then appears under *Follow-ups*.
 
 ## Tests
 
