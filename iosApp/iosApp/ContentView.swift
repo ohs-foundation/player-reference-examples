@@ -1,6 +1,6 @@
 import UIKit
 import SwiftUI
-import OhsPlayerReferenceApp
+import WorkflowExamples
 
 struct ComposeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {

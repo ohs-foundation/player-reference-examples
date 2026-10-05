@@ -5,7 +5,7 @@
 #
 #   cp local.properties.sample local.properties
 #
-# `local.properties` is git-ignored. The :reference-app `generateAuthConfig`
+# `local.properties` is git-ignored. The :workflow-examples `generateAuthConfig`
 # task bakes these into `GeneratedAuthConfig` before Kotlin compilation, so
 # edits here need a rebuild — not just an app restart.
 #
@@ -41,11 +41,11 @@ OAUTH_SCOPES=openid profile email offline_access
 # valid redirect URIs on the client above.
 
 # Android and iOS: a custom-scheme deep link, {SCHEME}://{HOST}.
-# Register: dev.ohs.player.examples.app://auth
+# Register: dev.ohs.workflow.examples://auth
 # The Android intent-filter picks these up automatically: the build injects them
 # into AndroidManifest.xml as manifest placeholders, so the LoginRedirectActivity
 # deep link always matches whatever is configured here.
-OAUTH_REDIRECT_SCHEME=dev.ohs.player.examples.app
+OAUTH_REDIRECT_SCHEME=dev.ohs.workflow.examples
 OAUTH_REDIRECT_HOST=auth
 
 # Desktop (JVM): a loopback HTTP server started for the duration of the flow.

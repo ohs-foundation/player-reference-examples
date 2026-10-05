@@ -3,12 +3,12 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>Player Reference</string>
+	<string>Workflow Examples</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>dev.ohs.player.examples.app.sync.periodic</string>
+		<string>dev.ohs.workflow.examples.sync.periodic</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

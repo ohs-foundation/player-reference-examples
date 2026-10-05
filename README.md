@@ -46,7 +46,7 @@ Add all of these to the client at your provider, or only the ones for the platfo
 
 | Platform | Redirect URI | Built from |
 | --- | --- | --- |
-| Android, iOS | `dev.ohs.player.examples.app://auth` | `OAUTH_REDIRECT_SCHEME` + `OAUTH_REDIRECT_HOST` |
+| Android, iOS | `dev.ohs.workflow.examples://auth` | `OAUTH_REDIRECT_SCHEME` + `OAUTH_REDIRECT_HOST` |
 | Desktop (JVM) | `http://127.0.0.1:8765/callback` | `OAUTH_DESKTOP_REDIRECT_PORT` |
 | Web (JS/Wasm) | `http://localhost:8080/callback` | `OAUTH_WEB_REDIRECT_URL`, verbatim |
 
@@ -55,14 +55,14 @@ Add all of these to the client at your provider, or only the ones for the platfo
 Desktop is the fastest path — JDK 21 only, no Android SDK, no Xcode:
 
 ```shell
-./gradlew :reference-app:run
+./gradlew :workflow-examples:run
 ```
 
 | Target | Command |
 | --- | --- |
-| Desktop | `./gradlew :reference-app:run` |
-| Android | `./gradlew :reference-app:assembleDebug` |
-| Web (Wasm) | `./gradlew :reference-app:wasmJsBrowserDevelopmentRun` |
+| Desktop | `./gradlew :workflow-examples:run` |
+| Android | `./gradlew :workflow-examples:assembleDebug` |
+| Web (Wasm) | `./gradlew :workflow-examples:wasmJsBrowserDevelopmentRun` |
 
 For iOS, open [`iosApp/`](./iosApp) in Xcode and run.
 
@@ -77,7 +77,7 @@ Use `gradlew.bat` on Windows, and run every command from the repository root. Co
 | `OAUTH_ISSUER` | `https://keycloak.example.org/realms/ohs-player` | OIDC issuer. Endpoints are discovered from `{issuer}/.well-known/openid-configuration`; nothing else is configured. |
 | `OAUTH_CLIENT_ID` | `ohs-player-reference-app` | Public client id. PKCE only — there is no client secret. |
 | `OAUTH_SCOPES` | `openid profile email offline_access` | Space separated. `offline_access` is what yields a refresh token. |
-| `OAUTH_REDIRECT_SCHEME` | `dev.ohs.player.examples.app` | Android/iOS deep-link scheme. |
+| `OAUTH_REDIRECT_SCHEME` | `dev.ohs.workflow.examples` | Android/iOS deep-link scheme. |
 | `OAUTH_REDIRECT_HOST` | `auth` | Android/iOS deep-link host. |
 | `OAUTH_DESKTOP_REDIRECT_PORT` | `8765` | Port for the desktop loopback listener. |
 | `OAUTH_WEB_REDIRECT_URL` | `http://localhost:8080/callback` | Full URL the browser returns to on web. |
@@ -87,7 +87,7 @@ Each platform uses its idiomatic flow: Chrome Custom Tabs on Android, `ASWebAuth
 
 Two things to know:
 
-- **The Android intent-filter tracks these automatically** — the build injects `OAUTH_REDIRECT_SCHEME` / `OAUTH_REDIRECT_HOST` into [`AndroidManifest.xml`](./reference-app/src/androidMain/AndroidManifest.xml) as manifest placeholders, so the `LoginRedirectActivity` deep link cannot drift from the generated config. Changing them still means registering the new redirect URI at your provider.
+- **The Android intent-filter tracks these automatically** — the build injects `OAUTH_REDIRECT_SCHEME` / `OAUTH_REDIRECT_HOST` into [`AndroidManifest.xml`](./workflow-examples/src/androidMain/AndroidManifest.xml) as manifest placeholders, so the `LoginRedirectActivity` deep link cannot drift from the generated config. Changing them still means registering the new redirect URI at your provider.
 - Android Studio writes `sdk.dir` into the same `local.properties`. Keep it; Android and `allTests` builds need it.
 
 ### Keycloak example
@@ -116,7 +116,7 @@ Household registration, member capture and clinical data entry run through FHIR 
 
 ### 1. Author configuration
 
-A `ViewDefinition` declares the columns of a view as FHIRPath expressions over a resource — excerpt from [`Binary-PatientSummary.json`](./reference-app/src/commonMain/composeResources/files/states/Binary-PatientSummary.json):
+A `ViewDefinition` declares the columns of a view as FHIRPath expressions over a resource — excerpt from [`Binary-PatientSummary.json`](./workflow-examples/src/commonMain/composeResources/files/states/Binary-PatientSummary.json):
 
 ```json
 {
@@ -137,7 +137,7 @@ A `ViewDefinition` declares the columns of a view as FHIRPath expressions over a
 }
 ```
 
-A `ViewJoinMap` names the view-state and binds it to a pivot `ViewDefinition` (plus any joined views) — [`Binary-PatientSummaryState.json`](./reference-app/src/commonMain/composeResources/files/states/Binary-PatientSummaryState.json):
+A `ViewJoinMap` names the view-state and binds it to a pivot `ViewDefinition` (plus any joined views) — [`Binary-PatientSummaryState.json`](./workflow-examples/src/commonMain/composeResources/files/states/Binary-PatientSummaryState.json):
 
 ```json
 {
@@ -149,7 +149,7 @@ A `ViewJoinMap` names the view-state and binds it to a pivot `ViewDefinition` (p
 }
 ```
 
-A `ViewConfig` declares the configuration a renderer accepts, with defaults — excerpt from [`Binary-PatientCardConfig.json`](./reference-app/src/commonMain/composeResources/files/configs/Binary-PatientCardConfig.json):
+A `ViewConfig` declares the configuration a renderer accepts, with defaults — excerpt from [`Binary-PatientCardConfig.json`](./workflow-examples/src/commonMain/composeResources/files/configs/Binary-PatientCardConfig.json):
 
 ```json
 {
@@ -162,7 +162,7 @@ A `ViewConfig` declares the configuration a renderer accepts, with defaults — 
 }
 ```
 
-One `CodeSystem` enumerates every view-type the app renders — [`CodeSystem-ViewTypes.json`](./reference-app/src/commonMain/composeResources/files/viewtypes/CodeSystem-ViewTypes.json).
+One `CodeSystem` enumerates every view-type the app renders — [`CodeSystem-ViewTypes.json`](./workflow-examples/src/commonMain/composeResources/files/viewtypes/CodeSystem-ViewTypes.json).
 
 ### 2. Generate typed Kotlin
 
@@ -200,7 +200,7 @@ data class PatientSummaryState(
 
 ### 3. Extract view-state
 
-A `ConfigStore` holds the parsed configuration and is fed by a `ConfigSource`. [`LocalConfigSource`](./reference-app/src/commonMain/kotlin/dev/ohs/player/reference/app/data/datasource/LocalConfigSource.kt) reads the bundled Binaries; swapping it for an HTTP fetch is the only change needed to serve configuration from a backend.
+A `ConfigStore` holds the parsed configuration and is fed by a `ConfigSource`. [`LocalConfigSource`](./workflow-examples/src/commonMain/kotlin/dev/ohs/player/reference/app/data/datasource/LocalConfigSource.kt) reads the bundled Binaries; swapping it for an HTTP fetch is the only change needed to serve configuration from a backend.
 
 ```kotlin
 object Extraction {
@@ -291,7 +291,7 @@ ListScaffold<PatientSummaryState>(
 }
 ```
 
-Detail screens compose sections by resolving renderers directly, which lets one screen mix several state types — see [`PatientProfileScreen.kt`](./reference-app/src/commonMain/kotlin/dev/ohs/player/reference/app/feature/patient/profile/PatientProfileScreen.kt):
+Detail screens compose sections by resolving renderers directly, which lets one screen mix several state types — see [`PatientProfileScreen.kt`](./workflow-examples/src/commonMain/kotlin/dev/ohs/player/reference/app/feature/patient/profile/PatientProfileScreen.kt):
 
 ```kotlin
 val registry = LocalViewRegistry.current
@@ -318,18 +318,18 @@ The [library README](https://github.com/ohs-foundation/player-client#readme) is 
 
 Click **Use this template → Create a new repository** on GitHub, then work through these:
 
-- **Application id / namespace** — `applicationId` and `namespace` in [`reference-app/build.gradle.kts`](./reference-app/build.gradle.kts), the iOS bundle id in [`iosApp/Configuration/Config.xcconfig`](./iosApp/Configuration/Config.xcconfig), and the Kotlin package `dev.ohs.player.examples.app`.
-- **Application name** — Android [`strings.xml`](./reference-app/src/androidMain/res/values/strings.xml), iOS `PRODUCT_NAME`, desktop `packageName` in the `compose.desktop` block, web `<title>` in [`index.html`](./reference-app/src/webMain/resources/index.html).
-- **Icons** — `reference-app/src/androidMain/res/mipmap-*/`, `iosApp/iosApp/Assets.xcassets`, and `reference-app/desktop-icons/`.
+- **Application id / namespace** — `applicationId` and `namespace` in [`workflow-examples/build.gradle.kts`](./workflow-examples/build.gradle.kts), the iOS bundle id in [`iosApp/Configuration/Config.xcconfig`](./iosApp/Configuration/Config.xcconfig), and the Kotlin package `dev.ohs.workflow.examples`.
+- **Application name** — Android [`strings.xml`](./workflow-examples/src/androidMain/res/values/strings.xml), iOS `PRODUCT_NAME`, desktop `packageName` in the `compose.desktop` block, web `<title>` in [`index.html`](./workflow-examples/src/webMain/resources/index.html).
+- **Icons** — `workflow-examples/src/androidMain/res/mipmap-*/`, `iosApp/iosApp/Assets.xcassets`, and `workflow-examples/desktop-icons/`.
 - **Generated code package** — `packageName` in the `igCodegen` block.
 - **Project names** — `rootProject.name` and the module name in [`settings.gradle.kts`](./settings.gradle.kts). Renaming either changes the package of the generated Compose `Res` class.
-- **Screens and configuration** — the `Binary-*.json` files under `reference-app/src/commonMain/composeResources/files/` and the renderers under `reference-app/src/commonMain/kotlin/.../feature/`.
+- **Screens and configuration** — the `Binary-*.json` files under `workflow-examples/src/commonMain/composeResources/files/` and the renderers under `workflow-examples/src/commonMain/kotlin/.../feature/`.
 
 ## Testing
 
 ```shell
-./gradlew :reference-app:jvmTest    # JVM — what CI runs
-./gradlew :reference-app:allTests   # all platforms; needs the Android SDK
+./gradlew :workflow-examples:jvmTest    # JVM — what CI runs
+./gradlew :workflow-examples:allTests   # all platforms; needs the Android SDK
 ```
 
 ## CI and release
@@ -358,11 +358,11 @@ first minute rather than in a shipped artifact.
 Local installers:
 
 ```shell
-./gradlew :reference-app:packageDmg                 # macOS .dmg
-./gradlew :reference-app:packageMsi                 # Windows .msi
-./gradlew :reference-app:packageDeb                 # Linux .deb
-./gradlew :reference-app:createDistributable        # portable app image
-./gradlew :reference-app:wasmJsBrowserDistribution  # web bundle
+./gradlew :workflow-examples:packageDmg                 # macOS .dmg
+./gradlew :workflow-examples:packageMsi                 # Windows .msi
+./gradlew :workflow-examples:packageDeb                 # Linux .deb
+./gradlew :workflow-examples:createDistributable        # portable app image
+./gradlew :workflow-examples:wasmJsBrowserDistribution  # web bundle
 ```
 
 ### Android release signing
@@ -372,7 +372,7 @@ Release builds read signing inputs from environment variables first, then fall b
 ```shell
 cp keystore.properties.template keystore.properties
 # fill in keystore path, alias and passwords, then:
-./gradlew :reference-app:bundleRelease
+./gradlew :workflow-examples:bundleRelease
 ```
 
 `keystore.properties` is git-ignored and must never be committed. `ANDROID_KEYSTORE_PATH`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` and `ANDROID_STORE_PASSWORD` take precedence over the file. With neither configured, release builds are emitted unsigned.

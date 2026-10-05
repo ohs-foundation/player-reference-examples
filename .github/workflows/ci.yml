@@ -58,12 +58,12 @@ jobs:
         include:
           - id: jvm
             label: JVM/Desktop
-            tasks: ':reference-app:jvmTest'
+            tasks: ':workflow-examples:jvmTest'
             kotlinDaemonHeap: '-Xmx6g -XX:+UseG1GC'
             extraArgs: ''
           - id: android
             label: Android
-            tasks: ':reference-app:lintDebug'
+            tasks: ':workflow-examples:lintDebug'
             kotlinDaemonHeap: '-Xmx6g -XX:+UseG1GC'
             extraArgs: ''
     steps:
@@ -134,4 +134,4 @@ jobs:
       - name: Compile + link ${{ matrix.label }}
         run: |
           ./gradlew --stacktrace \
-            :reference-app:linkDebugFramework${{ matrix.target }}
+            :workflow-examples:linkDebugFramework${{ matrix.target }}
