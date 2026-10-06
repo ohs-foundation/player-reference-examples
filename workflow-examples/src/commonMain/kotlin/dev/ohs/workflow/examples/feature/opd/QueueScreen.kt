@@ -70,7 +70,7 @@ fun QueueScreen(context: UserContext) {
   val viewModel = koinViewModel<QueueViewModel> { parametersOf(context) }
   val items by viewModel.queue.collectAsStateWithLifecycle()
   val error by viewModel.error.collectAsStateWithLifecycle()
-  val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
+  val pulling by viewModel.pulling.collectAsStateWithLifecycle()
   val updatedAt by viewModel.updatedAt.collectAsStateWithLifecycle()
   LaunchedEffect(viewModel) {
     while (true) {
@@ -78,7 +78,7 @@ fun QueueScreen(context: UserContext) {
       delay(QUEUE_REFRESH_INTERVAL)
     }
   }
-  PullToRefreshBox(isRefreshing = refreshing, onRefresh = { viewModel.refresh() }) {
+  PullToRefreshBox(isRefreshing = pulling, onRefresh = { viewModel.refresh(pulled = true) }) {
     Column {
       updatedAt?.let {
         Text(

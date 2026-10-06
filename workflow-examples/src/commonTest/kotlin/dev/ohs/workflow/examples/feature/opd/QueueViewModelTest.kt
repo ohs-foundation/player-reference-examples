@@ -28,7 +28,10 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.time.Instant
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 
@@ -54,7 +57,6 @@ class QueueViewModelTest {
 
     assertEquals(1, sync.syncNowCount)
     assertEquals("07:05", viewModel.updatedAt.value)
-    assertFalse(viewModel.refreshing.value)
   }
 
   @Test
@@ -64,6 +66,22 @@ class QueueViewModelTest {
     viewModel.refresh().join()
 
     assertNull(viewModel.updatedAt.value)
-    assertFalse(viewModel.refreshing.value)
+  }
+
+  @Test
+  fun onlyAPullShowsTheSpinner() = runTest {
+    val release = CompletableDeferred<SyncJobStatus>()
+    val viewModel = viewModel(FakeSyncManager { release.await() })
+
+    val automatic = viewModel.refresh()
+    runCurrent()
+    assertFalse(viewModel.pulling.value)
+    release.complete(SyncJobStatus.Succeeded())
+    automatic.join()
+
+    val pull = viewModel.refresh(pulled = true)
+    assertTrue(viewModel.pulling.value)
+    pull.join()
+    assertFalse(viewModel.pulling.value)
   }
 }
