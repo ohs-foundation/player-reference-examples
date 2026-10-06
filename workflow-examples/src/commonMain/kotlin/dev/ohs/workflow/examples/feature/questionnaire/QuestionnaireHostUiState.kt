@@ -23,12 +23,7 @@ sealed interface QuestionnaireHostUiState {
   data class Submitting(val questionnaireJson: String, val title: String?) :
     QuestionnaireHostUiState
 
-  data class Submitted(
-    val result: QuestionnaireSubmissionResult,
-    val referralSent: Boolean = false,
-    val sending: Boolean = false,
-    val referralError: String? = null,
-  ) : QuestionnaireHostUiState
+  data class Submitted(val result: QuestionnaireSubmissionResult) : QuestionnaireHostUiState
 
   data class Error(val message: String) : QuestionnaireHostUiState
 }

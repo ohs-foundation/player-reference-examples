@@ -40,14 +40,6 @@
     <string name="role_retry">Retry</string>
 
     <!-- Sick-child assessment result -->
-    <string name="assessment_refer">Refer urgently to the health facility</string>
-    <string name="assessment_follow_up">Follow up on day 3</string>
-    <string name="assessment_home_care">No danger signs, malaria or fast breathing. Advise home care.</string>
-    <string name="assessment_confirm_referral">Confirm referral</string>
-    <string name="assessment_referral_sent">Referral sent to the facility</string>
-    <string name="assessment_done">Done</string>
-    <string name="assessment_what_to_do">What to do</string>
-    <string name="assessment_result_title">Assessment result</string>
 
     <!-- Worklists -->
     <string name="work_due">Due %1$s</string>

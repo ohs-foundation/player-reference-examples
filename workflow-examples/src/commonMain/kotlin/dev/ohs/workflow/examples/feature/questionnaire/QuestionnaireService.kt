@@ -15,10 +15,10 @@
  */
 package dev.ohs.workflow.examples.feature.questionnaire
 
+import dev.ohs.fhir.model.r4.MedicationRequest
 import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.Questionnaire as QuestionnaireR4
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
-import dev.ohs.fhir.model.r4.ServiceRequest
 import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.data.repository.FhirRepository
 import dev.ohs.workflow.examples.util.FhirJson
@@ -36,10 +36,7 @@ data class QuestionnaireLaunchContext(
 )
 
 /** Outcome of submitting a QuestionnaireResponse, ready for the UI to render. */
-data class QuestionnaireSubmissionResult(
-  val successMessage: String,
-  val assessment: AssessmentResult? = null,
-)
+data class QuestionnaireSubmissionResult(val successMessage: String)
 
 object QuestionnaireIds {
   const val PATIENT_REGISTRATION = "patient-registration"
@@ -92,17 +89,16 @@ class QuestionnaireService(
       QuestionnaireIds.ICCM_SICK_CHILD -> {
         val assessment =
           protocols.assessSickChild(patient(launchContext), response, launchContext.user())
-        QuestionnaireSubmissionResult("Assessment saved.", assessment)
+        QuestionnaireSubmissionResult(act(assessment, launchContext.user()))
       }
       QuestionnaireIds.ICCM_FOLLOW_UP -> {
         val taskId = launchContext.taskId ?: error("A follow-up visit needs its follow-up task.")
         val visit =
           protocols.recordFollowUp(patient(launchContext), response, taskId, launchContext.user())
-        if (visit.referral == null) {
-          QuestionnaireSubmissionResult("Follow-up recorded: the child is better.")
-        } else {
-          QuestionnaireSubmissionResult("Follow-up recorded.", visit)
-        }
+        QuestionnaireSubmissionResult(
+          if (visit.referral == null) "Follow-up recorded: the child is better."
+          else act(visit, launchContext.user())
+        )
       }
       QuestionnaireIds.OPD_CHECK_IN -> {
         val consult = protocols.checkIn(patient(launchContext), response, launchContext.user())
@@ -113,8 +109,22 @@ class QuestionnaireService(
       else -> error("No submission handling is defined for questionnaire '${questionnaire.id}'.")
     }
 
-  suspend fun confirmReferral(proposal: ServiceRequest, launchContext: QuestionnaireLaunchContext) {
-    protocols.confirmReferral(proposal, launchContext.user())
+  /** Sends any referral the protocol decided on and says what the CHW does next. */
+  private suspend fun act(assessment: AssessmentResult, user: UserContext): String {
+    assessment.referral?.let {
+      protocols.confirmReferral(it, user)
+      return "Referral sent to the facility."
+    }
+    val steps =
+      assessment.medications.mapNotNull {
+        (it.medication as? MedicationRequest.Medication.CodeableConcept)?.value?.text?.value?.let {
+          name ->
+          "Give $name."
+        }
+      } + listOfNotNull(assessment.followUp?.let { "Follow up on day 3." })
+    return steps.joinToString(" ").ifEmpty {
+      "No danger signs, malaria or fast breathing. Advise home care."
+    }
   }
 
   private suspend fun patient(launchContext: QuestionnaireLaunchContext): Patient =

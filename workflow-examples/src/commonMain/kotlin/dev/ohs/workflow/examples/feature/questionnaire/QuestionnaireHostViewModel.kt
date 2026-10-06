@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.ohs.fhir.model.r4.Questionnaire as QuestionnaireR4
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -58,25 +57,6 @@ class QuestionnaireHostViewModel(
           _uiState.value =
             QuestionnaireHostUiState.Error(throwable.message ?: "Failed to load questionnaire.")
         }
-    }
-  }
-
-  fun confirmReferral(): Job {
-    val submitted = _uiState.value as? QuestionnaireHostUiState.Submitted
-    val referral = submitted?.result?.assessment?.referral
-    if (submitted == null || referral == null || submitted.sending || submitted.referralSent) {
-      return Job().apply { complete() }
-    }
-    _uiState.value = submitted.copy(sending = true, referralError = null)
-    return viewModelScope.launch {
-      _uiState.value =
-        runCatching { questionnaireService.confirmReferral(referral, launchContext) }
-          .fold(
-            onSuccess = { submitted.copy(referralSent = true) },
-            onFailure = {
-              submitted.copy(referralError = it.message ?: "Failed to send the referral.")
-            },
-          )
     }
   }
 

@@ -26,7 +26,7 @@ The role is the `PractitionerRole.code` (system `http://ohs.dev/fhir/CodeSystem/
 
 | Role | Lands on | Does |
 |---|---|---|
-| `chw` | Patients · Follow-ups · Referrals | Registers children, runs the sick-child assessment, confirms referrals, closes day-3 follow-ups, and sees each referral as *Waiting at facility* or *Seen at facility* |
+| `chw` | Patients · Follow-ups · Referrals | Registers children, runs the sick-child assessment (a danger sign sends the referral on submit), closes day-3 follow-ups, and sees each referral as *Waiting at facility* or *Seen at facility* |
 | `nurse` | Patients | Registers patients and checks them in with vitals, which runs OPD triage |
 | `clinician` | OPD queue | Works the queue most urgent first, and completes consults with an outcome, which closes any referral behind them |
 
@@ -108,7 +108,7 @@ Kiambu County Department of Health          county code 022
 
 ## Walkthrough
 
-1. Sign in as **chw1**. Tap **+** to register *Amina Otieno*, a child born 14 months ago, then open her and choose *Sick-child assessment*. Answer *Chest indrawing* = yes, then submit. The result says *Refer urgently to the health facility*. Choose **Confirm referral**, then sync.
+1. Sign in as **chw1**. Tap **+** to register *Amina Otieno*, a child born 14 months ago, then open her and choose *Sick-child assessment*. Answer *Chest indrawing* = yes, then submit. The form closes with *Referral sent to the facility*. Sync.
 2. Sign in as **nurse1**. Open *Amina* and choose *Check in to OPD*, entering SpO₂ 95. The app shows *Queued for consultation: stat*, because the referral is urgent. Sync.
 3. Sign in as **clinician1**. *Amina* is at the top of the OPD queue, marked *Community referral*. Open her entry, enter an outcome, and choose **Complete**. Sync.
 4. Sign in as **chw1** and sync. Amina's row shows **Follow-up due**. Completing the consult ran the `referral-follow-up` PlanDefinition, which handed her back to the CHW with a visit due in two days.
@@ -118,7 +118,7 @@ The patient list chip shows where each child stands: **Referred** → **Seen at 
 
 A walk-in follows the same facility path without a referral. **nurse1** opens or registers the patient, then checks them in with a reason and vitals. Triage queues them `routine`, or `stat` when SpO₂ is below 90, and **clinician1** sees them in the OPD queue after a sync.
 
-To see the home-treatment path, register a second child, then assess them with fever and a positive RDT. The result lists artemether-lumefantrine and a day-3 follow-up, which then appears under *Follow-ups*.
+To see the home-treatment path, register a second child, then assess them with fever and a positive RDT. On submit the app says *Give artemether-lumefantrine. Follow up on day 3.*, and the follow-up appears under *Follow-ups*.
 
 ## Tests
 
@@ -131,7 +131,7 @@ To see the home-treatment path, register a second child, then assess them with f
 | Protocol branches | `IccmSickChildTest` (9 cases), `OpdTriageTest` (5 cases) |
 | Referral loop on a real engine | `ProtocolServiceTest` |
 | Roles and sync | `UserContextTest`, `PractitionerDetailsApiTest`, `SyncConfigResolverTest`, `SyncConfigFilesTest`, `RoleDownloadWorkManagerTest` |
-| Screens | `AssessmentResultContentTest`, `WorklistContentTest`, `QueueContentTest`, `NoRoleScreenTest` |
+| Screens | `WorklistContentTest`, `QueueContentTest`, `NoRoleScreenTest` |
 
 ## Not in this example
 

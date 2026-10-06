@@ -51,13 +51,11 @@ import dev.ohs.fhir.datacapture.QuestionnaireConfig
 import dev.ohs.fhir.datacapture.QuestionnaireItemViewFactoryMatcher
 import dev.ohs.fhir.datacapture.QuestionnaireItemViewFactoryMatchersProvider
 import dev.ohs.workflow.examples.auth.UserContext
-import dev.ohs.workflow.examples.feature.chw.AssessmentResultContent
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.assessment_result_title
 import player_reference_examples.workflow_examples.generated.resources.questionnaire_back
 import player_reference_examples.workflow_examples.generated.resources.questionnaire_close
 import player_reference_examples.workflow_examples.generated.resources.questionnaire_retry
@@ -91,13 +89,12 @@ fun QuestionnaireHostScreen(
 
   LaunchedEffect(uiState) {
     val submitted = uiState as? QuestionnaireHostUiState.Submitted ?: return@LaunchedEffect
-    if (submitted.result.assessment == null) onSubmitted(submitted.result.successMessage)
+    onSubmitted(submitted.result.successMessage)
   }
   val title =
     when (val state = uiState) {
       is QuestionnaireHostUiState.Ready -> state.title
       is QuestionnaireHostUiState.Submitting -> state.title
-      is QuestionnaireHostUiState.Submitted -> stringResource(Res.string.assessment_result_title)
       else -> null
     }
 
@@ -149,12 +146,7 @@ fun QuestionnaireHostScreen(
         modifier = Modifier.widthIn(max = 720.dp).fillMaxSize().padding(6.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
       ) {
-        Box(
-          modifier = Modifier.fillMaxWidth().weight(1f),
-          contentAlignment =
-            if (uiState is QuestionnaireHostUiState.Submitted) Alignment.TopCenter
-            else Alignment.Center,
-        ) {
+        Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
           when (val state = uiState) {
             is QuestionnaireHostUiState.Loading -> CircularProgressIndicator()
 
@@ -201,17 +193,7 @@ fun QuestionnaireHostScreen(
               )
             }
 
-            is QuestionnaireHostUiState.Submitted ->
-              state.result.assessment?.let {
-                AssessmentResultContent(
-                  assessment = it,
-                  referralSent = state.referralSent,
-                  sending = state.sending,
-                  onConfirmReferral = { viewModel.confirmReferral() },
-                  onDone = onBack,
-                  error = state.referralError,
-                )
-              }
+            is QuestionnaireHostUiState.Submitted -> Unit
           }
         }
       }

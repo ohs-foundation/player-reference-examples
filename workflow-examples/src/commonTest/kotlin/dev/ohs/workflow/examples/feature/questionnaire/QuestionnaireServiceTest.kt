@@ -23,6 +23,7 @@ import dev.ohs.fhir.model.r4.Integer
 import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
 import dev.ohs.fhir.model.r4.QuestionnaireResponse.Item.Answer.Value
+import dev.ohs.fhir.model.r4.ServiceRequest
 import dev.ohs.fhir.model.r4.String as FhirString
 import dev.ohs.fhir.workflow.FhirOperator
 import dev.ohs.workflow.examples.auth.AppRole
@@ -33,19 +34,16 @@ import dev.ohs.workflow.examples.workflow.InMemoryWorkflowRepository
 import dev.ohs.workflow.examples.workflow.ProtocolService
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 
 class QuestionnaireServiceTest {
   private val repository = InMemorySampleFhirRepository()
   private val user = UserContext(AppRole.CHW, "p1", "org-1", null)
+  private val workflow = InMemoryWorkflowRepository()
   private val service =
     QuestionnaireService(
       repository,
-      InMemoryWorkflowRepository().let { workflow ->
-        ProtocolService(workflow, { FhirOperator(workflow, resolver = BundledProtocols.load()) })
-      },
+      ProtocolService(workflow, { FhirOperator(workflow, resolver = BundledProtocols.load()) }),
     )
 
   @Test
@@ -86,7 +84,7 @@ class QuestionnaireServiceTest {
   }
 
   @Test
-  fun submittingASickChildAssessmentRunsTheProtocol() = runTest {
+  fun submittingADangerSignSendsTheReferral() = runTest {
     repository.upsert(Patient(id = "child-1"))
     val questionnaire = service.getQuestionnaire(QuestionnaireIds.ICCM_SICK_CHILD)
     fun answer(linkId: String, value: Value) =
@@ -113,9 +111,12 @@ class QuestionnaireServiceTest {
         QuestionnaireLaunchContext(patientId = "child-1", user = user),
       )
 
-    val assessment = assertNotNull(result.assessment)
-    assertNotNull(assessment.referral)
-    assertNull(assessment.followUp)
+    assertEquals("Referral sent to the facility.", result.successMessage)
+    val order =
+      workflow.resources.values.filterIsInstance<ServiceRequest>().single {
+        it.intent.value == ServiceRequest.RequestIntent.Order
+      }
+    assertEquals(ServiceRequest.RequestStatus.Active, order.status.value)
   }
 
   @Test
@@ -187,7 +188,6 @@ class QuestionnaireServiceTest {
         QuestionnaireLaunchContext(patientId = "child-1", user = user, taskId = "task-1"),
       )
 
-    assertNull(result.assessment)
     assertEquals("Follow-up recorded: the child is better.", result.successMessage)
   }
 }
