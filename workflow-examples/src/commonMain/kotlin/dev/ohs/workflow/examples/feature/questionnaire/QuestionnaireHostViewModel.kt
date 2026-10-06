@@ -71,15 +71,17 @@ class QuestionnaireHostViewModel(
 
     _uiState.value = QuestionnaireHostUiState.Submitting(current.questionnaireJson, current.title)
 
-    viewModelScope.launch {
-      runCatching { questionnaireService.submit(questionnaire, response, launchContext) }
-        .onSuccess { result ->
+    // The app scope lets the submit finish if the user leaves the form mid-way.
+    appScope.launch {
+      _uiState.value =
+        try {
+          val result = questionnaireService.submit(questionnaire, response, launchContext)
           upload()
-          _uiState.value = QuestionnaireHostUiState.Submitted(result)
-        }
-        .onFailure { throwable ->
-          _uiState.value =
-            QuestionnaireHostUiState.Error(throwable.message ?: "Failed to submit questionnaire.")
+          QuestionnaireHostUiState.Submitted(result)
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          current.copy(error = e.message ?: "Failed to submit questionnaire.")
         }
     }
   }

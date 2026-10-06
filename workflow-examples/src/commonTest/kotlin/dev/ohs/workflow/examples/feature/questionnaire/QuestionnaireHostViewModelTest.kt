@@ -15,12 +15,14 @@
  */
 package dev.ohs.workflow.examples.feature.questionnaire
 
+import androidx.lifecycle.viewModelScope
 import dev.ohs.fhir.model.r4.Boolean as FhirBoolean
 import dev.ohs.fhir.model.r4.Enumeration
 import dev.ohs.fhir.model.r4.Integer
 import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
 import dev.ohs.fhir.model.r4.QuestionnaireResponse.Item.Answer.Value
+import dev.ohs.fhir.model.r4.ServiceRequest
 import dev.ohs.fhir.model.r4.String as FhirString
 import dev.ohs.fhir.workflow.FhirOperator
 import dev.ohs.workflow.examples.auth.AppRole
@@ -33,7 +35,9 @@ import dev.ohs.workflow.examples.workflow.ProtocolService
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -41,16 +45,19 @@ import kotlinx.coroutines.test.runTest
 
 class QuestionnaireHostViewModelTest {
 
+  private val workflow = InMemoryWorkflowRepository()
+
   private suspend fun TestScope.submitAssessment(
     sync: FakeSyncManager,
     scope: CoroutineScope,
+    patientId: String = "child-1",
+    leaveRightAway: Boolean = false,
   ): QuestionnaireHostViewModel {
     val patients = InMemorySampleFhirRepository().apply { upsert(Patient(id = "child-1")) }
-    val workflow = InMemoryWorkflowRepository()
     val viewModel =
       QuestionnaireHostViewModel(
         QuestionnaireIds.ICCM_SICK_CHILD,
-        QuestionnaireLaunchContext("child-1", UserContext(AppRole.CHW, "p1", "o1", null)),
+        QuestionnaireLaunchContext(patientId, UserContext(AppRole.CHW, "p1", "o1", null)),
         QuestionnaireService(
           patients,
           ProtocolService(workflow, { FhirOperator(workflow, resolver = BundledProtocols.load()) }),
@@ -74,7 +81,8 @@ class QuestionnaireHostViewModelTest {
           ),
       )
     )
-    viewModel.uiState.first { it is QuestionnaireHostUiState.Submitted }
+    if (leaveRightAway) viewModel.viewModelScope.cancel()
+    viewModel.uiState.first { it !is QuestionnaireHostUiState.Submitting }
     advanceUntilIdle()
     return viewModel
   }
@@ -96,5 +104,24 @@ class QuestionnaireHostViewModelTest {
 
     assertEquals(1, sync.syncNowCount)
     assertIs<QuestionnaireHostUiState.Submitted>(viewModel.uiState.value)
+  }
+
+  @Test
+  fun leavingTheFormDoesNotCutTheSubmitShort() = runTest {
+    submitAssessment(FakeSyncManager(), backgroundScope, leaveRightAway = true)
+
+    assertTrue(
+      workflow.resources.values.filterIsInstance<ServiceRequest>().any {
+        it.intent.value == ServiceRequest.RequestIntent.Order
+      }
+    )
+  }
+
+  @Test
+  fun aFailedSubmitKeepsTheFormAndSaysWhy() = runTest {
+    val viewModel = submitAssessment(FakeSyncManager(), backgroundScope, patientId = "unknown")
+
+    val state = assertIs<QuestionnaireHostUiState.Ready>(viewModel.uiState.value)
+    assertEquals("This questionnaire needs a patient.", state.error)
   }
 }

@@ -18,7 +18,9 @@ package dev.ohs.workflow.examples.feature.questionnaire
 sealed interface QuestionnaireHostUiState {
   data object Loading : QuestionnaireHostUiState
 
-  data class Ready(val questionnaireJson: String, val title: String?) : QuestionnaireHostUiState
+  /** The form, with [error] set when the last submit failed and nothing was saved. */
+  data class Ready(val questionnaireJson: String, val title: String?, val error: String? = null) :
+    QuestionnaireHostUiState
 
   data class Submitting(val questionnaireJson: String, val title: String?) :
     QuestionnaireHostUiState

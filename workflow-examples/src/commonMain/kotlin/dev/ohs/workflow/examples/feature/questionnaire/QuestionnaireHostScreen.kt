@@ -33,6 +33,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -87,6 +89,9 @@ fun QuestionnaireHostScreen(
   val uiState by viewModel.uiState.collectAsState()
   val coroutineScope = rememberCoroutineScope()
 
+  val snackbarHostState = remember { SnackbarHostState() }
+  val submitError = (uiState as? QuestionnaireHostUiState.Ready)?.error
+  LaunchedEffect(submitError) { submitError?.let { snackbarHostState.showSnackbar(it) } }
   LaunchedEffect(uiState) {
     val submitted = uiState as? QuestionnaireHostUiState.Submitted ?: return@LaunchedEffect
     onSubmitted(submitted.result.successMessage)
@@ -99,6 +104,7 @@ fun QuestionnaireHostScreen(
     }
 
   Scaffold(
+    snackbarHost = { SnackbarHost(snackbarHostState) },
     topBar = {
       Surface(
         color = MaterialTheme.colorScheme.primary,
@@ -136,7 +142,7 @@ fun QuestionnaireHostScreen(
           }
         }
       }
-    }
+    },
   ) { padding ->
     Box(
       modifier = Modifier.fillMaxSize().padding(padding),
