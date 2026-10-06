@@ -137,7 +137,7 @@ class AuthViewModelTest {
     val viewModel = AuthViewModel(service, FakeSyncManager())
     val launcher = FakeLauncher("app://callback") { AuthResult.Canceled }
 
-    viewModel.bootstrapForTest(launcher)
+    viewModel.bootstrap(launcher).join()
 
     assertEquals(AuthState.Unauthenticated, viewModel.state.value)
   }
@@ -153,7 +153,7 @@ class AuthViewModelTest {
     val viewModel = AuthViewModel(service, FakeSyncManager())
     val launcher = FakeLauncher("app://callback") { AuthResult.Canceled }
 
-    viewModel.bootstrapForTest(launcher)
+    viewModel.bootstrap(launcher).join()
 
     assertIs<AuthState.Authenticated>(viewModel.state.value)
   }
@@ -174,7 +174,7 @@ class AuthViewModelTest {
         AuthResult.Canceled
       }
 
-    viewModel.bootstrapForTest(launcher)
+    viewModel.bootstrap(launcher).join()
 
     assertEquals("Invalid state — possible CSRF, please try again", viewModel.error.value)
   }
@@ -190,7 +190,7 @@ class AuthViewModelTest {
     val viewModel = AuthViewModel(service, FakeSyncManager())
     val launcher = FakeLauncher("app://callback") { AuthResult.Failure("network down") }
 
-    viewModel.loginForTest(launcher)
+    viewModel.login(launcher).join()
 
     assertEquals("network down", viewModel.error.value)
     assertEquals(false, viewModel.signingIn.value)
@@ -208,7 +208,7 @@ class AuthViewModelTest {
     val syncManager = FakeSyncManager()
     val viewModel = AuthViewModel(service, syncManager)
 
-    viewModel.logoutForTest()
+    viewModel.logout().join()
 
     assertEquals(AuthState.Unauthenticated, viewModel.state.value)
     assertNull(store.session.value)

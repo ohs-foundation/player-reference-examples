@@ -18,6 +18,7 @@ package dev.ohs.workflow.examples.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.ohs.workflow.examples.data.sync.SyncManager
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,16 +47,11 @@ internal class AuthViewModel(
   private var bootstrapped = false
 
   /** Restores any saved session and completes a web redirect login. Runs once. */
-  fun bootstrap(launcher: AuthorizationLauncher) {
-    if (bootstrapped) return
+  internal fun bootstrap(launcher: AuthorizationLauncherApi): Job {
+    if (bootstrapped) return Job().apply { complete() }
     bootstrapped = true
-    viewModelScope.launch { runBootstrap(launcher) }
+    return viewModelScope.launch { runBootstrap(launcher) }
   }
-
-  /**
-   * Test seam: same bootstrap logic, but against [AuthorizationLauncherApi] so tests can fake it.
-   */
-  internal suspend fun bootstrapForTest(launcher: AuthorizationLauncherApi) = runBootstrap(launcher)
 
   private suspend fun runBootstrap(launcher: AuthorizationLauncherApi) {
     when (val redirect = service.completeRedirectLoginIfPresent(launcher)) {
@@ -79,12 +75,8 @@ internal class AuthViewModel(
     viewModelScope.launch { if (!service.revalidateSession()) signOut() }
   }
 
-  fun login(launcher: AuthorizationLauncher) {
+  internal fun login(launcher: AuthorizationLauncherApi): Job =
     viewModelScope.launch { runLogin(launcher) }
-  }
-
-  /** Test seam: same login logic, but against [AuthorizationLauncherApi] so tests can fake it. */
-  internal suspend fun loginForTest(launcher: AuthorizationLauncherApi) = runLogin(launcher)
 
   private suspend fun runLogin(launcher: AuthorizationLauncherApi) {
     _signingIn.value = true
@@ -102,12 +94,7 @@ internal class AuthViewModel(
     _error.value = null
   }
 
-  fun logout() {
-    viewModelScope.launch { runLogout() }
-  }
-
-  /** Test seam: same logout logic, runnable directly without `viewModelScope.launch`. */
-  internal suspend fun logoutForTest() = runLogout()
+  fun logout(): Job = viewModelScope.launch { runLogout() }
 
   private suspend fun runLogout() {
     service.logout()

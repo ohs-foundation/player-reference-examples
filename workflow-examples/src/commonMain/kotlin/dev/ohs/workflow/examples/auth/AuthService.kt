@@ -125,12 +125,6 @@ internal class AuthService(
     }
   }
 
-  /** Refresh hook for [FhirBearerAuthenticator]'s eventual retry path, and internal use. */
-  internal suspend fun refreshTokensForRequest(): Session? {
-    val session = repository.session.value ?: repository.load() ?: return null
-    return tryRefresh(session)
-  }
-
   private suspend fun tryRefresh(session: Session): Session? {
     val refreshToken =
       session.refreshToken

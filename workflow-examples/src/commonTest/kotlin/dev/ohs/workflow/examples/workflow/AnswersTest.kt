@@ -29,7 +29,6 @@ import dev.ohs.fhir.model.r4.terminologies.AdministrativeGender
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 class AnswersTest {
   private val response =
@@ -51,10 +50,8 @@ class AnswersTest {
 
   @Test
   fun readsTypedAnswersIncludingNestedItems() {
-    assertEquals(true, response.boolean("fever"))
     assertEquals(2, response.integer("fever-days"))
     assertEquals("female", response.code("gender"))
-    assertNull(response.boolean("cough"))
   }
 
   @Test

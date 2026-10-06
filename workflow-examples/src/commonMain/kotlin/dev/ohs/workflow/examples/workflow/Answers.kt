@@ -34,9 +34,6 @@ private fun List<QuestionnaireResponse.Item>.flatten(): List<QuestionnaireRespon
 private fun QuestionnaireResponse.answer(linkId: String): Value? =
   item.flatten().firstOrNull { it.linkId.value == linkId }?.answer?.firstOrNull()?.value
 
-fun QuestionnaireResponse.boolean(linkId: String): Boolean? =
-  (answer(linkId) as? Value.Boolean)?.value?.value
-
 fun QuestionnaireResponse.integer(linkId: String): Int? =
   (answer(linkId) as? Value.Integer)?.value?.value
 
