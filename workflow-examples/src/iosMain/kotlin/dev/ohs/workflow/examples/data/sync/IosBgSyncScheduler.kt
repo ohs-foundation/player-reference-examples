@@ -33,6 +33,7 @@ import kotlinx.cinterop.value
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -46,8 +47,8 @@ import platform.Foundation.NSError
  * Registers and schedules this app's sync as a `BGProcessingTask`. Mirrors kotlin-fhir-engine's
  * engine-app `IosBgSyncScheduler`. [register] must be called during app launch, before
  * `applicationDidFinishLaunching` returns per Apple's `BGTaskScheduler` docs — see
- * [dev.ohs.workflow.examples.MainViewController], which constructs [IosPeriodicSyncUseCase] eagerly
- * (not lazily through Koin) for exactly this reason. Requires
+ * [dev.ohs.workflow.examples.MainViewController], which constructs [IosSyncManager] eagerly (not
+ * lazily through Koin) for exactly this reason. Requires
  * `BGTaskSchedulerPermittedIdentifiers`/`UIBackgroundModes` in `iosApp/iosApp/Info.plist`.
  */
 internal class IosBgSyncScheduler(
@@ -91,33 +92,36 @@ internal class IosBgSyncScheduler(
           if (!completed) {
             completed = true
             task.setTaskCompletedWithSuccess(success)
-            if (success) schedule()
+            schedule()
           }
         }
       }
     }
 
+    lateinit var sync: Job
     task.expirationHandler = {
       Logger.w { "IosBgSyncScheduler: task expired for $taskIdentifier" }
+      sync.cancel()
       completeOnce(false)
     }
 
-    scope.launch {
-      try {
-        // A background launch never runs the UI bootstrap, so hydrate + refresh the session first
-        // to hand the sync's requests a valid Bearer token.
-        ensureFreshSessionForSync()
-        val status = taskFactory().runSync(taskName = taskIdentifier, onProgress = {})
-        Logger.d { "IosBgSyncScheduler: sync completed with $status" }
-        if (status is SyncJobStatus.Succeeded) DataChangeSignal.notifyChanged()
-        completeOnce(status is SyncJobStatus.Succeeded)
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        Logger.e(e) { "IosBgSyncScheduler: sync failed" }
-        completeOnce(false)
+    sync =
+      scope.launch {
+        try {
+          // A background launch never runs the UI bootstrap, so hydrate + refresh the session first
+          // to hand the sync's requests a valid Bearer token.
+          ensureFreshSessionForSync()
+          val status = taskFactory().runSync(taskName = taskIdentifier, onProgress = {})
+          Logger.d { "IosBgSyncScheduler: sync completed with $status" }
+          if (status is SyncJobStatus.Succeeded) DataChangeSignal.notifyChanged()
+          completeOnce(status is SyncJobStatus.Succeeded)
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          Logger.e(e) { "IosBgSyncScheduler: sync failed" }
+          completeOnce(false)
+        }
       }
-    }
   }
 
   @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)

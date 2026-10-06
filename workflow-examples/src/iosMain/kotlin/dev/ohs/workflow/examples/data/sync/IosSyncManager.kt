@@ -93,9 +93,12 @@ class IosSyncManager : SyncManager {
   }
 
   override suspend fun syncNow(): SyncJobStatus {
-    val statusFlow = MutableSharedFlow<SyncJobStatus>(replay = 1)
-    currentStatusFlow = statusFlow
-    launchSyncJob()
+    val statusFlow =
+      currentStatusFlow?.takeIf { currentJob?.isActive == true }
+        ?: MutableSharedFlow<SyncJobStatus>(replay = 1).also {
+          currentStatusFlow = it
+          launchSyncJob()
+        }
     return statusFlow.first { it is SyncJobStatus.Succeeded || it is SyncJobStatus.Failed }
   }
 
