@@ -34,6 +34,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
@@ -122,40 +123,41 @@ internal object Sync {
     retryConfiguration: RetryConfiguration?,
     syncTimeout: Duration? = null,
   ): Flow<CurrentSyncJobStatus> {
-    mutex
-      .withLock { activeSyncs[uniqueWorkName] }
-      ?.takeIf { it.job.isActive }
-      ?.let {
-        return it.progressChannel
-      }
-
-    val statusFlow = MutableSharedFlow<CurrentSyncJobStatus>(replay = 1)
-    storeUniqueWorkNameInDataStore(fhirDataStore, uniqueWorkName)
-
-    statusFlow.emit(CurrentSyncJobStatus.Enqueued)
-
-    val job =
-      scope.launch {
-        val lastResult =
-          runAttemptsWithRetry(taskFactory, uniqueWorkName, retryConfiguration, syncTimeout) {
-            statusFlow.emit(it)
+    val (handle, started) =
+      mutex.withLock {
+        activeSyncs[uniqueWorkName]
+          ?.takeIf { !it.job.isCompleted }
+          ?.let {
+            return@withLock it to false
           }
-        when (lastResult) {
-          is SyncJobStatus.Succeeded ->
-            statusFlow.emit(CurrentSyncJobStatus.Succeeded(lastResult.timestamp))
-          else ->
-            statusFlow.emit(
-              CurrentSyncJobStatus.Failed(
-                (lastResult as? SyncJobStatus.Failed)?.timestamp ?: Clock.System.now()
-              )
-            )
-        }
-        removeUniqueWorkNameInDataStore(fhirDataStore, uniqueWorkName)
-        mutex.withLock { activeSyncs.remove(uniqueWorkName) }
+        val statusFlow = MutableSharedFlow<CurrentSyncJobStatus>(replay = 1)
+        val job =
+          scope.launch(start = CoroutineStart.LAZY) {
+            val lastResult =
+              runAttemptsWithRetry(taskFactory, uniqueWorkName, retryConfiguration, syncTimeout) {
+                statusFlow.emit(it)
+              }
+            when (lastResult) {
+              is SyncJobStatus.Succeeded ->
+                statusFlow.emit(CurrentSyncJobStatus.Succeeded(lastResult.timestamp))
+              else ->
+                statusFlow.emit(
+                  CurrentSyncJobStatus.Failed(
+                    (lastResult as? SyncJobStatus.Failed)?.timestamp ?: Clock.System.now()
+                  )
+                )
+            }
+            removeUniqueWorkNameInDataStore(fhirDataStore, uniqueWorkName)
+            mutex.withLock { activeSyncs.remove(uniqueWorkName) }
+          }
+        SyncHandle(job, statusFlow).also { activeSyncs[uniqueWorkName] = it } to true
       }
+    if (!started) return handle.progressChannel
 
-    mutex.withLock { activeSyncs[uniqueWorkName] = SyncHandle(job, statusFlow) }
-    return statusFlow
+    storeUniqueWorkNameInDataStore(fhirDataStore, uniqueWorkName)
+    handle.progressChannel.emit(CurrentSyncJobStatus.Enqueued)
+    handle.job.start()
+    return handle.progressChannel
   }
 
   suspend fun runPeriodicSync(

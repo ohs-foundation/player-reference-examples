@@ -140,4 +140,25 @@ class ConsultQueueTest {
       queue.first(),
     )
   }
+
+  @Test
+  fun positionsRunOnWithoutGaps() {
+    val queue =
+      consultQueue(
+        tasks =
+          listOf(
+            consult("t1", "a", Task.RequestPriority.Stat, "2026-10-05T08:00:00Z"),
+            consult("t2", "a", Task.RequestPriority.Urgent, "2026-10-05T08:10:00Z")
+              .copy(`for` = null),
+            consult("t3", "a", Task.RequestPriority.Routine, "2026-10-05T08:20:00Z"),
+          ),
+        patients = listOf(Patient(id = "a")),
+        encounters = emptyList(),
+        observations = emptyList(),
+        organizationId = "o1",
+        timeZone = TimeZone.UTC,
+      )
+
+    assertEquals(listOf(1, 2), queue.map { it.position })
+  }
 }

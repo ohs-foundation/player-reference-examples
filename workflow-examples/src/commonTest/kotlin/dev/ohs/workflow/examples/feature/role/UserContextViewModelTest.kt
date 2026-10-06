@@ -124,4 +124,22 @@ class UserContextViewModelTest {
     viewModel.resolve().join()
     assertEquals(UserContextState.Ready(context), viewModel.state.value)
   }
+
+  @Test
+  fun aTokenRefreshedDuringTheFetchIsKept() = runTest {
+    val store = FakeSessionStore(session)
+    val viewModel =
+      UserContextViewModel(
+        {
+          store.save(session.copy(accessToken = "token-2"))
+          context
+        },
+        store,
+        resetSync = {},
+      )
+
+    viewModel.resolve().join()
+
+    assertEquals(session.copy(accessToken = "token-2", context = context), store.session.value)
+  }
 }

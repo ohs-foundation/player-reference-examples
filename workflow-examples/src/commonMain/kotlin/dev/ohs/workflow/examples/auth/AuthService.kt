@@ -42,10 +42,13 @@ internal class AuthService(
     repository.savePending(PendingAuth(codeVerifier = pkce.verifier, state = state))
 
     val authUrl =
-      runCatching { buildAuthorizationUrl(launcher.redirectUri, pkce, state) }
-        .getOrElse {
-          return LoginOutcome.Error(it.message ?: "Could not reach the sign-in provider")
-        }
+      try {
+        buildAuthorizationUrl(launcher.redirectUri, pkce, state)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        return LoginOutcome.Error(e.message ?: "Could not reach the sign-in provider")
+      }
     return when (val result = launcher.authorize(authUrl)) {
       is AuthResult.Redirecting -> LoginOutcome.Redirecting
       is AuthResult.Success -> completeLogin(result.callbackUrl, launcher.redirectUri)
@@ -77,13 +80,16 @@ internal class AuthService(
       return LoginOutcome.Error("Invalid state — possible CSRF, please try again")
     }
 
-    return runCatching {
-        val tokens = api.exchangeCode(code, pending.codeVerifier, redirectUri)
-        val session = tokens.toSession(api.fetchUserInfo(tokens.accessToken))
-        repository.save(session)
-        LoginOutcome.Authenticated(session)
-      }
-      .getOrElse { LoginOutcome.Error(it.message ?: "Sign-in failed") }
+    return try {
+      val tokens = api.exchangeCode(code, pending.codeVerifier, redirectUri)
+      val session = tokens.toSession(api.fetchUserInfo(tokens.accessToken))
+      repository.save(session)
+      LoginOutcome.Authenticated(session)
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      LoginOutcome.Error(e.message ?: "Sign-in failed")
+    }
   }
 
   /**

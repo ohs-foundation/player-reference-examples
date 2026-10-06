@@ -22,17 +22,10 @@ import dev.ohs.fhir.engine.search.Search
 import dev.ohs.fhir.model.r4.Resource
 import dev.ohs.fhir.model.r4.terminologies.ResourceType
 import dev.ohs.workflow.examples.data.DataChangeSignal
-import dev.ohs.workflow.examples.generateId
-import dev.ohs.workflow.examples.util.FhirJson
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonObject
 
 /** [FhirRepository] backed by a real on-disk database via [FhirEngine]. */
 class FhirEngineRepository(private val fhirEngine: FhirEngine) : FhirRepository {
-
-  private val json = FhirJson.instance
 
   override val revision: StateFlow<Long> = DataChangeSignal.revision
 
@@ -53,17 +46,14 @@ class FhirEngineRepository(private val fhirEngine: FhirEngine) : FhirRepository 
   }
 
   private suspend fun upsertResource(resource: Resource) {
-    val withId = if (resource.id == null) resource.withId(generateId()) else resource
-    val type = ResourceType.valueOf(withId.resourceType)
-    val exists = runCatching { fhirEngine.get(type, withId.id!!) }.isSuccess
-    if (exists) fhirEngine.update(withId) else fhirEngine.create(withId)
-  }
-
-  private fun Resource.withId(newId: String): Resource {
-    val obj = json.encodeToJsonElement(Resource.serializer(), this).jsonObject
-    return json.decodeFromJsonElement(
-      Resource.serializer(),
-      JsonObject(obj + ("id" to JsonPrimitive(newId))),
-    )
+    val type = ResourceType.valueOf(resource.resourceType)
+    val exists =
+      try {
+        fhirEngine.get(type, requireNotNull(resource.id) { "upsert needs a resource id" })
+        true
+      } catch (_: ResourceNotFoundException) {
+        false
+      }
+    if (exists) fhirEngine.update(resource) else fhirEngine.create(resource)
   }
 }

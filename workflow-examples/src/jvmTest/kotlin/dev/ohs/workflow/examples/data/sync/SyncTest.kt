@@ -36,7 +36,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 
 /**
@@ -104,6 +108,34 @@ class SyncTest {
       Sync.cancelOneTimeSync<TestFhirSyncTask>()
       Sync.beforeAttempt = original
     }
+  }
+
+  @Test
+  fun simultaneousRequestsShareOneSync() = runBlocking {
+    val gate = CompletableDeferred<Unit>()
+    var tasks = 0
+    val original = Sync.beforeAttempt
+    Sync.beforeAttempt = {}
+    try {
+      List(20) {
+          async(Dispatchers.Default) {
+            Sync.oneTimeSync(
+              taskFactory = {
+                tasks++
+                TestFhirSyncTask(gate)
+              }
+            )
+          }
+        }
+        .awaitAll()
+        .first()
+        .first { it is CurrentSyncJobStatus.Running }
+    } finally {
+      Sync.cancelOneTimeSync<TestFhirSyncTask>()
+      Sync.beforeAttempt = original
+    }
+
+    assertEquals(1, tasks)
   }
 
   @Test

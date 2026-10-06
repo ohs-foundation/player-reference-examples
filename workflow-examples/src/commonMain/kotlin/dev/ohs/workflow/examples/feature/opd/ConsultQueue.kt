@@ -63,8 +63,8 @@ fun consultQueue(
         { it.authoredOn?.value?.toString() },
       )
     )
-    .mapIndexedNotNull { index, task ->
-      val patientId = task.`for`.idOf("Patient") ?: return@mapIndexedNotNull null
+    .mapNotNull { task ->
+      val patientId = task.`for`.idOf("Patient") ?: return@mapNotNull null
       val encounterId = task.encounter.idOf("Encounter")
       QueueItem(
         taskId = task.id!!,
@@ -78,10 +78,10 @@ fun consultQueue(
             .filter { encounterId != null && it.encounter.idOf("Encounter") == encounterId }
             .mapNotNull { it.summary() }
             .joinToString(", "),
-        position = index + 1,
         arrivedAt = task.authoredOn?.value.clockTime(timeZone),
       )
     }
+    .mapIndexed { index, item -> item.copy(position = index + 1) }
 }
 
 private fun Observation.summary(): String? {

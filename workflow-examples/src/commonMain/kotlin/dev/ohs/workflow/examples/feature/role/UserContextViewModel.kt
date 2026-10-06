@@ -62,7 +62,7 @@ internal class UserContextViewModel(
           fetchContext(session.accessToken)
             ?.also {
               resetSync()
-              store.save(session.copy(context = it))
+              store.session.value?.let { current -> store.save(current.copy(context = it)) }
             }
             ?.let(UserContextState::Ready) ?: UserContextState.NoRole
         } catch (e: CancellationException) {

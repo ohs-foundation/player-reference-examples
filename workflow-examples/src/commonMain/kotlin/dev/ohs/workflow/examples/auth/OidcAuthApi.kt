@@ -138,22 +138,20 @@ internal class OidcAuthApi(
 
   /** Best-effort server-side logout; failures are ignored (local clear still wins). */
   suspend fun logout(refreshToken: String) {
-    runCatching {
+    try {
       val endSession = endpoints().endSessionEndpoint
-      if (endSession.isBlank()) return@runCatching
-      val response =
-        httpClient.submitForm(
-          url = endSession,
-          formParameters =
-            parameters {
-              append("client_id", config.clientId)
-              append("refresh_token", refreshToken)
-            },
-        )
-      if (response.status != HttpStatusCode.NoContent && !response.status.isSuccess()) {
-        response.bodyAsText()
-      }
-    }
+      if (endSession.isBlank()) return
+      httpClient.submitForm(
+        url = endSession,
+        formParameters =
+          parameters {
+            append("client_id", config.clientId)
+            append("refresh_token", refreshToken)
+          },
+      )
+    } catch (e: CancellationException) {
+      throw e
+    } catch (_: Exception) {}
   }
 
   companion object {

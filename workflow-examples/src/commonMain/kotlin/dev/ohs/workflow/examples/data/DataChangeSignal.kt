@@ -18,6 +18,7 @@ package dev.ohs.workflow.examples.data
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 /**
  * Process-wide "the local FHIR data changed" tick that screens observe to re-query. Both app writes
@@ -31,6 +32,6 @@ object DataChangeSignal {
   val revision: StateFlow<Long> = _revision.asStateFlow()
 
   fun notifyChanged() {
-    _revision.value += 1
+    _revision.update { it + 1 }
   }
 }
