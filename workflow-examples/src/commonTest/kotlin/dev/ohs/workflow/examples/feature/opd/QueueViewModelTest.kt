@@ -16,6 +16,10 @@
 package dev.ohs.workflow.examples.feature.opd
 
 import dev.ohs.fhir.engine.sync.SyncJobStatus
+import dev.ohs.fhir.model.r4.Enumeration
+import dev.ohs.fhir.model.r4.Reference
+import dev.ohs.fhir.model.r4.String as FhirString
+import dev.ohs.fhir.model.r4.Task
 import dev.ohs.fhir.workflow.FhirOperator
 import dev.ohs.workflow.examples.auth.AppRole
 import dev.ohs.workflow.examples.auth.UserContext
@@ -31,17 +35,19 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Instant
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.TimeZone
 
 class QueueViewModelTest {
   private val workflow = InMemoryWorkflowRepository()
+  private val repository = InMemorySampleFhirRepository()
 
   private fun viewModel(sync: FakeSyncManager) =
     QueueViewModel(
       UserContext(AppRole.CLINICIAN, "p1", "o1", "l1"),
-      InMemorySampleFhirRepository(),
+      repository,
       ProtocolService(workflow, { FhirOperator(workflow, resolver = BundledProtocols.load()) }),
       sync,
       now = { Instant.parse("2026-10-06T07:05:00Z") },
@@ -62,6 +68,35 @@ class QueueViewModelTest {
   @Test
   fun failedRefreshKeepsTheLastTime() = runTest {
     val viewModel = viewModel(FakeSyncManager { SyncJobStatus.Failed() })
+
+    viewModel.refresh().join()
+
+    assertNull(viewModel.updatedAt.value)
+  }
+
+  @Test
+  fun completingAConsultUploadsRightAway() = runTest {
+    val sync = FakeSyncManager()
+    val viewModel = viewModel(sync)
+    repository.upsert(
+      Task(
+        id = "t1",
+        status = Enumeration(value = Task.TaskStatus.Requested),
+        intent = Enumeration(value = Task.TaskIntent.Order),
+        `for` = Reference(reference = FhirString(value = "Patient/a")),
+      )
+    )
+
+    viewModel.complete("t1", "Treated").join()
+    advanceUntilIdle()
+
+    assertNull(viewModel.error.value)
+    assertEquals(1, sync.syncNowCount)
+  }
+
+  @Test
+  fun anOfflineRefreshIsIgnored() = runTest {
+    val viewModel = viewModel(FakeSyncManager { error("Unable to resolve host") })
 
     viewModel.refresh().join()
 

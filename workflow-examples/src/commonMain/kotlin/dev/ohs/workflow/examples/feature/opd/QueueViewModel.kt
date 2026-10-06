@@ -72,7 +72,10 @@ class QueueViewModel(
   /** Local time of the last sync that brought the queue up to date, e.g. "09:14". */
   val updatedAt: StateFlow<String?> = _updatedAt.asStateFlow()
 
-  /** Pulls check-ins from other devices; overlapping calls share the one in flight. */
+  /**
+   * Pushes local changes and pulls check-ins from other devices; overlapping calls share the one in
+   * flight, and an offline failure keeps the last [updatedAt].
+   */
   fun refresh(pulled: Boolean = false): Job {
     if (pulled) _pulling.value = true
     if (refreshing) return Job().apply { complete() }
@@ -84,7 +87,9 @@ class QueueViewModel(
           _updatedAt.value =
             "${local.hour.toString().padStart(2, '0')}:${local.minute.toString().padStart(2, '0')}"
         }
-      } finally {
+      } catch (e: CancellationException) {
+        throw e
+      } catch (_: Exception) {} finally {
         refreshing = false
         _pulling.value = false
       }
@@ -100,6 +105,7 @@ class QueueViewModel(
       _error.value =
         try {
           protocols.completeConsult(task, outcome)
+          refresh()
           null
         } catch (e: CancellationException) {
           throw e
