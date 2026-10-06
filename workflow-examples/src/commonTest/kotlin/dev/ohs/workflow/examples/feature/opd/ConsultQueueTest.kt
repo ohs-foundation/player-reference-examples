@@ -32,6 +32,7 @@ import dev.ohs.fhir.model.r4.Uri
 import dev.ohs.workflow.examples.util.FhirJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.datetime.TimeZone
 
 class ConsultQueueTest {
   private fun ref(value: String) = Reference(reference = FhirString(value = value))
@@ -118,9 +119,12 @@ class ConsultQueueTest {
         encounters = listOf(encounter("e-t2", "Fast breathing")),
         observations = listOf(spo2),
         organizationId = "o1",
+        timeZone = TimeZone.UTC,
       )
 
     assertEquals(listOf("t2", "t3", "t4", "t1"), queue.map { it.taskId })
+    assertEquals(listOf(1, 2, 3, 4), queue.map { it.position })
+    assertEquals(listOf("09:00", "08:30", "07:00", "08:00"), queue.map { it.arrivedAt })
     assertEquals(
       QueueItem(
         "t2",
@@ -130,6 +134,8 @@ class ConsultQueueTest {
         "stat",
         referred = true,
         vitals = "Oxygen saturation 88 %",
+        position = 1,
+        arrivedAt = "09:00",
       ),
       queue.first(),
     )

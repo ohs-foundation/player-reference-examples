@@ -18,6 +18,9 @@ package dev.ohs.workflow.examples.util
 import dev.ohs.fhir.model.r4.FhirDateTime
 import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.Reference
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 
 /** "Given Family" for list rows, or blank when the patient is unknown. */
 fun Patient?.displayName(): String =
@@ -35,4 +38,11 @@ fun FhirDateTime?.calendarDate(): String? =
     is FhirDateTime.Date -> "$date"
     is FhirDateTime.DateTime -> "${dateTime.date}"
     else -> null
+  }
+
+/** The local wall-clock time of a FHIR date-time, e.g. "09:20", or null without a time part. */
+fun FhirDateTime?.clockTime(timeZone: TimeZone): String? =
+  (this as? FhirDateTime.DateTime)?.let {
+    val local = it.dateTime.toInstant(it.utcOffset).toLocalDateTime(timeZone)
+    "${local.hour.toString().padStart(2, '0')}:${local.minute.toString().padStart(2, '0')}"
   }

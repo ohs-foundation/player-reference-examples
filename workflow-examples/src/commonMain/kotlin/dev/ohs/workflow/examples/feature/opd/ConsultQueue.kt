@@ -19,8 +19,10 @@ import dev.ohs.fhir.model.r4.Encounter
 import dev.ohs.fhir.model.r4.Observation
 import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.Task
+import dev.ohs.workflow.examples.util.clockTime
 import dev.ohs.workflow.examples.util.displayName
 import dev.ohs.workflow.examples.util.idOf
+import kotlinx.datetime.TimeZone
 
 const val CONSULT_TASK = "opd-consult"
 private val PRIORITY_ORDER = listOf("stat", "asap", "urgent", "routine")
@@ -34,6 +36,8 @@ data class QueueItem(
   val priority: String,
   val referred: Boolean,
   val vitals: String,
+  val position: Int = 0,
+  val arrivedAt: String? = null,
 )
 
 /** The facility's open consults, most urgent first, then in order of arrival. */
@@ -43,6 +47,7 @@ fun consultQueue(
   encounters: List<Encounter>,
   observations: List<Observation>,
   organizationId: String,
+  timeZone: TimeZone = TimeZone.currentSystemDefault(),
 ): List<QueueItem> {
   val patientsById = patients.associateBy { it.id }
   val encountersById = encounters.associateBy { it.id }
@@ -58,8 +63,8 @@ fun consultQueue(
         { it.authoredOn?.value?.toString() },
       )
     )
-    .mapNotNull { task ->
-      val patientId = task.`for`.idOf("Patient") ?: return@mapNotNull null
+    .mapIndexedNotNull { index, task ->
+      val patientId = task.`for`.idOf("Patient") ?: return@mapIndexedNotNull null
       val encounterId = task.encounter.idOf("Encounter")
       QueueItem(
         taskId = task.id!!,
@@ -73,6 +78,8 @@ fun consultQueue(
             .filter { encounterId != null && it.encounter.idOf("Encounter") == encounterId }
             .mapNotNull { it.summary() }
             .joinToString(", "),
+        position = index + 1,
+        arrivedAt = task.authoredOn?.value.clockTime(timeZone),
       )
     }
 }

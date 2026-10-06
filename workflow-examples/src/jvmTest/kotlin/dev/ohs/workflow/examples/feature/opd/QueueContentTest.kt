@@ -44,6 +44,8 @@ class QueueContentTest {
                 "stat",
                 true,
                 "Oxygen saturation 88 %",
+                position = 1,
+                arrivedAt = "09:20",
               )
             ),
           onComplete = { taskId, outcome -> completed = taskId to outcome },
@@ -52,6 +54,7 @@ class QueueContentTest {
     }
 
     onNodeWithText("Community referral").assertExists()
+    onNodeWithText("#1 · arrived 09:20 · Fast breathing").assertExists()
     onNodeWithText("Amina Otieno").performClick()
     onNodeWithText("Oxygen saturation 88 %").assertExists()
     onNode(hasSetTextAction()).performTextInput("Admitted for oxygen")

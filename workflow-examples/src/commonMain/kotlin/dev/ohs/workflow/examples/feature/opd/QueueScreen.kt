@@ -52,6 +52,7 @@ import player_reference_examples.workflow_examples.generated.resources.queue_can
 import player_reference_examples.workflow_examples.generated.resources.queue_complete
 import player_reference_examples.workflow_examples.generated.resources.queue_empty
 import player_reference_examples.workflow_examples.generated.resources.queue_outcome
+import player_reference_examples.workflow_examples.generated.resources.queue_position
 import player_reference_examples.workflow_examples.generated.resources.queue_priority_routine
 import player_reference_examples.workflow_examples.generated.resources.queue_priority_stat
 import player_reference_examples.workflow_examples.generated.resources.queue_priority_urgent
@@ -92,7 +93,15 @@ fun QueueContent(items: List<QueueItem>?, onComplete: (taskId: String, outcome: 
           ListItem(
             modifier = Modifier.clickable { open = item },
             headlineContent = { Text(item.patientName) },
-            supportingContent = { Text(item.reason) },
+            supportingContent = {
+              Text(
+                listOfNotNull(
+                    stringResource(Res.string.queue_position, item.position, item.arrivedAt ?: "–"),
+                    item.reason.takeIf { it.isNotBlank() },
+                  )
+                  .joinToString(" · ")
+              )
+            },
             trailingContent = {
               Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 if (item.referred) {
