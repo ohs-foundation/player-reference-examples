@@ -44,6 +44,9 @@ import dev.ohs.workflow.examples.feature.sync.InitialSyncViewModel
 import dev.ohs.workflow.examples.workflow.BundledProtocols
 import dev.ohs.workflow.examples.workflow.EngineWorkflowRepository
 import dev.ohs.workflow.examples.workflow.ProtocolService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
@@ -60,7 +63,10 @@ internal val fhirEngineRepositoryModule = module {
  * [fhirEngineRepositoryModule] so tests can swap in a fake [FhirRepository] without redeclaring
  * these bindings.
  */
-internal val repositoryModule = module { single { PatientRepository(get()) } }
+internal val repositoryModule = module {
+  single { PatientRepository(get()) }
+  single { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
+}
 
 internal val serviceModule = module {
   factory { QuestionnaireService(get(), get()) }
@@ -99,7 +105,7 @@ internal val viewModelModule = module {
   viewModel { (context: UserContext) -> ChwWorklistViewModel(context, get()) }
   viewModel { (context: UserContext) -> QueueViewModel(context, get(), get(), get()) }
   viewModel { (questionnaireId: String, launchContext: QuestionnaireLaunchContext) ->
-    QuestionnaireHostViewModel(questionnaireId, launchContext, get())
+    QuestionnaireHostViewModel(questionnaireId, launchContext, get(), get(), get())
   }
   viewModel { HomeViewModel(get(), get()) }
   viewModel { AuthViewModel(get(), get()) }

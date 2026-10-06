@@ -19,6 +19,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.ohs.fhir.model.r4.Questionnaire as QuestionnaireR4
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
+import dev.ohs.workflow.examples.data.sync.SyncManager
+import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +35,8 @@ class QuestionnaireHostViewModel(
   private val questionnaireId: String,
   private val launchContext: QuestionnaireLaunchContext,
   private val questionnaireService: QuestionnaireService,
+  private val syncManager: SyncManager,
+  private val appScope: CoroutineScope,
 ) : ViewModel() {
 
   private val _uiState =
@@ -68,11 +73,29 @@ class QuestionnaireHostViewModel(
 
     viewModelScope.launch {
       runCatching { questionnaireService.submit(questionnaire, response, launchContext) }
-        .onSuccess { result -> _uiState.value = QuestionnaireHostUiState.Submitted(result) }
+        .onSuccess { result ->
+          upload()
+          _uiState.value = QuestionnaireHostUiState.Submitted(result)
+        }
         .onFailure { throwable ->
           _uiState.value =
             QuestionnaireHostUiState.Error(throwable.message ?: "Failed to submit questionnaire.")
         }
+    }
+  }
+
+  /**
+   * Sends the new records up straight away instead of waiting for the periodic sync. Runs in the
+   * app scope because the form closes on submit; offline, it fails quietly and the next sync
+   * uploads them.
+   */
+  private fun upload() {
+    appScope.launch {
+      try {
+        syncManager.syncNow()
+      } catch (e: CancellationException) {
+        throw e
+      } catch (_: Exception) {}
     }
   }
 }
