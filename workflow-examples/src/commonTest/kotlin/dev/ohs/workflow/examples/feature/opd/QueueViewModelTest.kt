@@ -1,0 +1,69 @@
+/*
+ * Copyright 2026 Open Health Stack Foundation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package dev.ohs.workflow.examples.feature.opd
+
+import dev.ohs.fhir.engine.sync.SyncJobStatus
+import dev.ohs.fhir.workflow.FhirOperator
+import dev.ohs.workflow.examples.auth.AppRole
+import dev.ohs.workflow.examples.auth.UserContext
+import dev.ohs.workflow.examples.data.repository.InMemorySampleFhirRepository
+import dev.ohs.workflow.examples.data.sync.FakeSyncManager
+import dev.ohs.workflow.examples.workflow.BundledProtocols
+import dev.ohs.workflow.examples.workflow.InMemoryWorkflowRepository
+import dev.ohs.workflow.examples.workflow.ProtocolService
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.time.Instant
+import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.TimeZone
+
+class QueueViewModelTest {
+  private val workflow = InMemoryWorkflowRepository()
+
+  private fun viewModel(sync: FakeSyncManager) =
+    QueueViewModel(
+      UserContext(AppRole.CLINICIAN, "p1", "o1", "l1"),
+      InMemorySampleFhirRepository(),
+      ProtocolService(workflow, { FhirOperator(workflow, resolver = BundledProtocols.load()) }),
+      sync,
+      now = { Instant.parse("2026-10-06T07:05:00Z") },
+      timeZone = TimeZone.UTC,
+    )
+
+  @Test
+  fun refreshSyncsAndStampsTheTime() = runTest {
+    val sync = FakeSyncManager()
+    val viewModel = viewModel(sync)
+
+    viewModel.refresh().join()
+
+    assertEquals(1, sync.syncNowCount)
+    assertEquals("07:05", viewModel.updatedAt.value)
+    assertFalse(viewModel.refreshing.value)
+  }
+
+  @Test
+  fun failedRefreshKeepsTheLastTime() = runTest {
+    val viewModel = viewModel(FakeSyncManager { SyncJobStatus.Failed() })
+
+    viewModel.refresh().join()
+
+    assertNull(viewModel.updatedAt.value)
+    assertFalse(viewModel.refreshing.value)
+  }
+}

@@ -97,7 +97,7 @@ internal val viewModelModule = module {
   viewModel { PatientListViewModel(get()) }
   viewModel { (patientId: String) -> PatientProfileViewModel(patientId, get()) }
   viewModel { (context: UserContext) -> ChwWorklistViewModel(context, get()) }
-  viewModel { (context: UserContext) -> QueueViewModel(context, get(), get()) }
+  viewModel { (context: UserContext) -> QueueViewModel(context, get(), get(), get()) }
   viewModel { (questionnaireId: String, launchContext: QuestionnaireLaunchContext) ->
     QuestionnaireHostViewModel(questionnaireId, launchContext, get())
   }

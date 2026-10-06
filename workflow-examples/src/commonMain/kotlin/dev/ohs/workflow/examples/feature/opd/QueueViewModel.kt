@@ -17,13 +17,17 @@ package dev.ohs.workflow.examples.feature.opd
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.ohs.fhir.engine.sync.SyncJobStatus
 import dev.ohs.fhir.model.r4.Encounter
 import dev.ohs.fhir.model.r4.Observation
 import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.Task
 import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.data.repository.FhirRepository
+import dev.ohs.workflow.examples.data.sync.SyncManager
 import dev.ohs.workflow.examples.workflow.ProtocolService
+import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,11 +37,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class QueueViewModel(
   private val context: UserContext,
   private val repository: FhirRepository,
   private val protocols: ProtocolService,
+  private val syncManager: SyncManager,
+  private val now: () -> Instant = { Clock.System.now() },
+  private val timeZone: TimeZone = TimeZone.currentSystemDefault(),
 ) : ViewModel() {
 
   val queue: StateFlow<List<QueueItem>?> =
@@ -52,6 +61,30 @@ class QueueViewModel(
         )
       }
       .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+  private val _refreshing = MutableStateFlow(false)
+  val refreshing: StateFlow<Boolean> = _refreshing.asStateFlow()
+
+  private val _updatedAt = MutableStateFlow<String?>(null)
+  /** Local time of the last sync that brought the queue up to date, e.g. "09:14". */
+  val updatedAt: StateFlow<String?> = _updatedAt.asStateFlow()
+
+  /** Pulls check-ins from other devices; overlapping calls share the one in flight. */
+  fun refresh(): Job {
+    if (_refreshing.value) return Job().apply { complete() }
+    _refreshing.value = true
+    return viewModelScope.launch {
+      try {
+        if (syncManager.syncNow() is SyncJobStatus.Succeeded) {
+          val local = now().toLocalDateTime(timeZone)
+          _updatedAt.value =
+            "${local.hour.toString().padStart(2, '0')}:${local.minute.toString().padStart(2, '0')}"
+        }
+      } finally {
+        _refreshing.value = false
+      }
+    }
+  }
 
   private val _error = MutableStateFlow<String?>(null)
   val error: StateFlow<String?> = _error.asStateFlow()
