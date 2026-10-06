@@ -67,6 +67,7 @@ class AssessmentResultContentTest {
       }
     }
 
+    onNodeWithText("What to do").assertExists()
     onNodeWithText("Refer urgently to the health facility").assertExists()
     onNodeWithText("Confirm referral").performClick()
     assertEquals(1, confirmed)

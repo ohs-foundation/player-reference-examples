@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -45,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.ohs.fhir.datacapture.Questionnaire
@@ -54,13 +52,12 @@ import dev.ohs.fhir.datacapture.QuestionnaireItemViewFactoryMatcher
 import dev.ohs.fhir.datacapture.QuestionnaireItemViewFactoryMatchersProvider
 import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.feature.chw.AssessmentResultContent
-import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import player_reference_examples.workflow_examples.generated.resources.Res
+import player_reference_examples.workflow_examples.generated.resources.assessment_result_title
 import player_reference_examples.workflow_examples.generated.resources.questionnaire_back
 import player_reference_examples.workflow_examples.generated.resources.questionnaire_close
 import player_reference_examples.workflow_examples.generated.resources.questionnaire_retry
@@ -73,6 +70,7 @@ fun QuestionnaireHostScreen(
   taskId: String? = null,
   user: UserContext? = null,
   onBack: () -> Unit,
+  onSubmitted: (message: String) -> Unit,
 ) {
   val launchContext =
     remember(patientId, user, taskId) {
@@ -93,14 +91,13 @@ fun QuestionnaireHostScreen(
 
   LaunchedEffect(uiState) {
     val submitted = uiState as? QuestionnaireHostUiState.Submitted ?: return@LaunchedEffect
-    if (submitted.result.assessment != null) return@LaunchedEffect
-    delay(2_000.milliseconds)
-    onBack()
+    if (submitted.result.assessment == null) onSubmitted(submitted.result.successMessage)
   }
   val title =
     when (val state = uiState) {
       is QuestionnaireHostUiState.Ready -> state.title
       is QuestionnaireHostUiState.Submitting -> state.title
+      is QuestionnaireHostUiState.Submitted -> stringResource(Res.string.assessment_result_title)
       else -> null
     }
 
@@ -152,15 +149,12 @@ fun QuestionnaireHostScreen(
         modifier = Modifier.widthIn(max = 720.dp).fillMaxSize().padding(6.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
       ) {
-        when (val state = uiState) {
-          is QuestionnaireHostUiState.Submitted ->
-            SubmissionBanner(message = state.result.successMessage, isSuccess = true)
-
-          is QuestionnaireHostUiState.Error -> Unit // rendered below, inline with a dismiss action
-          else -> Unit
-        }
-
-        Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+        Box(
+          modifier = Modifier.fillMaxWidth().weight(1f),
+          contentAlignment =
+            if (uiState is QuestionnaireHostUiState.Submitted) Alignment.TopCenter
+            else Alignment.Center,
+        ) {
           when (val state = uiState) {
             is QuestionnaireHostUiState.Loading -> CircularProgressIndicator()
 
@@ -222,22 +216,5 @@ fun QuestionnaireHostScreen(
         }
       }
     }
-  }
-}
-
-@Composable
-private fun SubmissionBanner(message: String, isSuccess: Boolean) {
-  Surface(
-    modifier = Modifier.fillMaxWidth().padding(16.dp),
-    shape = RoundedCornerShape(8.dp),
-    color = if (isSuccess) Color(0xFF2E7D32) else MaterialTheme.colorScheme.error,
-    tonalElevation = 2.dp,
-  ) {
-    Text(
-      text = message,
-      modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-      color = Color.White,
-      style = MaterialTheme.typography.bodySmall,
-    )
   }
 }

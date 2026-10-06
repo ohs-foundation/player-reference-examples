@@ -46,6 +46,8 @@
     <string name="assessment_confirm_referral">Confirm referral</string>
     <string name="assessment_referral_sent">Referral sent to the facility</string>
     <string name="assessment_done">Done</string>
+    <string name="assessment_what_to_do">What to do</string>
+    <string name="assessment_result_title">Assessment result</string>
 
     <!-- Worklists -->
     <string name="work_due">Due %1$s</string>

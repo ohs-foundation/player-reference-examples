@@ -18,14 +18,18 @@ package dev.ohs.workflow.examples
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,6 +58,7 @@ import dev.ohs.workflow.examples.feature.sync.InitialSyncScreen
 import dev.ohs.workflow.examples.feature.sync.InitialSyncViewModel
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import player_reference_examples.workflow_examples.generated.resources.Res
@@ -133,82 +138,97 @@ private fun SignedInApp(context: UserContext, userName: String, onSignOut: () ->
       )
     InitialSyncGateState.Passed -> {
       val navController = rememberNavController()
-      NavHost(navController = navController, startDestination = "home") {
-        composable("home") {
-          HomeScreen(
-            context = context,
-            userName = userName,
-            onPatientClick = { id -> navController.navigate("patientProfile/$id") },
-            onStartFollowUp = { item ->
-              navController.navigate(
-                "questionnaireHost/${QuestionnaireIds.ICCM_FOLLOW_UP}?patientId=${item.patientId}&taskId=${item.id}"
-              )
-            },
-            onRegisterPatient = {
-              navController.navigate("questionnaireHost/${QuestionnaireIds.PATIENT_REGISTRATION}")
-            },
-            onSignOut = onSignOut,
-          )
-        }
-
-        composable(
-          route = "questionnaireHost/{questionnaireId}?patientId={patientId}&taskId={taskId}",
-          arguments =
-            listOf(
-              navArgument("questionnaireId") { type = NavType.StringType },
-              navArgument("patientId") {
-                type = NavType.StringType
-                nullable = true
-                defaultValue = null
+      val snackbarHostState = remember { SnackbarHostState() }
+      val scope = rememberCoroutineScope()
+      Box(Modifier.fillMaxSize()) {
+        NavHost(navController = navController, startDestination = "home") {
+          composable("home") {
+            HomeScreen(
+              context = context,
+              userName = userName,
+              onPatientClick = { id -> navController.navigate("patientProfile/$id") },
+              onStartFollowUp = { item ->
+                navController.navigate(
+                  "questionnaireHost/${QuestionnaireIds.ICCM_FOLLOW_UP}?patientId=${item.patientId}&taskId=${item.id}"
+                )
               },
-              navArgument("taskId") {
-                type = NavType.StringType
-                nullable = true
-                defaultValue = null
+              onRegisterPatient = {
+                navController.navigate("questionnaireHost/${QuestionnaireIds.PATIENT_REGISTRATION}")
               },
-            ),
-        ) { back ->
-          val questionnaireId =
-            back.arguments?.read { getStringOrNull("questionnaireId") }.orEmpty()
-          val patientId = back.arguments?.read { getStringOrNull("patientId") }
-          val taskId = back.arguments?.read { getStringOrNull("taskId") }
-          QuestionnaireHostScreen(
-            questionnaireId = questionnaireId,
-            patientId = patientId,
-            taskId = taskId,
-            user = context,
-            onBack = { navController.popBackStack() },
-          )
-        }
+              onSignOut = onSignOut,
+            )
+          }
 
-        composable(
-          route = "patientProfile/{patientId}",
-          arguments = listOf(navArgument("patientId") { type = NavType.StringType }),
-        ) { back ->
-          val patientId = back.arguments?.read { getStringOrNull("patientId") }.orEmpty()
-          PatientProfileScreen(
-            patientId = patientId,
-            onBack = { navController.popBackStack() },
-            actions = {
-              val (questionnaireId, label) =
-                when (context.role) {
-                  AppRole.CHW ->
-                    QuestionnaireIds.ICCM_SICK_CHILD to Res.string.patient_profile_assess_sick_child
-                  AppRole.NURSE ->
-                    QuestionnaireIds.OPD_CHECK_IN to Res.string.patient_profile_check_in
-                  AppRole.CLINICIAN -> return@PatientProfileScreen
-                }
-              Button(
-                onClick = {
-                  navController.navigate("questionnaireHost/$questionnaireId?patientId=$patientId")
+          composable(
+            route = "questionnaireHost/{questionnaireId}?patientId={patientId}&taskId={taskId}",
+            arguments =
+              listOf(
+                navArgument("questionnaireId") { type = NavType.StringType },
+                navArgument("patientId") {
+                  type = NavType.StringType
+                  nullable = true
+                  defaultValue = null
                 },
-                modifier = Modifier.fillMaxWidth(),
-              ) {
-                Text(stringResource(label))
-              }
-            },
-          )
+                navArgument("taskId") {
+                  type = NavType.StringType
+                  nullable = true
+                  defaultValue = null
+                },
+              ),
+          ) { back ->
+            val questionnaireId =
+              back.arguments?.read { getStringOrNull("questionnaireId") }.orEmpty()
+            val patientId = back.arguments?.read { getStringOrNull("patientId") }
+            val taskId = back.arguments?.read { getStringOrNull("taskId") }
+            QuestionnaireHostScreen(
+              questionnaireId = questionnaireId,
+              patientId = patientId,
+              taskId = taskId,
+              user = context,
+              onBack = { navController.popBackStack() },
+              onSubmitted = { message ->
+                navController.popBackStack()
+                scope.launch { snackbarHostState.showSnackbar(message) }
+              },
+            )
+          }
+
+          composable(
+            route = "patientProfile/{patientId}",
+            arguments = listOf(navArgument("patientId") { type = NavType.StringType }),
+          ) { back ->
+            val patientId = back.arguments?.read { getStringOrNull("patientId") }.orEmpty()
+            PatientProfileScreen(
+              patientId = patientId,
+              onBack = { navController.popBackStack() },
+              actions = {
+                val (questionnaireId, label) =
+                  when (context.role) {
+                    AppRole.CHW ->
+                      QuestionnaireIds.ICCM_SICK_CHILD to
+                        Res.string.patient_profile_assess_sick_child
+                    AppRole.NURSE ->
+                      QuestionnaireIds.OPD_CHECK_IN to Res.string.patient_profile_check_in
+                    AppRole.CLINICIAN -> return@PatientProfileScreen
+                  }
+                Button(
+                  onClick = {
+                    navController.navigate(
+                      "questionnaireHost/$questionnaireId?patientId=$patientId"
+                    )
+                  },
+                  modifier = Modifier.fillMaxWidth(),
+                ) {
+                  Text(stringResource(label))
+                }
+              },
+            )
+          }
         }
+        SnackbarHost(
+          snackbarHostState,
+          Modifier.align(Alignment.BottomCenter).navigationBarsPadding(),
+        )
       }
     }
   }

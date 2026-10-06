@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +39,7 @@ import player_reference_examples.workflow_examples.generated.resources.assessmen
 import player_reference_examples.workflow_examples.generated.resources.assessment_home_care
 import player_reference_examples.workflow_examples.generated.resources.assessment_refer
 import player_reference_examples.workflow_examples.generated.resources.assessment_referral_sent
+import player_reference_examples.workflow_examples.generated.resources.assessment_what_to_do
 
 /**
  * What the iCCM protocol decided, with the one action the CHW takes on it: sending the referral.
@@ -51,9 +54,13 @@ fun AssessmentResultContent(
   error: String? = null,
 ) {
   Column(
-    modifier = Modifier.fillMaxWidth().padding(16.dp),
+    modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
+    Text(
+      stringResource(Res.string.assessment_what_to_do),
+      style = MaterialTheme.typography.titleLarge,
+    )
     val decisions =
       listOfNotNull(assessment.referral?.let { stringResource(Res.string.assessment_refer) }) +
         assessment.medications.mapNotNull { it.medicineName() } +
