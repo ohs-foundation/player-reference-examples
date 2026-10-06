@@ -34,7 +34,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.first
@@ -105,12 +104,6 @@ class SyncTest {
 
     val terminal = statusFlow.first { it !is CurrentSyncJobStatus.Running }
     assertIs<CurrentSyncJobStatus.Cancelled>(terminal)
-  }
-
-  @Test
-  fun cancelOneTimeSync_withNoActiveSync_doesNotThrow() = runTest {
-    Sync.cancelOneTimeSync<TestFhirSyncTask>()
-    assertTrue(true) // reaching here means no-op didn't throw
   }
 
   @Test

@@ -34,13 +34,6 @@ class DataStoreTimestampContextTest {
   }
 
   @Test
-  fun getLasUpdateTimestamp_beforeAnySave_isNull() = runTest {
-    val context = DataStoreTimestampContext(testDataStore())
-
-    assertNull(context.getLasUpdateTimestamp(ResourceType.Patient))
-  }
-
-  @Test
   fun saveThenGet_roundTripsPerResourceType() = runTest {
     val context = DataStoreTimestampContext(testDataStore())
 

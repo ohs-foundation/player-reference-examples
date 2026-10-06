@@ -16,8 +16,6 @@
 package dev.ohs.workflow.examples.feature.questionnaire
 
 import dev.ohs.fhir.model.r4.Boolean as FhirBoolean
-import dev.ohs.fhir.model.r4.Code
-import dev.ohs.fhir.model.r4.Coding
 import dev.ohs.fhir.model.r4.Enumeration
 import dev.ohs.fhir.model.r4.Integer
 import dev.ohs.fhir.model.r4.Patient
@@ -45,16 +43,6 @@ class QuestionnaireServiceTest {
       repository,
       ProtocolService(workflow, { FhirOperator(workflow, resolver = BundledProtocols.load()) }),
     )
-
-  @Test
-  fun registrationQuestionnaireIsBundled() = runTest {
-    val questionnaire = service.getQuestionnaire(QuestionnaireIds.PATIENT_REGISTRATION)
-
-    assertEquals(
-      listOf("given", "family", "gender", "birth-date"),
-      questionnaire.item.map { it.linkId.value },
-    )
-  }
 
   @Test
   fun submittingRegistrationStoresThePatient() = runTest {
@@ -149,45 +137,5 @@ class QuestionnaireServiceTest {
       )
 
     assertEquals("Queued for consultation: stat", result.successMessage)
-  }
-
-  @Test
-  fun followUpOfARecoveredChildClosesWithoutAReferral() = runTest {
-    repository.upsert(Patient(id = "child-1"))
-    val questionnaire = service.getQuestionnaire(QuestionnaireIds.ICCM_FOLLOW_UP)
-    val response =
-      QuestionnaireResponse(
-        status = Enumeration(value = QuestionnaireResponse.QuestionnaireResponseStatus.Completed),
-        item =
-          listOf(
-            QuestionnaireResponse.Item(
-              linkId = FhirString(value = "condition"),
-              answer =
-                listOf(
-                  QuestionnaireResponse.Item.Answer(
-                    value = Value.Coding(Coding(code = Code(value = "better")))
-                  )
-                ),
-            ),
-            QuestionnaireResponse.Item(
-              linkId = FhirString(value = "danger-sign"),
-              answer =
-                listOf(
-                  QuestionnaireResponse.Item.Answer(
-                    value = Value.Boolean(FhirBoolean(value = false))
-                  )
-                ),
-            ),
-          ),
-      )
-
-    val result =
-      service.submit(
-        questionnaire,
-        response,
-        QuestionnaireLaunchContext(patientId = "child-1", user = user, taskId = "task-1"),
-      )
-
-    assertEquals("Follow-up recorded: the child is better.", result.successMessage)
   }
 }

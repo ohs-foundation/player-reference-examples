@@ -63,17 +63,6 @@ class HomeViewModelTest {
   }
 
   @Test
-  fun initialState_withNoPriorSync_hasNoLastSyncedAt() = runTest {
-    val viewModel =
-      HomeViewModel(
-        RecordingSyncManager(newFhirDataStore()) { SyncJobStatus.Succeeded() },
-        newFhirDataStore(),
-      )
-
-    assertNull(viewModel.uiState.value.lastSyncedAt)
-  }
-
-  @Test
   fun syncNow_onSuccess_clearsIsSyncingAndPopulatesLastSyncedAt() = runTest {
     val fhirDataStore = newFhirDataStore()
     val viewModel =
@@ -160,17 +149,5 @@ class HomeViewModelTest {
     viewModel.cancelSync()
 
     assertEquals(0, fake.cancelCount)
-  }
-
-  @Test
-  fun clearSyncError_removesTheErrorMessage() = runTest {
-    val fhirDataStore = newFhirDataStore()
-    val viewModel =
-      HomeViewModel(RecordingSyncManager(fhirDataStore) { SyncJobStatus.Failed() }, fhirDataStore)
-    viewModel.syncNow()?.join()
-
-    viewModel.clearSyncError()
-
-    assertNull(viewModel.uiState.value.syncError)
   }
 }

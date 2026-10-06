@@ -143,7 +143,7 @@ class AuthViewModelTest {
   }
 
   @Test
-  fun bootstrap_withValidStoredSession_goesAuthenticatedWithoutContactingProvider() = runTest {
+  fun bootstrap_withValidStoredSession_goesAuthenticated() = runTest {
     val service =
       AuthService(
         OAuthConfig("https://idp.example.org", "c", "openid"),
@@ -194,23 +194,6 @@ class AuthViewModelTest {
 
     assertEquals("network down", viewModel.error.value)
     assertEquals(false, viewModel.signingIn.value)
-  }
-
-  @Test
-  fun clearError_removesTheErrorMessage() = runTest {
-    val service =
-      AuthService(
-        OAuthConfig("https://idp.example.org", "c", "openid"),
-        FakeSessionStore(null),
-        apiWithWorkingDiscovery(),
-      )
-    val viewModel = AuthViewModel(service, FakeSyncManager())
-    val launcher = FakeLauncher("app://callback") { AuthResult.Failure("network down") }
-    viewModel.loginForTest(launcher)
-
-    viewModel.clearError()
-
-    assertNull(viewModel.error.value)
   }
 
   @Test

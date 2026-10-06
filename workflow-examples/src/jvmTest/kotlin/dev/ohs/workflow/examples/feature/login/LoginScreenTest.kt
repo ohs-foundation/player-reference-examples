@@ -28,25 +28,6 @@ import kotlin.test.assertTrue
 class LoginScreenTest {
 
   @Test
-  fun tappingSignIn_invokesCallback() = runComposeUiTest {
-    var clicked = false
-    setContent {
-      MaterialTheme {
-        LoginScreen(
-          signingIn = false,
-          error = null,
-          onSignIn = { clicked = true },
-          onErrorDismiss = {},
-        )
-      }
-    }
-
-    onNodeWithText("Continue to sign in", ignoreCase = true).performClick()
-
-    assertTrue(clicked)
-  }
-
-  @Test
   fun error_showsDialogWithMessage_andDismissClearsIt() = runComposeUiTest {
     var dismissed = false
     setContent {

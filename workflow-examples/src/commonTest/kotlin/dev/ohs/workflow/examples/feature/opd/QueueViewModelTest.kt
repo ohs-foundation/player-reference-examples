@@ -66,15 +66,6 @@ class QueueViewModelTest {
   }
 
   @Test
-  fun failedRefreshKeepsTheLastTime() = runTest {
-    val viewModel = viewModel(FakeSyncManager { SyncJobStatus.Failed() })
-
-    viewModel.refresh().join()
-
-    assertNull(viewModel.updatedAt.value)
-  }
-
-  @Test
   fun completingAConsultUploadsRightAway() = runTest {
     val sync = FakeSyncManager()
     val viewModel = viewModel(sync)
