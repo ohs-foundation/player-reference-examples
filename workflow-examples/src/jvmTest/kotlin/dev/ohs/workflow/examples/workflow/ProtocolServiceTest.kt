@@ -194,6 +194,21 @@ class ProtocolServiceTest {
   }
 
   @Test
+  fun aReferralToAnotherFacilityIsNotThisFacilitysToClose() = runTest {
+    val proposal =
+      service
+        .assessSickChild(child, response(number("age-months", 14), yes("convulsions")), chw)
+        .referral!!
+    service.confirmReferral(proposal, chw)
+    val otherFacilityNurse = UserContext(AppRole.NURSE, "p-nurse-2", "o2", "l2")
+
+    val consult = service.checkIn(child, response(number("spo2", 97)), otherFacilityNurse)
+
+    assertEquals(Task.RequestPriority.Routine, consult.priority?.value)
+    assertNull(consult.focus)
+  }
+
+  @Test
   fun walkInWithoutVitalsIsQueuedRoutine() = runTest {
     val consult =
       service.checkIn(

@@ -50,7 +50,7 @@ The library has no CQL, so every condition is FHIRPath over data the app looks u
 Each role downloads what [`files/sync/<role>.json`](./workflow-examples/src/commonMain/composeResources/files/sync) names. Each entry has a resource `type`, search `params`, and `ids`. `{practitioner}`, `{organization}` and `{location}` are filled in from the user's PractitionerRole.
 
 ```json
-{ "type": "Task", "params": { "owner": "Practitioner/{practitioner}", "status": "requested" } }
+{ "type": "ServiceRequest", "params": { "intent": "order", "performer": "Organization/{organization}" } }
 ```
 
 The gateway runs `org_scoped_access` (ohs-player-reference-backend PR #82). It adds the organization filter to every search, so configs only narrow by role. `SyncConfigFilesTest` fails if a config names a type or param the gateway refuses.

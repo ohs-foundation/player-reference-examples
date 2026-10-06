@@ -195,7 +195,7 @@ class ProtocolService(
         )
         .map { it.copy(subject = subject, encounter = encounterReference) }
         .onEach { repository.create(it) }
-    val referrals = activeReferrals(patient)
+    val referrals = activeReferrals(patient, context.organizationId)
     return apply(
         OPD_TRIAGE,
         patient,
@@ -272,14 +272,18 @@ class ProtocolService(
     }
   }
 
-  private suspend fun activeReferrals(patient: Patient): List<ServiceRequest> =
+  /**
+   * Open referral orders for [patient] addressed to [facilityId]; other facilities' stay theirs.
+   */
+  private suspend fun activeReferrals(patient: Patient, facilityId: String): List<ServiceRequest> =
     repository
       .searchByReferenceParam("ServiceRequest", "subject", "Patient/${patient.id}")
       .filterIsInstance<ServiceRequest>()
       .filter {
         it.intent.value == ServiceRequest.RequestIntent.Order &&
           it.status.value == ServiceRequest.RequestStatus.Active &&
-          it.code?.coding?.any { coding -> coding.code?.value == REFERRAL_CODE } == true
+          it.code?.coding?.any { coding -> coding.code?.value == REFERRAL_CODE } == true &&
+          it.performer.any { performer -> performer.idOf("Organization") == facilityId }
       }
 
   private suspend fun apply(
