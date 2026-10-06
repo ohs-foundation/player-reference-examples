@@ -25,7 +25,7 @@ import dev.ohs.fhir.engine.sync.upload.HttpUpdateMethod
 import dev.ohs.fhir.engine.sync.upload.UploadStrategy
 import dev.ohs.workflow.examples.auth.SessionRepository
 
-const val SYNC_TIMEOUT_DURATION = 120L
+const val SYNC_TIMEOUT_DURATION = 30L
 
 /**
  * This app's [FhirSyncTask]: downloads the signed-in role's sync config, resolves conflicts in

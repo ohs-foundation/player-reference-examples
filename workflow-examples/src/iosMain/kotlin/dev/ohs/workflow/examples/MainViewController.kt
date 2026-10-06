@@ -43,7 +43,7 @@ fun MainViewController() = run {
               readTimeOut = SYNC_TIMEOUT_DURATION,
               writeTimeOut = SYNC_TIMEOUT_DURATION,
             ),
-          httpLogger = HttpLogger(level = HttpLogger.Level.HEADERS),
+          httpLogger = HttpLogger(level = HttpLogger.Level.BASIC),
           authenticator = FhirBearerAuthenticator,
         )
     )
