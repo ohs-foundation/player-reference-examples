@@ -42,8 +42,10 @@ import dev.ohs.workflow.examples.feature.questionnaire.QuestionnaireService
 import dev.ohs.workflow.examples.feature.role.UserContextViewModel
 import dev.ohs.workflow.examples.feature.sync.InitialSyncViewModel
 import dev.ohs.workflow.examples.workflow.BundledProtocols
+import dev.ohs.workflow.examples.workflow.EngineTransactor
 import dev.ohs.workflow.examples.workflow.EngineWorkflowRepository
 import dev.ohs.workflow.examples.workflow.ProtocolService
+import dev.ohs.workflow.examples.workflow.Transactor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -69,10 +71,15 @@ internal val repositoryModule = module {
 }
 
 internal val serviceModule = module {
-  factory { QuestionnaireService(get(), get()) }
+  single<Transactor> { EngineTransactor(get()) }
+  factory { QuestionnaireService(get(), get(), get()) }
   single {
     val repository = EngineWorkflowRepository(get())
-    ProtocolService(repository, { FhirOperator(repository, resolver = BundledProtocols.load()) })
+    ProtocolService(
+      repository,
+      { FhirOperator(repository, resolver = BundledProtocols.load()) },
+      transactor = get(),
+    )
   }
 }
 

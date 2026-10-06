@@ -80,6 +80,7 @@ class ProtocolService(
   private val repository: WorkflowRepository,
   private val operatorFactory: suspend () -> FhirOperator,
   private val now: () -> Instant = { Clock.System.now() },
+  private val transactor: Transactor = Transactor { it() },
 ) {
   private val operatorLock = Mutex()
   private var operator: FhirOperator? = null
@@ -215,33 +216,34 @@ class ProtocolService(
    * ActivityFlow. Safe to repeat, and to run on a device that never received the consult's
    * encounter.
    */
-  suspend fun completeConsult(task: Task, outcome: String) {
-    val current = repository.read("Task", task.id!!) as? Task ?: task
-    if (current.status.value == Task.TaskStatus.Completed) return
-    val referral =
-      current.focus.idOf("ServiceRequest")?.let { repository.read("ServiceRequest", it) }
-        as? ServiceRequest
-    if (referral?.status?.value == ServiceRequest.RequestStatus.Active) {
-      val flow = ActivityFlow.of(repository, CPGServiceRequest(referral))
-      val event = flow.preparePerform<CPGProcedureEvent>("CPGProcedureEvent").getOrThrow()
-      val perform = flow.initiatePerform(event).getOrThrow()
-      perform.start().getOrThrow()
-      perform.complete().getOrThrow()
-      repository.update(
-        perform
-          .getEventResource()
-          .resource
-          .copy(outcome = CodeableConcept(text = FhirString(value = outcome)))
-      )
-      handBackToCommunity(referral, outcome)
+  suspend fun completeConsult(task: Task, outcome: String) =
+    transactor.atomically {
+      val current = repository.read("Task", task.id!!) as? Task ?: task
+      if (current.status.value == Task.TaskStatus.Completed) return@atomically
+      val referral =
+        current.focus.idOf("ServiceRequest")?.let { repository.read("ServiceRequest", it) }
+          as? ServiceRequest
+      if (referral?.status?.value == ServiceRequest.RequestStatus.Active) {
+        val flow = ActivityFlow.of(repository, CPGServiceRequest(referral))
+        val event = flow.preparePerform<CPGProcedureEvent>("CPGProcedureEvent").getOrThrow()
+        val perform = flow.initiatePerform(event).getOrThrow()
+        perform.start().getOrThrow()
+        perform.complete().getOrThrow()
+        repository.update(
+          perform
+            .getEventResource()
+            .resource
+            .copy(outcome = CodeableConcept(text = FhirString(value = outcome)))
+        )
+        handBackToCommunity(referral, outcome)
+      }
+      repository.update(current.copy(status = Enumeration(value = Task.TaskStatus.Completed)))
+      val encounter =
+        current.encounter.idOf("Encounter")?.let { repository.read("Encounter", it) } as? Encounter
+      encounter?.let {
+        repository.update(it.copy(status = Enumeration(value = Encounter.EncounterStatus.Finished)))
+      }
     }
-    repository.update(current.copy(status = Enumeration(value = Task.TaskStatus.Completed)))
-    val encounter =
-      current.encounter.idOf("Encounter")?.let { repository.read("Encounter", it) } as? Encounter
-    encounter?.let {
-      repository.update(it.copy(status = Enumeration(value = Encounter.EncounterStatus.Finished)))
-    }
-  }
 
   private suspend fun orderFor(proposal: ServiceRequest): ServiceRequest? =
     repository

@@ -30,17 +30,20 @@ import dev.ohs.fhir.model.r4.Patient
 import dev.ohs.fhir.model.r4.Procedure
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
 import dev.ohs.fhir.model.r4.QuestionnaireResponse.Item.Answer.Value
+import dev.ohs.fhir.model.r4.Resource
 import dev.ohs.fhir.model.r4.ServiceRequest
 import dev.ohs.fhir.model.r4.String as FhirString
 import dev.ohs.fhir.model.r4.Task
 import dev.ohs.fhir.model.r4.terminologies.ResourceType
 import dev.ohs.fhir.workflow.FhirOperator
+import dev.ohs.fhir.workflow.WorkflowRepository
 import dev.ohs.workflow.examples.auth.AppRole
 import dev.ohs.workflow.examples.auth.UserContext
 import java.nio.file.Files
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -325,6 +328,44 @@ class ProtocolServiceTest {
   }
 
   @Test
+  fun aFailedHandBackLeavesTheReferralOpenForARetry() = runTest {
+    var failHandBack = true
+    val flaky =
+      object : WorkflowRepository by repository {
+        override suspend fun create(resource: Resource): String {
+          if (failHandBack && resource is Task && resource.isFollowUp()) error("Disk full")
+          return repository.create(resource)
+        }
+      }
+    val service =
+      ProtocolService(
+        flaky,
+        { FhirOperator(flaky, resolver = BundledProtocols.load()) },
+        now = { Instant.parse("2026-10-05T08:00:00Z") },
+        transactor = EngineTransactor(fhirEngine),
+      )
+    val proposal =
+      service
+        .assessSickChild(child, response(number("age-months", 14), yes("convulsions")), chw)
+        .referral!!
+    service.confirmReferral(proposal, chw)
+    val consult = service.checkIn(child, response(number("spo2", 97)), nurse)
+
+    assertFails { service.completeConsult(consult, "Treated") }
+    failHandBack = false
+    service.completeConsult(consult, "Treated")
+
+    val tasks =
+      repository
+        .searchByReferenceParam("Task", "subject", "Patient/child-1")
+        .filterIsInstance<Task>()
+    assertEquals(
+      1,
+      tasks.count { it.isFollowUp() && it.owner?.reference?.value == "Practitioner/p-chw" },
+    )
+  }
+
+  @Test
   fun walkInConsultCreatesNoFollowUp() = runTest {
     val consult = service.checkIn(child, response(number("spo2", 97)), nurse)
 
@@ -409,3 +450,5 @@ class ProtocolServiceTest {
     )
   }
 }
+
+private fun Task.isFollowUp() = code?.coding?.any { it.code?.value == "iccm-follow-up" } == true

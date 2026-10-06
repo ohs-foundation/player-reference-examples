@@ -24,6 +24,7 @@ import dev.ohs.workflow.examples.data.repository.FhirRepository
 import dev.ohs.workflow.examples.util.FhirJson
 import dev.ohs.workflow.examples.workflow.AssessmentResult
 import dev.ohs.workflow.examples.workflow.ProtocolService
+import dev.ohs.workflow.examples.workflow.Transactor
 import dev.ohs.workflow.examples.workflow.registrationPatient
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import player_reference_examples.workflow_examples.generated.resources.Res
@@ -59,6 +60,7 @@ private val BUNDLED_QUESTIONNAIRE_PATHS: Map<String, String> =
 class QuestionnaireService(
   private val repository: FhirRepository,
   private val protocols: ProtocolService,
+  private val transactor: Transactor = Transactor { it() },
 ) {
 
   private val fhirJson = FhirJson.instance
@@ -77,6 +79,16 @@ class QuestionnaireService(
     fhirJson.encodeToString(QuestionnaireR4.serializer(), questionnaire)
 
   suspend fun submit(
+    questionnaire: QuestionnaireR4,
+    response: QuestionnaireResponse,
+    launchContext: QuestionnaireLaunchContext,
+  ): QuestionnaireSubmissionResult {
+    var result: QuestionnaireSubmissionResult? = null
+    transactor.atomically { result = record(questionnaire, response, launchContext) }
+    return result!!
+  }
+
+  private suspend fun record(
     questionnaire: QuestionnaireR4,
     response: QuestionnaireResponse,
     launchContext: QuestionnaireLaunchContext,
