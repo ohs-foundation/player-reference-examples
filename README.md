@@ -53,6 +53,8 @@ Each role downloads what [`files/sync/<role>.json`](./workflow-examples/src/comm
 { "type": "ServiceRequest", "params": { "intent": "order", "performer": "Organization/{organization}" } }
 ```
 
+Saving a form or completing a consult uploads at once. Offline, it waits for the next sync. A sync requested while another is running gets its own sync afterwards, so nothing saved mid-sync is missed.
+
 The gateway runs `org_scoped_access` (ohs-player-reference-backend PR #82). It adds the organization filter to every search, so configs only narrow by role. `SyncConfigFilesTest` fails if a config names a type or param the gateway refuses.
 
 ## Setup
@@ -108,10 +110,10 @@ Kiambu County Department of Health          county code 022
 
 ## Walkthrough
 
-1. Sign in as **chw1**. Tap **+** to register *Amina Otieno*, a child born 14 months ago, then open her and choose *Sick-child assessment*. Answer *Chest indrawing* = yes, then submit. The form closes with *Referral sent to the facility*. Sync.
-2. Sign in as **nurse1**. Open *Amina* and choose *Check in to OPD*, entering SpO₂ 95. The app shows *Queued for consultation: stat*, because the referral is urgent. Sync.
-3. Sign in as **clinician1**. *Amina* is at the top of the OPD queue, marked *Community referral*. Open her entry, enter an outcome, and choose **Complete**. Sync.
-4. Sign in as **chw1** and sync. Amina's row shows **Follow-up due**. Completing the consult ran the `referral-follow-up` PlanDefinition, which handed her back to the CHW with a visit due in two days.
+1. Sign in as **chw1**. Tap **+** to register *Amina Otieno*, a child born 14 months ago, then open her and choose *Sick-child assessment*. Answer *Chest indrawing* = yes, then submit. The form closes with *Referral sent to the facility* and the referral uploads straight away.
+2. Sign in as **nurse1** and tap *Sync now*. Open *Amina* and choose *Check in to OPD*, entering SpO₂ 95. The app shows *Queued for consultation: stat*, because the referral is urgent.
+3. Sign in as **clinician1**. The queue refreshes every minute, or on pull, and *Amina* appears at the top, marked *Community referral*. Open her entry, enter an outcome, and choose **Complete**.
+4. Sign in as **chw1** and tap *Sync now*. Amina's row shows **Follow-up due**. Completing the consult ran the `referral-follow-up` PlanDefinition, which handed her back to the CHW with a visit due in two days.
 5. Open *Follow-ups* and tap Amina to record the home visit. **Better** closes the follow-up and clears her chip. **The same**, **worse**, or any danger sign creates a new urgent referral (`iccm-follow-up-visit`), which goes back to the facility.
 
 The patient list chip shows where each child stands: **Referred** → **Seen at facility** → **Follow-up due** → no chip once the loop is closed. Each profile shows the care record, rendered from ViewDefinition configs: referrals, facility outcome, treatment, follow-ups, facility visits and vitals.
@@ -129,7 +131,8 @@ To see the home-treatment path, register a second child, then assess them with f
 | Area | Tests |
 |---|---|
 | Protocol branches | `IccmSickChildTest` (9 cases), `OpdTriageTest` (5 cases) |
-| Referral loop on a real engine | `ProtocolServiceTest` |
+| Referral loop on a real engine | `ProtocolServiceTest`, `AtomicSubmitTest` |
+| Sync coordination | `SerializedSyncManagerTest`, `SyncTest`, `DataChangeSignalTest` |
 | Roles and sync | `UserContextTest`, `PractitionerDetailsApiTest`, `SyncConfigResolverTest`, `SyncConfigFilesTest`, `RoleDownloadWorkManagerTest` |
 | Screens | `WorklistContentTest`, `QueueContentTest`, `NoRoleScreenTest` |
 
