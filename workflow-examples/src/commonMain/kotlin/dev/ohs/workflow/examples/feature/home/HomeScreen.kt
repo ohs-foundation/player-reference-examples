@@ -63,6 +63,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -109,7 +110,8 @@ fun HomeScreen(
   val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
 
   val destinations = context.role.destinations()
-  var selectedDestination by remember(context.role) { mutableStateOf(destinations.first()) }
+  var selectedName by rememberSaveable(context.role) { mutableStateOf(destinations.first().name) }
+  val selectedDestination = HomeDestination.valueOf(selectedName)
   val drawerState = rememberDrawerState(DrawerValue.Closed)
   val scope = rememberCoroutineScope()
   val snackbarHostState = remember { SnackbarHostState() }
@@ -195,7 +197,7 @@ fun HomeScreen(
             selected = destination == selectedDestination,
             colors = drawerItemColors,
             onClick = {
-              selectedDestination = destination
+              selectedName = destination.name
               closeDrawerIfCompact()
             },
           )
@@ -298,7 +300,7 @@ fun HomeScreen(
           destinations.forEach { destination ->
             NavigationRailItem(
               selected = destination == selectedDestination,
-              onClick = { selectedDestination = destination },
+              onClick = { selectedName = destination.name },
               colors = railItemColors,
               icon = { Icon(destination.icon, contentDescription = null) },
               label = { Text(stringResource(destination.label)) },

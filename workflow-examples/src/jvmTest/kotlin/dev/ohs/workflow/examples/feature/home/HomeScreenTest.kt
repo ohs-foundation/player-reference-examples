@@ -17,9 +17,14 @@ package dev.ohs.workflow.examples.feature.home
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.runComposeUiTest
@@ -95,6 +100,43 @@ class HomeScreenTest {
     assertTrue(onAllNodesWithText("Patients").fetchSemanticsNodes().isNotEmpty())
     assertTrue(onAllNodesWithText("Sync now").fetchSemanticsNodes().isNotEmpty())
     assertTrue(onAllNodesWithText("Nurse").fetchSemanticsNodes().isNotEmpty())
+  }
+
+  @Test
+  fun theSelectedSectionSurvivesAFormRoundTrip() = runComposeUiTest {
+    startTestKoin(FakeSyncManager { SyncJobStatus.Succeeded() })
+    val registry = buildAppViewRegistry()
+    var onHome by mutableStateOf(true)
+    setContent {
+      val saved = rememberSaveableStateHolder()
+      CompositionLocalProvider(LocalViewRegistry provides registry) {
+        MaterialTheme {
+          if (onHome)
+            saved.SaveableStateProvider("home") {
+              HomeScreen(
+                context = UserContext(AppRole.CHW, "p1", "o1", "l1"),
+                userName = "Test User",
+                onPatientClick = {},
+                onStartFollowUp = {},
+                onRegisterPatient = {},
+                onSignOut = {},
+              )
+            }
+        }
+      }
+    }
+    onAllNodesWithText("Follow-ups").onFirst().performClick()
+    waitUntil(timeoutMillis = 5_000L) {
+      onAllNodesWithText("No follow-ups due").fetchSemanticsNodes().isNotEmpty()
+    }
+
+    onHome = false
+    waitForIdle()
+    onHome = true
+
+    waitUntil(timeoutMillis = 5_000L) {
+      onAllNodesWithText("No follow-ups due").fetchSemanticsNodes().isNotEmpty()
+    }
   }
 
   @Test
