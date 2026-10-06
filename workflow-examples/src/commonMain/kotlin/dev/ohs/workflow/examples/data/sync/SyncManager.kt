@@ -16,6 +16,8 @@
 package dev.ohs.workflow.examples.data.sync
 
 import dev.ohs.fhir.engine.sync.SyncJobStatus
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * This app's single sync seam. Scheduling is inherently platform-specific — WorkManager on Android,
@@ -43,4 +45,31 @@ interface SyncManager {
 
   /** Cancels the periodic sync. No-op if none is scheduled. */
   suspend fun cancelPeriodicSync()
+}
+
+/**
+ * Runs one sync at a time and answers each [SyncManager.syncNow] with a sync that started after the
+ * call, so a record saved while a sync is past its upload phase still goes up. Callers queued
+ * behind the same running sync share the next one.
+ */
+fun SyncManager.serialized(): SyncManager = SerializedSyncManager(this)
+
+private class SerializedSyncManager(private val delegate: SyncManager) : SyncManager by delegate {
+  private val runLock = Mutex()
+  private val ticketLock = Mutex()
+  private var requested = 0L
+  private var covered = 0L
+  private var last: SyncJobStatus? = null
+
+  override suspend fun syncNow(): SyncJobStatus {
+    val ticket = ticketLock.withLock { ++requested }
+    return runLock.withLock {
+      last?.takeIf { covered >= ticket }
+        ?: run {
+          covered = ticketLock.withLock { requested }
+          last = null
+          delegate.syncNow().also { last = it }
+        }
+    }
+  }
 }

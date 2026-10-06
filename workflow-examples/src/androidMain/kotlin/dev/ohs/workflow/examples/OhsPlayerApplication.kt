@@ -29,6 +29,7 @@ import dev.ohs.workflow.examples.data.di.initKoin
 import dev.ohs.workflow.examples.data.sync.SYNC_TIMEOUT_DURATION
 import dev.ohs.workflow.examples.data.sync.SyncManager
 import dev.ohs.workflow.examples.data.sync.WorkManagerSyncManager
+import dev.ohs.workflow.examples.data.sync.serialized
 import org.koin.dsl.module
 
 class OhsPlayerApplication : Application() {
@@ -57,7 +58,7 @@ class OhsPlayerApplication : Application() {
     initKoin(
       module {
         single<FhirEngine> { FhirEngineProvider.getInstance(applicationContext) }
-        single<SyncManager> { WorkManagerSyncManager(applicationContext) }
+        single<SyncManager> { WorkManagerSyncManager(applicationContext).serialized() }
       }
     )
   }

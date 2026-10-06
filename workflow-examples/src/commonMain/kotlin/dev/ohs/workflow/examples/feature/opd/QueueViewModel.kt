@@ -62,8 +62,6 @@ class QueueViewModel(
       }
       .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
-  private var refreshing = false
-
   private val _pulling = MutableStateFlow(false)
   /** True while a refresh the user pulled for is running; automatic refreshes stay silent. */
   val pulling: StateFlow<Boolean> = _pulling.asStateFlow()
@@ -73,13 +71,11 @@ class QueueViewModel(
   val updatedAt: StateFlow<String?> = _updatedAt.asStateFlow()
 
   /**
-   * Pushes local changes and pulls check-ins from other devices; overlapping calls share the one in
-   * flight, and an offline failure keeps the last [updatedAt].
+   * Pushes local changes and pulls check-ins from other devices. An offline failure keeps the last
+   * [updatedAt].
    */
   fun refresh(pulled: Boolean = false): Job {
     if (pulled) _pulling.value = true
-    if (refreshing) return Job().apply { complete() }
-    refreshing = true
     return viewModelScope.launch {
       try {
         if (syncManager.syncNow() is SyncJobStatus.Succeeded) {
@@ -90,8 +86,7 @@ class QueueViewModel(
       } catch (e: CancellationException) {
         throw e
       } catch (_: Exception) {} finally {
-        refreshing = false
-        _pulling.value = false
+        if (pulled) _pulling.value = false
       }
     }
   }

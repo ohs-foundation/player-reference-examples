@@ -28,6 +28,7 @@ import dev.ohs.workflow.examples.data.di.initKoin
 import dev.ohs.workflow.examples.data.sync.IosSyncManager
 import dev.ohs.workflow.examples.data.sync.SYNC_TIMEOUT_DURATION
 import dev.ohs.workflow.examples.data.sync.SyncManager
+import dev.ohs.workflow.examples.data.sync.serialized
 import org.koin.dsl.module
 
 fun MainViewController() = run {
@@ -53,7 +54,7 @@ fun MainViewController() = run {
   initKoin(
     module {
       single<FhirEngine> { FhirEngineProvider.getInstance() }
-      single<SyncManager> { syncManager }
+      single<SyncManager> { syncManager.serialized() }
     }
   )
   ComposeUIViewController { App() }
