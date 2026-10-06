@@ -26,6 +26,7 @@ import dev.ohs.fhir.engine.sync.SyncJobStatus
 import dev.ohs.fhir.engine.sync.defaultRetryConfiguration
 import dev.ohs.fhir.engine.sync.runSync
 import dev.ohs.fhir.engine.sync.syncDispatcher
+import dev.ohs.workflow.examples.auth.ensureFreshSessionForSync
 import dev.ohs.workflow.examples.data.DataChangeSignal
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Clock
@@ -55,6 +56,9 @@ internal expect fun isNetworkConnected(): Boolean
 internal object Sync {
   private val scope = CoroutineScope(SupervisorJob() + syncDispatcher)
   private val mutex = Mutex()
+
+  /** Runs before every attempt so a long-open app syncs with a fresh access token, not a 401. */
+  internal var beforeAttempt: suspend () -> Unit = { ensureFreshSessionForSync() }
   private val activeSyncs = mutableMapOf<String, SyncHandle>()
   private val activePeriodicJobs = mutableMapOf<String, Job>()
   private val fhirDataStore: FhirDataStore by lazy { FhirEngineProvider.getFhirDataStore() }
@@ -217,6 +221,7 @@ internal object Sync {
       onStatus(CurrentSyncJobStatus.Running(SyncJobStatus.Started()))
       lastResult =
         try {
+          beforeAttempt()
           runSyncWithTimeout(taskFactory(), uniqueWorkName, syncTimeout) { syncJobStatus ->
             onStatus(CurrentSyncJobStatus.Running(syncJobStatus))
           }

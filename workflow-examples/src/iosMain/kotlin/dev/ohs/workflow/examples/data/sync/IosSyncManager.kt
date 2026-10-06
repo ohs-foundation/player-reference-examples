@@ -19,6 +19,7 @@ import co.touchlab.kermit.Logger
 import dev.ohs.fhir.engine.FhirEngineProvider
 import dev.ohs.fhir.engine.sync.SyncJobStatus
 import dev.ohs.fhir.engine.sync.runSync
+import dev.ohs.workflow.examples.auth.ensureFreshSessionForSync
 import dev.ohs.workflow.examples.data.DataChangeSignal
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -119,6 +120,7 @@ class IosSyncManager : SyncManager {
       scope.launch {
         val result =
           try {
+            ensureFreshSessionForSync()
             AppFhirSyncTask(FhirEngineProvider.getInstance()).runSync(taskName = null) {}
           } catch (e: CancellationException) {
             throw e

@@ -93,6 +93,20 @@ class SyncTest {
   }
 
   @Test
+  fun aSyncRefreshesTheSessionBeforeItRuns() = runTest {
+    val refreshed = CompletableDeferred<Unit>()
+    val original = Sync.beforeAttempt
+    Sync.beforeAttempt = { refreshed.complete(Unit) }
+    try {
+      Sync.oneTimeSync(taskFactory = { TestFhirSyncTask(CompletableDeferred()) })
+      refreshed.await()
+    } finally {
+      Sync.cancelOneTimeSync<TestFhirSyncTask>()
+      Sync.beforeAttempt = original
+    }
+  }
+
+  @Test
   fun cancelOneTimeSync_whileRunning_emitsCancelled() = runTest {
     val gate = CompletableDeferred<Unit>()
     val statusFlow = Sync.oneTimeSync(taskFactory = { TestFhirSyncTask(gate) })
