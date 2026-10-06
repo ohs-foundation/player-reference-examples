@@ -1,0 +1,1 @@
+{"resourceType": "http://ohs.dev/StructureDefinition/ViewJoinMap", "name": "patientVital", "from": "revIncluded", "resource": "Observation", "view": "Vital", "searchParam": "subject"}

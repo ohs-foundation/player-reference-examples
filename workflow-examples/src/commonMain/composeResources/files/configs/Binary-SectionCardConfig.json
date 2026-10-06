@@ -1,0 +1,1 @@
+{"resourceType": "http://ohs.dev/StructureDefinition/ViewConfig", "viewType": "SectionCard", "property": [{"name": "showItemCount", "type": "boolean", "valueBoolean": false}, {"name": "collapsible", "type": "boolean", "valueBoolean": true}]}

@@ -1,0 +1,1 @@
+{"resourceType": "http://ohs.dev/StructureDefinition/ViewConfig", "viewType": "CareItem", "property": [{"name": "showDate", "type": "boolean", "valueBoolean": true}]}

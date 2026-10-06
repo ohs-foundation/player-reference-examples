@@ -1,0 +1,17 @@
+{
+  "resourceType": "ActivityDefinition",
+  "id": "iccm-follow-up",
+  "url": "http://ohs.dev/fhir/ActivityDefinition/iccm-follow-up",
+  "status": "active",
+  "kind": "Task",
+  "title": "Day-3 follow-up",
+  "description": "Day-3 follow-up visit",
+  "code": {
+    "coding": [
+      {
+        "system": "http://ohs.dev/fhir/CodeSystem/task-type",
+        "code": "iccm-follow-up"
+      }
+    ]
+  }
+}
