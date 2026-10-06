@@ -41,7 +41,7 @@ class ChwWorklistViewModel(
           context.practitionerId,
         )
       }
-      .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
   val referrals: StateFlow<List<WorkItem>?> =
     repository.revision
@@ -52,7 +52,7 @@ class ChwWorklistViewModel(
           context.practitionerId,
         )
       }
-      .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+      .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
   private suspend fun patients(): Map<String, Patient> =
     repository.all("Patient").filterIsInstance<Patient>().associateBy { it.id.orEmpty() }

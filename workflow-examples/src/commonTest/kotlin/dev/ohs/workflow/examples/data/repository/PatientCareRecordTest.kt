@@ -91,4 +91,24 @@ class PatientCareRecordTest {
       profile.vitals.map { "${it.vitalName} ${it.vitalValue} ${it.vitalUnit}" },
     )
   }
+
+  @Test
+  fun theRegisterReadsEachTableOncePerRefresh() = runTest {
+    store(
+      """{"resourceType":"Patient","id":"a"}""",
+      """{"resourceType":"Patient","id":"b"}""",
+      """{"resourceType":"Patient","id":"c"}""",
+    )
+    val reads = mutableMapOf<String, Int>()
+    val counting =
+      object : FhirRepository by repository {
+        override suspend fun all(resourceType: String): List<Resource> {
+          reads[resourceType] = (reads[resourceType] ?: 0) + 1
+          return repository.all(resourceType)
+        }
+      }
+
+    assertEquals(3, PatientRepository(counting).getPatients().size)
+    assertEquals(mapOf("Patient" to 1, "ServiceRequest" to 1, "Task" to 1), reads.toMap())
+  }
 }

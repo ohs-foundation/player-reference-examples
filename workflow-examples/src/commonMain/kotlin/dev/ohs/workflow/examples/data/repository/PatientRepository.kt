@@ -17,9 +17,9 @@ package dev.ohs.workflow.examples.data.repository
 
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.workflow.examples.data.Extraction.extractor
-import dev.ohs.workflow.examples.data.datasource.allPatientIds
 import dev.ohs.workflow.examples.data.datasource.patientProfileSearchResult
 import dev.ohs.workflow.examples.data.datasource.patientSummarySearchResult
+import dev.ohs.workflow.examples.data.datasource.patientSummarySearchResults
 import dev.ohs.workflow.examples.feature.patient.profile.ProfileUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -38,10 +38,8 @@ class PatientRepository(private val fhirRepository: FhirRepository) {
 
   suspend fun getPatients(): List<PatientSummaryState> =
     withContext(extractorDispatcher) {
-      allPatientIds(fhirRepository).mapNotNull { id ->
-        patientSummarySearchResult(id, fhirRepository)?.let {
-          extractor.extract<PatientSummaryState>(it).firstOrNull()
-        }
+      patientSummarySearchResults(fhirRepository).mapNotNull {
+        extractor.extract<PatientSummaryState>(it).firstOrNull()
       }
     }
 

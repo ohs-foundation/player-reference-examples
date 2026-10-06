@@ -30,41 +30,60 @@ import dev.ohs.workflow.examples.feature.chw.FOLLOW_UP_TASK
 import dev.ohs.workflow.examples.util.idOf
 import dev.ohs.workflow.examples.workflow.REFERRAL_CODE
 
-/** Returns all patient IDs — used by the patient list screen. */
-suspend fun allPatientIds(repository: FhirRepository): List<String> =
-  repository.all("Patient").mapNotNull { (it as? Patient)?.id }
-
 /**
- * Patient list: root = Patient, plus the patient's referral orders (newest first) and follow-up
- * tasks (open first). The list row's joins read the first of each, mirroring a search with
- * `_revinclude` sorted by the server.
+ * Patient list rows: each Patient plus its referral orders (newest first) and follow-up tasks (open
+ * first). The row's joins read the first of each, mirroring a search with `_revinclude` sorted by
+ * the server. Each table is read once and grouped by patient.
  */
+suspend fun patientSummarySearchResults(repository: FhirRepository): List<SearchResult<Resource>> {
+  val referrals = referralOrdersByPatient(repository)
+  val followUps = followUpsByPatient(repository)
+  return repository.all("Patient").filterIsInstance<Patient>().map {
+    summary(it, referrals[it.id].orEmpty(), followUps[it.id].orEmpty())
+  }
+}
+
+/** One patient's list row; see [patientSummarySearchResults]. */
 suspend fun patientSummarySearchResult(
   patientId: String,
   repository: FhirRepository,
 ): SearchResult<Resource>? {
   val patient = repository.get("Patient", patientId) as? Patient ?: return null
-  val referrals =
-    repository
-      .all("ServiceRequest")
-      .filterIsInstance<ServiceRequest>()
-      .filter { it.subject.idOf("Patient") == patientId && it.isReferralOrder() }
-      .sortedByDescending { it.authoredOn?.value?.toString() }
-  val followUps =
-    repository
-      .all("Task")
-      .filterIsInstance<Task>()
-      .filter { it.`for`.idOf("Patient") == patientId && it.isFollowUp() }
-      .sortedWith(
-        compareBy<Task> { it.status.value != Task.TaskStatus.Requested }
-          .thenByDescending { it.authoredOn?.value?.toString() }
-      )
-  return SearchResult(
-    resource = patient,
-    revIncluded =
-      mapOf(("ServiceRequest" to "subject") to referrals, ("Task" to "subject") to followUps),
+  return summary(
+    patient,
+    referralOrdersByPatient(repository)[patientId].orEmpty(),
+    followUpsByPatient(repository)[patientId].orEmpty(),
   )
 }
+
+private fun summary(patient: Patient, referrals: List<ServiceRequest>, followUps: List<Task>) =
+  SearchResult<Resource>(
+    resource = patient,
+    revIncluded =
+      mapOf(
+        ("ServiceRequest" to "subject") to
+          referrals.sortedByDescending { it.authoredOn?.value?.toString() },
+        ("Task" to "subject") to
+          followUps.sortedWith(
+            compareBy<Task> { it.status.value != Task.TaskStatus.Requested }
+              .thenByDescending { it.authoredOn?.value?.toString() }
+          ),
+      ),
+  )
+
+private suspend fun referralOrdersByPatient(repository: FhirRepository) =
+  repository
+    .all("ServiceRequest")
+    .filterIsInstance<ServiceRequest>()
+    .filter { it.isReferralOrder() }
+    .groupBy { it.subject.idOf("Patient") }
+
+private suspend fun followUpsByPatient(repository: FhirRepository) =
+  repository
+    .all("Task")
+    .filterIsInstance<Task>()
+    .filter { it.isFollowUp() }
+    .groupBy { it.`for`.idOf("Patient") }
 
 /** Patient profile: root = Patient, with every care resource that references the patient. */
 suspend fun patientProfileSearchResult(
