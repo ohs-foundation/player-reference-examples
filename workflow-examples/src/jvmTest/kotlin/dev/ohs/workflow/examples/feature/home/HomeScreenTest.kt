@@ -94,6 +94,7 @@ class HomeScreenTest {
     assertTrue(onAllNodesWithText("Registers").fetchSemanticsNodes().isNotEmpty())
     assertTrue(onAllNodesWithText("Patients").fetchSemanticsNodes().isNotEmpty())
     assertTrue(onAllNodesWithText("Sync now").fetchSemanticsNodes().isNotEmpty())
+    assertTrue(onAllNodesWithText("Nurse").fetchSemanticsNodes().isNotEmpty())
   }
 
   @Test

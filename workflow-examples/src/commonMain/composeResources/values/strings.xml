@@ -97,4 +97,7 @@
     <string name="label_age">Age %1$s</string>
     <string name="label_mrn">MRN %1$s</string>
     <string name="name_unknown">Unknown</string>
+    <string name="role_chw">Community health promoter</string>
+    <string name="role_nurse">Nurse</string>
+    <string name="role_clinician">Clinician</string>
 </resources>

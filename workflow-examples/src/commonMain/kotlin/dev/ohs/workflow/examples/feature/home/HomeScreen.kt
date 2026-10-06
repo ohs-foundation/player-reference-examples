@@ -168,12 +168,19 @@ fun HomeScreen(
               color = onDrawer,
             )
           }
-          Text(
-            text = userName.ifBlank { stringResource(Res.string.home_signed_in) },
-            style = MaterialTheme.typography.titleMedium,
-            color = onDrawer,
-            fontWeight = FontWeight.SemiBold,
-          )
+          Column {
+            Text(
+              text = userName.ifBlank { stringResource(Res.string.home_signed_in) },
+              style = MaterialTheme.typography.titleMedium,
+              color = onDrawer,
+              fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+              text = stringResource(context.role.label),
+              style = MaterialTheme.typography.bodyMedium,
+              color = onDrawer.copy(alpha = 0.8f),
+            )
+          }
         }
         Text(
           text = stringResource(Res.string.home_registers),

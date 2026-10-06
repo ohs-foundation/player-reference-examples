@@ -28,6 +28,9 @@ import player_reference_examples.workflow_examples.generated.resources.home_dest
 import player_reference_examples.workflow_examples.generated.resources.home_destination_patients
 import player_reference_examples.workflow_examples.generated.resources.home_destination_queue
 import player_reference_examples.workflow_examples.generated.resources.home_destination_referrals
+import player_reference_examples.workflow_examples.generated.resources.role_chw
+import player_reference_examples.workflow_examples.generated.resources.role_clinician
+import player_reference_examples.workflow_examples.generated.resources.role_nurse
 
 /** A top-level destination reachable from [HomeScreen]'s navigation drawer. */
 enum class HomeDestination(val label: StringResource, val icon: ImageVector) {
@@ -45,3 +48,11 @@ fun AppRole.destinations(): List<HomeDestination> =
     AppRole.NURSE -> listOf(HomeDestination.Patients)
     AppRole.CLINICIAN -> listOf(HomeDestination.Queue)
   }
+
+val AppRole.label: StringResource
+  get() =
+    when (this) {
+      AppRole.CHW -> Res.string.role_chw
+      AppRole.NURSE -> Res.string.role_nurse
+      AppRole.CLINICIAN -> Res.string.role_clinician
+    }
