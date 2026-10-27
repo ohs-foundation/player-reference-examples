@@ -1,0 +1,141 @@
+<resources>
+    <!-- Login screen -->
+    <string name="login_brand">OHS Medplum EIR</string>
+    <string name="login_card_title">Sign in</string>
+    <string name="login_subtitle">Electronic Immunization Registry</string>
+    <string name="login_attribution_eyebrow">Powered by</string>
+    <string name="login_attribution_medplum">Medplum</string>
+    <string name="login_attribution_open_health_stack">Open Health Stack</string>
+    <string name="login_attribution_separator">·</string>
+    <string name="login_redirect_hint">We'll hand you over to your organization's sign-in page, then bring you straight back.</string>
+    <string name="login_sign_in">Continue to sign in</string>
+    <string name="login_error_title">Sign-in failed</string>
+    <string name="login_error_dismiss">Dismiss</string>
+
+    <!-- Home screen -->
+    <string name="home_destination_children">Children</string>
+    <string name="home_registers">Registers</string>
+    <string name="home_signed_in">Signed in</string>
+    <string name="home_last_synced">Last synced: %1$s</string>
+    <string name="home_sync_now">Sync now</string>
+    <string name="home_cancel_sync">Cancel sync</string>
+    <string name="home_sync_in_progress">Sync in progress</string>
+    <string name="home_sign_out">Sign out</string>
+    <!-- Theme switcher in the navigation drawer. Kept to one word each: the drawer is 280dp wide
+         and these sit three-across in a segmented control. -->
+    <string name="home_theme">Appearance</string>
+    <string name="home_theme_system">System</string>
+    <string name="home_theme_light">Light</string>
+    <string name="home_theme_dark">Dark</string>
+    <string name="home_theme_selected">%1$s theme, selected</string>
+    <string name="home_theme_not_selected">%1$s theme</string>
+    <string name="home_open_navigation_menu">Open navigation menu</string>
+    <string name="home_sync_failed">Sync failed. Please try again.</string>
+    <string name="home_sync_cancelled">Sync cancelled.</string>
+    <string name="home_select_child">Select a child to view their record</string>
+    <string name="home_register_child">Register new child</string>
+    <string name="home_view_profile">View my profile</string>
+
+    <!-- Initial sync screen -->
+    <string name="initial_sync_title">Setting up your data…</string>
+    <string name="initial_sync_subtitle">This may take a moment the first time.</string>
+    <string name="initial_sync_failed_title">Couldn't sync your data</string>
+    <string name="initial_sync_failed_body">Sync failed. Please check your connection and try again.</string>
+    <string name="initial_sync_retry">Retry</string>
+    <string name="initial_sync_continue">Continue without syncing</string>
+
+    <!-- Patient list screen -->
+    <string name="patient_list_title">Children</string>
+    <string name="patient_list_empty">No children in this register yet</string>
+    <string name="patient_list_no_matches">No children match “%1$s”</string>
+    <string name="patient_list_search_hint">Search for name or ID</string>
+    <string name="patient_list_clear_search">Clear search</string>
+    <string name="patient_list_register">Register child</string>
+
+    <!-- Patient profile screen -->
+    <string name="patient_profile_default_name">Child</string>
+    <string name="patient_profile_back">Back</string>
+    <string name="patient_profile_record_growth">Record growth</string>
+    <string name="patient_profile_not_found">Child not found</string>
+    <!-- Overflow menu on the child profile. -->
+    <string name="patient_profile_more_actions">More actions</string>
+    <string name="patient_profile_change_status">Change status</string>
+    <string name="patient_profile_report_deceased">Report deceased</string>
+    <string name="patient_profile_report_aefi">Report adverse event</string>
+    <!-- Change-status confirmation. Deactivating is reversible, which the copy says out loud so
+         nobody avoids the action for fear of losing the record. -->
+    <string name="patient_profile_status_title_deactivate">Mark %1$s inactive?</string>
+    <string name="patient_profile_status_title_activate">Mark %1$s active?</string>
+    <string name="patient_profile_status_body_deactivate">They stop appearing in the active register and no further vaccines will be forecast. Nothing is deleted, and you can make them active again at any time.</string>
+    <string name="patient_profile_status_body_activate">They return to the active register and vaccine forecasting resumes.</string>
+    <string name="patient_profile_status_confirm_deactivate">Mark inactive</string>
+    <string name="patient_profile_status_confirm_activate">Mark active</string>
+    <string name="patient_profile_cancel">Cancel</string>
+    <string name="patient_profile_status_changed_inactive">Marked inactive</string>
+    <string name="patient_profile_status_changed_active">Marked active</string>
+    <!-- Shown instead of the deceased/AEFI actions when the record is already marked deceased. -->
+    <string name="patient_profile_already_deceased">Already recorded as deceased</string>
+    <!-- The AEFI form asks WHICH dose caused the reaction, so it needs at least one recorded. -->
+    <string name="patient_profile_no_doses_recorded">No vaccines recorded yet</string>
+    <!-- Report-deceased dialog. A fuller death report would ask date of death, place of death and
+         date of birth. Only the date of death is kept: base R4 has nowhere on Patient for a place
+         of death, and the register already holds the date of birth. -->
+    <string name="patient_profile_deceased_title">Report %1$s deceased</string>
+    <string name="patient_profile_deceased_body">This removes the child from the active register and stops all vaccine forecasting.</string>
+    <string name="patient_profile_deceased_date">Date of death</string>
+    <string name="patient_profile_deceased_confirm">Report deceased</string>
+    <string name="patient_profile_deceased_recorded">Recorded as deceased</string>
+    <string name="patient_profile_action_failed">Couldn\'t save that. Please try again.</string>
+
+    <!-- Practitioner profile screen -->
+    <string name="practitioner_title">My profile</string>
+    <string name="practitioner_back">Back</string>
+    <string name="practitioner_unavailable">Your practitioner record hasn\'t synced yet.</string>
+    <string name="practitioner_section_you">Signed in as</string>
+    <string name="practitioner_section_facility">Facility</string>
+    <string name="practitioner_label_name">Name</string>
+    <string name="practitioner_label_email">Email</string>
+    <string name="practitioner_label_username">Username</string>
+    <string name="practitioner_label_id">Practitioner ID</string>
+    <string name="practitioner_label_facility">Name</string>
+    <string name="practitioner_label_facility_id">Facility ID</string>
+    <string name="practitioner_caseload">%1$s children in your register</string>
+
+    <!-- Questionnaire screen -->
+    <string name="questionnaire_title">Questionnaire</string>
+    <string name="questionnaire_close">Close</string>
+    <string name="questionnaire_back">Back</string>
+    <string name="questionnaire_retry">Retry</string>
+
+    <!-- Shared item labels -->
+    <string name="label_age">Age %1$s</string>
+    <string name="label_age_plain">Age</string>
+    <string name="label_sex">Sex</string>
+    <string name="label_dob">DOB</string>
+    <string name="label_id">ID</string>
+    <string name="label_mrn">MRN %1$s</string>
+    <string name="name_unknown">Unknown</string>
+
+    <!-- Section header -->
+    <string name="section_collapse">Collapse</string>
+    <string name="section_expand">Expand</string>
+
+    <!-- Patient clinical items -->
+    <string name="immunization_unknown">Unknown vaccine</string>
+    <string name="immunization_given">Given %1$s</string>
+    <string name="immunization_due_on">%1$s due %2$s</string>
+    <string name="immunization_overdue_since">%1$s overdue since %2$s</string>
+    <string name="growth_unknown">Measurement</string>
+    <string name="growth_measured">Measured %1$s</string>
+    <!-- Adverse event (AEFI) rows on the child profile. -->
+    <string name="adverse_event_unknown">Adverse event</string>
+    <!-- AdverseEvent.date carries the ONSET of the reaction ("when did it start"), not when the
+         report was filed, so the label says so. -->
+    <string name="adverse_event_started">Started %1$s</string>
+    <string name="adverse_event_after_vaccine">After %1$s</string>
+    <string name="adverse_event_detail_separator"> · </string>
+    <string name="adverse_event_severity_mild">Mild</string>
+    <string name="adverse_event_severity_moderate">Moderate</string>
+    <string name="adverse_event_severity_severe">Severe</string>
+    <string name="adverse_event_serious">Serious</string>
+</resources>

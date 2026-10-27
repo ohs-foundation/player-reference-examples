@@ -1,0 +1,10 @@
+<!--
+  App mark: a shield (protection) enclosing a check (immunised). Same geometry as
+  commonMain/composeResources/drawable/app_logo.xml and the Android adaptive icon,
+  but on a solid blue ground so it reads in a browser tab.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" role="img" aria-label="OHS Medplum EIR">
+  <rect width="108" height="108" rx="20" fill="#40A1DA"/>
+  <path d="M54 20 L84 31 L84 56 C84 73 71 86 54 93 C37 86 24 73 24 56 L24 31 Z" fill="#FFFFFF"/>
+  <path d="M42 56 L36 62 L50 76 L74 52 L68 46 L50 64 Z" fill="#40A1DA"/>
+</svg>

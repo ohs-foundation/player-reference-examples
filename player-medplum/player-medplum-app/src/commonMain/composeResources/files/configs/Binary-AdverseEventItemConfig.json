@@ -1,0 +1,11 @@
+{
+  "resourceType": "http://ohs.dev/StructureDefinition/ViewConfig",
+  "viewType": "AdverseEventItem",
+  "property": [
+    {
+      "name": "showDate",
+      "type": "boolean",
+      "valueBoolean": true
+    }
+  ]
+}

@@ -1,0 +1,458 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "child-registration",
+  "url": "https://medplum.player.ohs.dev/fhir/Questionnaire/child-registration",
+  "version": "1.0.0",
+  "name": "ChildRegistration",
+  "title": "Register child",
+  "status": "active",
+  "date": "2026-09-21",
+  "subjectType": [
+    "Patient"
+  ],
+  "_comment": [
+    "Registers one child and the caregiver who brings them, in a single SDC template extraction.",
+    "There is no ID pool: the child's business identifier IS the allocated FHIR UUID, so two",
+    "devices registering offline can never collide on a number.",
+    "caregiver card reads, and which can be referenced and updated on its own) and inline as",
+    "Patient.contact (which travels with the child record wherever it goes). Both come from the",
+    "same answers, so they cannot disagree.",
+    "The caregiver is written TWICE on purpose, which the spec explicitly allows ('Some individuals",
+    "may serve as both a Patient's Contact and a Related Person'): a standalone RelatedPerson, which",
+    "the profile's caregiver card reads and which other resources can reference, and inline as",
+    "Patient.contact, which travels with the child record wherever it goes. The two are tied together",
+    "by the standard patient-relatedPerson extension so a reader knows they are ONE person rather",
+    "than two contacts who happen to share a name.",
+    "managingOrganization records the facility as FHIR data. It is NOT what scopes access --",
+    "Medplum stamps meta.account from the signed-in practitioner's AccessPolicy compartment, which",
+    "the client cannot even represent. The two are independent, and only the server's one is",
+    "enforced.",
+    "__PRACTITIONER_ID__ and __ORGANIZATION_ID__ are substituted at launch. If either is unknown,",
+    "QuestionnaireService DROPS the element rather than writing a dangling reference."
+  ],
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId",
+      "valueString": "childId"
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId",
+      "valueString": "caregiverId"
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#child-template"
+          }
+        },
+        {
+          "url": "resourceId",
+          "valueString": "%childId.replace('urn:uuid:', '')"
+        }
+      ]
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#caregiver-template"
+          }
+        },
+        {
+          "url": "resourceId",
+          "valueString": "%caregiverId.replace('urn:uuid:', '')"
+        }
+      ]
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "Patient",
+      "id": "child-template",
+      "identifier": [
+        {
+          "system": "https://medplum.player.ohs.dev/child-id",
+          "_value": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "%childId.replace('urn:uuid:', '')"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "active": true,
+      "name": [
+        {
+          "_family": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "item.where(linkId='child-family').answer.value.first()"
+                }
+              }
+            ]
+          },
+          "_given": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "item.where(linkId='child-given').answer.value.first()"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "gender": "unknown",
+      "_gender": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueExpression": {
+              "language": "text/fhirpath",
+              "expression": "item.where(linkId='child-sex').answer.value.ofType(Coding).code.first()"
+            }
+          }
+        ]
+      },
+      "_birthDate": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueExpression": {
+              "language": "text/fhirpath",
+              "expression": "item.where(linkId='child-dob').answer.value.first()"
+            }
+          }
+        ]
+      },
+      "deceasedBoolean": false,
+      "contact": [
+        {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/patient-relatedPerson",
+              "valueReference": {
+                "_reference": {
+                  "extension": [
+                    {
+                      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                      "valueExpression": {
+                        "language": "text/fhirpath",
+                        "expression": "'RelatedPerson/' + %caregiverId.replace('urn:uuid:', '')"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "relationship": [
+            {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+                  "_code": {
+                    "extension": [
+                      {
+                        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                        "valueExpression": {
+                          "language": "text/fhirpath",
+                          "expression": "item.where(linkId='caregiver-relationship').answer.value.ofType(Coding).code.first()"
+                        }
+                      }
+                    ]
+                  },
+                  "_display": {
+                    "extension": [
+                      {
+                        "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                        "valueExpression": {
+                          "language": "text/fhirpath",
+                          "expression": "item.where(linkId='caregiver-relationship').answer.value.ofType(Coding).display.first()"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "name": {
+            "_family": {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "item.where(linkId='caregiver-family').answer.value.first()"
+                  }
+                }
+              ]
+            },
+            "_given": [
+              {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "item.where(linkId='caregiver-given').answer.value.first()"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "telecom": [
+            {
+              "system": "phone",
+              "_value": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "item.where(linkId='caregiver-phone').answer.value.first()"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "generalPractitioner": [
+        {
+          "reference": "Practitioner/__PRACTITIONER_ID__"
+        }
+      ],
+      "managingOrganization": {
+        "reference": "Organization/__ORGANIZATION_ID__"
+      }
+    },
+    {
+      "resourceType": "RelatedPerson",
+      "id": "caregiver-template",
+      "patient": {
+        "_reference": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "'Patient/' + %childId.replace('urn:uuid:', '')"
+              }
+            }
+          ]
+        }
+      },
+      "relationship": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+              "_code": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "item.where(linkId='caregiver-relationship').answer.value.ofType(Coding).code.first()"
+                    }
+                  }
+                ]
+              },
+              "_display": {
+                "extension": [
+                  {
+                    "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                    "valueExpression": {
+                      "language": "text/fhirpath",
+                      "expression": "item.where(linkId='caregiver-relationship').answer.value.ofType(Coding).display.first()"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "name": [
+        {
+          "_family": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "item.where(linkId='caregiver-family').answer.value.first()"
+                }
+              }
+            ]
+          },
+          "_given": [
+            {
+              "extension": [
+                {
+                  "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                  "valueExpression": {
+                    "language": "text/fhirpath",
+                    "expression": "item.where(linkId='caregiver-given').answer.value.first()"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "telecom": [
+        {
+          "system": "phone",
+          "_value": {
+            "extension": [
+              {
+                "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+                "valueExpression": {
+                  "language": "text/fhirpath",
+                  "expression": "item.where(linkId='caregiver-phone').answer.value.first()"
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "active": true
+    }
+  ],
+  "item": [
+    {
+      "linkId": "child-given",
+      "text": "Child's first name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "child-family",
+      "text": "Child's family name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "child-sex",
+      "text": "Sex",
+      "type": "choice",
+      "required": true,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "code": "female",
+            "display": "Female",
+            "system": "http://hl7.org/fhir/administrative-gender"
+          }
+        },
+        {
+          "valueCoding": {
+            "code": "male",
+            "display": "Male",
+            "system": "http://hl7.org/fhir/administrative-gender"
+          }
+        }
+      ],
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "http://hl7.org/fhir/questionnaire-item-control",
+                "code": "radio-button",
+                "display": "Radio Button"
+              }
+            ]
+          }
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-choiceOrientation",
+          "valueCode": "horizontal"
+        }
+      ]
+    },
+    {
+      "linkId": "child-dob",
+      "text": "Date of birth",
+      "type": "date",
+      "required": true
+    },
+    {
+      "linkId": "caregiver-given",
+      "text": "Caregiver's first name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "caregiver-family",
+      "text": "Caregiver's family name",
+      "type": "string",
+      "required": true
+    },
+    {
+      "linkId": "caregiver-relationship",
+      "text": "Relationship to child",
+      "type": "choice",
+      "required": true,
+      "answerOption": [
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+            "code": "MTH",
+            "display": "mother"
+          },
+          "initialSelected": true
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+            "code": "FTH",
+            "display": "father"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+            "code": "GRPRN",
+            "display": "grandparent"
+          }
+        },
+        {
+          "valueCoding": {
+            "system": "http://terminology.hl7.org/CodeSystem/v3-RoleCode",
+            "code": "GUARD",
+            "display": "guardian"
+          }
+        }
+      ]
+    },
+    {
+      "linkId": "caregiver-phone",
+      "text": "Caregiver's phone number",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,317 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "growth-monitoring",
+  "url": "https://medplum.player.ohs.dev/fhir/Questionnaire/growth-monitoring",
+  "version": "1.0.0",
+  "name": "GrowthMonitoring",
+  "title": "Record growth",
+  "status": "active",
+  "date": "2026-09-21",
+  "subjectType": [
+    "Patient"
+  ],
+  "_comment": [
+    "One visit's anthropometry, extracted as three separate vital-signs Observations rather than",
+    "one with components -- that is how WHO growth data is queried (one code, one series) and it",
+    "keeps each measurement independently omittable when a scale or tape is missing.",
+    "LOINC: 29463-7 body weight, 8302-2 body height/length, 56072-2 MUAC. Units are UCUM.",
+    "A blank measurement extracts NOTHING: templateExtractValue on an empty answer yields no",
+    "occurrence, so a skipped field cannot become a zero reading.",
+    "NOTE: no z-score or percentile is derived here. That needs the WHO reference tables and",
+    "clinical sign-off; a wrong growth classification is worse than none."
+  ],
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId",
+      "valueString": "weightId"
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId",
+      "valueString": "heightId"
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-extractAllocateId",
+      "valueString": "muacId"
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#weight-template"
+          }
+        },
+        {
+          "url": "resourceId",
+          "valueString": "%weightId"
+        }
+      ]
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#height-template"
+          }
+        },
+        {
+          "url": "resourceId",
+          "valueString": "%heightId"
+        }
+      ]
+    },
+    {
+      "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtract",
+      "extension": [
+        {
+          "url": "template",
+          "valueReference": {
+            "reference": "#muac-template"
+          }
+        },
+        {
+          "url": "resourceId",
+          "valueString": "%muacId"
+        }
+      ]
+    }
+  ],
+  "contained": [
+    {
+      "resourceType": "Observation",
+      "id": "weight-template",
+      "status": "final",
+      "category": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+              "code": "vital-signs",
+              "display": "Vital Signs"
+            }
+          ]
+        }
+      ],
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "29463-7",
+            "display": "Body weight"
+          }
+        ],
+        "text": "Body weight"
+      },
+      "subject": {
+        "_reference": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "'Patient/__PATIENT_ID__'"
+              }
+            }
+          ]
+        }
+      },
+      "_effectiveDateTime": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueExpression": {
+              "language": "text/fhirpath",
+              "expression": "item.where(linkId='growth-date').answer.value.first()"
+            }
+          }
+        ]
+      },
+      "valueQuantity": {
+        "_value": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "item.where(linkId='growth-weight').answer.value.first()"
+              }
+            }
+          ]
+        },
+        "unit": "kg",
+        "system": "http://unitsofmeasure.org",
+        "code": "kg"
+      }
+    },
+    {
+      "resourceType": "Observation",
+      "id": "height-template",
+      "status": "final",
+      "category": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+              "code": "vital-signs",
+              "display": "Vital Signs"
+            }
+          ]
+        }
+      ],
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "8302-2",
+            "display": "Body height"
+          }
+        ],
+        "text": "Body height"
+      },
+      "subject": {
+        "_reference": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "'Patient/__PATIENT_ID__'"
+              }
+            }
+          ]
+        }
+      },
+      "_effectiveDateTime": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueExpression": {
+              "language": "text/fhirpath",
+              "expression": "item.where(linkId='growth-date').answer.value.first()"
+            }
+          }
+        ]
+      },
+      "valueQuantity": {
+        "_value": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "item.where(linkId='growth-height').answer.value.first()"
+              }
+            }
+          ]
+        },
+        "unit": "cm",
+        "system": "http://unitsofmeasure.org",
+        "code": "cm"
+      }
+    },
+    {
+      "resourceType": "Observation",
+      "id": "muac-template",
+      "status": "final",
+      "category": [
+        {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+              "code": "vital-signs",
+              "display": "Vital Signs"
+            }
+          ]
+        }
+      ],
+      "code": {
+        "coding": [
+          {
+            "system": "http://loinc.org",
+            "code": "56072-2",
+            "display": "Mid upper arm circumference"
+          }
+        ],
+        "text": "Mid upper arm circumference"
+      },
+      "subject": {
+        "_reference": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "'Patient/__PATIENT_ID__'"
+              }
+            }
+          ]
+        }
+      },
+      "_effectiveDateTime": {
+        "extension": [
+          {
+            "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+            "valueExpression": {
+              "language": "text/fhirpath",
+              "expression": "item.where(linkId='growth-date').answer.value.first()"
+            }
+          }
+        ]
+      },
+      "valueQuantity": {
+        "_value": {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/uv/sdc/StructureDefinition/sdc-questionnaire-templateExtractValue",
+              "valueExpression": {
+                "language": "text/fhirpath",
+                "expression": "item.where(linkId='growth-muac').answer.value.first()"
+              }
+            }
+          ]
+        },
+        "unit": "cm",
+        "system": "http://unitsofmeasure.org",
+        "code": "cm"
+      }
+    }
+  ],
+  "item": [
+    {
+      "linkId": "patient-id",
+      "text": "Patient id",
+      "type": "string",
+      "readOnly": true,
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/questionnaire-hidden",
+          "valueBoolean": true
+        }
+      ]
+    },
+    {
+      "linkId": "growth-date",
+      "text": "Date of measurement",
+      "type": "dateTime",
+      "required": true
+    },
+    {
+      "linkId": "growth-weight",
+      "text": "Weight (kg)",
+      "type": "decimal"
+    },
+    {
+      "linkId": "growth-height",
+      "text": "Length / height (cm)",
+      "type": "decimal"
+    },
+    {
+      "linkId": "growth-muac",
+      "text": "MUAC (cm)",
+      "type": "decimal"
+    }
+  ]
+}

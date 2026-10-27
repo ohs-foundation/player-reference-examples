@@ -1,0 +1,44 @@
+# Repo-wide ignores. Build-system and platform ignores that belong to a single
+# example live in that example's own .gitignore (e.g. player-medplum/.gitignore).
+
+# --- OS ---
+.DS_Store
+
+# --- Editors & IDEs ---
+.idea
+*.iml
+.vscode
+.antigravity
+
+# --- AI-Native IDEs & Agents ---
+
+# Cursor
+.cursor/
+.cursorignore
+.cursorindexingignore
+.cursorrules
+
+# Windsurf / Codeium
+.windsurf/
+.codeium/
+.codeiumignore
+.windsurfignore
+
+# Aider
+.aider*
+.aider.chat.history.md
+.aider.conf.yml
+
+# JetBrains AI Assistant
+.aiignore
+.aiexclude
+
+# General / Emerging Standards
+.noai
+.claude
+AGENT.MD
+CLAUDE.MD
+.skills
+
+# Git worktrees used for isolated agent workspaces
+.worktrees/

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CFBundleDisplayName</key>
+		<string>OHS Medplum EIR</string>
+		<key>CADisableMinimumFrameDurationOnPhone</key>
+		<true/>
+		<!--
+		  Must stay byte-equal to PERIODIC_SYNC_TASK_IDENTIFIER in IosSyncManager.kt. iOS refuses to
+		  register a launch handler for an identifier that is not permitted here, and
+		  MainViewController registers eagerly at launch, so a mismatch crashes on start.
+		-->
+		<key>BGTaskSchedulerPermittedIdentifiers</key>
+		<array>
+			<string>dev.ohs.player.medplum.sync.periodic</string>
+		</array>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>processing</string>
+		</array>
+	</dict>
+</plist>
