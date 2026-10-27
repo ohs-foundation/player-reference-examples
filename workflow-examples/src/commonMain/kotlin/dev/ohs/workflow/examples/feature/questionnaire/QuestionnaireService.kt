@@ -21,13 +21,13 @@ import dev.ohs.fhir.model.r4.Questionnaire as QuestionnaireR4
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
 import dev.ohs.workflow.examples.auth.UserContext
 import dev.ohs.workflow.examples.data.repository.FhirRepository
+import dev.ohs.workflow.examples.generated.resources.Res
 import dev.ohs.workflow.examples.util.FhirJson
 import dev.ohs.workflow.examples.workflow.AssessmentResult
 import dev.ohs.workflow.examples.workflow.ProtocolService
 import dev.ohs.workflow.examples.workflow.Transactor
 import dev.ohs.workflow.examples.workflow.registrationPatient
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import player_reference_examples.workflow_examples.generated.resources.Res
 
 /** Caller-supplied identifiers describing why/for-whom a questionnaire was launched. */
 data class QuestionnaireLaunchContext(

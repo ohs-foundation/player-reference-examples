@@ -81,20 +81,20 @@ import dev.ohs.workflow.examples.feature.chw.ReferralsScreen
 import dev.ohs.workflow.examples.feature.chw.WorkItem
 import dev.ohs.workflow.examples.feature.opd.QueueScreen
 import dev.ohs.workflow.examples.feature.patient.list.PatientListScreen
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.home_cancel_sync
+import dev.ohs.workflow.examples.generated.resources.home_last_synced
+import dev.ohs.workflow.examples.generated.resources.home_open_navigation_menu
+import dev.ohs.workflow.examples.generated.resources.home_registers
+import dev.ohs.workflow.examples.generated.resources.home_sign_out
+import dev.ohs.workflow.examples.generated.resources.home_signed_in
+import dev.ohs.workflow.examples.generated.resources.home_sync_cancelled
+import dev.ohs.workflow.examples.generated.resources.home_sync_failed
+import dev.ohs.workflow.examples.generated.resources.home_sync_in_progress
+import dev.ohs.workflow.examples.generated.resources.home_sync_now
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.home_cancel_sync
-import player_reference_examples.workflow_examples.generated.resources.home_last_synced
-import player_reference_examples.workflow_examples.generated.resources.home_open_navigation_menu
-import player_reference_examples.workflow_examples.generated.resources.home_registers
-import player_reference_examples.workflow_examples.generated.resources.home_sign_out
-import player_reference_examples.workflow_examples.generated.resources.home_signed_in
-import player_reference_examples.workflow_examples.generated.resources.home_sync_cancelled
-import player_reference_examples.workflow_examples.generated.resources.home_sync_failed
-import player_reference_examples.workflow_examples.generated.resources.home_sync_in_progress
-import player_reference_examples.workflow_examples.generated.resources.home_sync_now
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable

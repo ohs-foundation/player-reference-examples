@@ -34,7 +34,7 @@ A user with no known role sees a "No role assigned" screen and does not sync. Se
 
 ## Protocols
 
-All protocol content ships in [`files/protocols/`](./workflow-examples/src/commonMain/composeResources/files/protocols). It is resolved in memory and never written to the local database. A write there would be queued for upload, and the gateway refuses `PlanDefinition`.
+All protocol content ships in [`files/protocols/`](./src/commonMain/composeResources/files/protocols). It is resolved in memory and never written to the local database. A write there would be queued for upload, and the gateway refuses `PlanDefinition`.
 
 | PlanDefinition | Variables | Produces |
 |---|---|---|
@@ -47,7 +47,7 @@ The library has no CQL, so every condition is FHIRPath over data the app looks u
 
 ## Sync
 
-Each role downloads what [`files/sync/<role>.json`](./workflow-examples/src/commonMain/composeResources/files/sync) names. Each entry has a resource `type`, search `params`, and `ids`. `{practitioner}`, `{organization}` and `{location}` are filled in from the user's PractitionerRole.
+Each role downloads what [`files/sync/<role>.json`](./src/commonMain/composeResources/files/sync) names. Each entry has a resource `type`, search `params`, and `ids`. `{practitioner}`, `{organization}` and `{location}` are filled in from the user's PractitionerRole.
 
 ```json
 { "type": "ServiceRequest", "params": { "intent": "order", "performer": "Organization/{organization}" } }
@@ -101,11 +101,13 @@ Kiambu County Department of Health          county code 022
 
 ## Run
 
+Run every command from this directory (`workflow-examples/`).
+
 | Target | Command |
 |---|---|
-| Desktop | `./gradlew :workflow-examples:run` |
-| Android | `./gradlew :workflow-examples:assembleDebug` |
-| Web (Wasm) | `./gradlew :workflow-examples:wasmJsBrowserDevelopmentRun` |
+| Desktop | `./gradlew run` |
+| Android | `./gradlew assembleDebug` |
+| Web (Wasm) | `./gradlew wasmJsBrowserDevelopmentRun` |
 | iOS | Open [`iosApp/`](./iosApp) in Xcode |
 
 ## Walkthrough
@@ -125,7 +127,7 @@ To see the home-treatment path, register a second child, then assess them with f
 ## Tests
 
 ```shell
-./gradlew :workflow-examples:jvmTest
+./gradlew jvmTest
 ```
 
 | Area | Tests |

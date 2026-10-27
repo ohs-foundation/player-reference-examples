@@ -28,13 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.home_sign_out
+import dev.ohs.workflow.examples.generated.resources.role_failed_title
+import dev.ohs.workflow.examples.generated.resources.role_none_body
+import dev.ohs.workflow.examples.generated.resources.role_none_title
+import dev.ohs.workflow.examples.generated.resources.role_retry
 import org.jetbrains.compose.resources.stringResource
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.home_sign_out
-import player_reference_examples.workflow_examples.generated.resources.role_failed_title
-import player_reference_examples.workflow_examples.generated.resources.role_none_body
-import player_reference_examples.workflow_examples.generated.resources.role_none_title
-import player_reference_examples.workflow_examples.generated.resources.role_retry
 
 /** Shown instead of the app when the user's role is unknown ([message] null) or failed to load. */
 @Composable

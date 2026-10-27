@@ -34,11 +34,11 @@ import dev.ohs.player.client.layout.VerticalListRenderer
 import dev.ohs.player.client.scaffold.ListScaffold
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.player.generated.viewtype.ViewTypeCS
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.patient_list_empty
+import dev.ohs.workflow.examples.generated.resources.patient_list_register
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.patient_list_empty
-import player_reference_examples.workflow_examples.generated.resources.patient_list_register
 
 @Composable
 fun PatientListScreen(onPatientClick: (String) -> Unit, onRegister: () -> Unit) {

@@ -34,15 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.ohs.workflow.examples.auth.UserContext
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.follow_ups_empty
+import dev.ohs.workflow.examples.generated.resources.referrals_empty
+import dev.ohs.workflow.examples.generated.resources.work_due
+import dev.ohs.workflow.examples.generated.resources.work_seen_at_facility
+import dev.ohs.workflow.examples.generated.resources.work_waiting_at_facility
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.follow_ups_empty
-import player_reference_examples.workflow_examples.generated.resources.referrals_empty
-import player_reference_examples.workflow_examples.generated.resources.work_due
-import player_reference_examples.workflow_examples.generated.resources.work_seen_at_facility
-import player_reference_examples.workflow_examples.generated.resources.work_waiting_at_facility
 
 @Composable
 fun FollowUpsScreen(context: UserContext, onStartVisit: (WorkItem) -> Unit) {

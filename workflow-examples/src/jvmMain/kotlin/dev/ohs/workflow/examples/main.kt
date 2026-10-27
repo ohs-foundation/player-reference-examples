@@ -30,10 +30,10 @@ import dev.ohs.workflow.examples.data.sync.ForegroundSyncManager
 import dev.ohs.workflow.examples.data.sync.SYNC_TIMEOUT_DURATION
 import dev.ohs.workflow.examples.data.sync.SyncManager
 import dev.ohs.workflow.examples.data.sync.serialized
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.app_logo
 import org.jetbrains.compose.resources.painterResource
 import org.koin.dsl.module
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.app_logo
 
 fun main() = application {
   FhirEngineProvider.init(

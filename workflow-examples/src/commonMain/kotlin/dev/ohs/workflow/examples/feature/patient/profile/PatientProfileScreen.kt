@@ -46,13 +46,13 @@ import dev.ohs.player.client.registry.layoutRenderer
 import dev.ohs.player.client.renderer.RenderOptions
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.player.generated.viewtype.ViewTypeCS
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.patient_profile_back
+import dev.ohs.workflow.examples.generated.resources.patient_profile_default_name
+import dev.ohs.workflow.examples.generated.resources.patient_profile_not_found
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.patient_profile_back
-import player_reference_examples.workflow_examples.generated.resources.patient_profile_default_name
-import player_reference_examples.workflow_examples.generated.resources.patient_profile_not_found
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

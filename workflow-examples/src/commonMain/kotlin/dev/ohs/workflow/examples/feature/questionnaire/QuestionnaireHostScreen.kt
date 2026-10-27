@@ -53,15 +53,15 @@ import dev.ohs.fhir.datacapture.QuestionnaireConfig
 import dev.ohs.fhir.datacapture.QuestionnaireItemViewFactoryMatcher
 import dev.ohs.fhir.datacapture.QuestionnaireItemViewFactoryMatchersProvider
 import dev.ohs.workflow.examples.auth.UserContext
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.questionnaire_back
+import dev.ohs.workflow.examples.generated.resources.questionnaire_close
+import dev.ohs.workflow.examples.generated.resources.questionnaire_retry
+import dev.ohs.workflow.examples.generated.resources.questionnaire_title
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.questionnaire_back
-import player_reference_examples.workflow_examples.generated.resources.questionnaire_close
-import player_reference_examples.workflow_examples.generated.resources.questionnaire_retry
-import player_reference_examples.workflow_examples.generated.resources.questionnaire_title
 
 @Composable
 fun QuestionnaireHostScreen(

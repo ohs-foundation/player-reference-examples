@@ -55,16 +55,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.app_logo
+import dev.ohs.workflow.examples.generated.resources.login_brand
+import dev.ohs.workflow.examples.generated.resources.login_card_title
+import dev.ohs.workflow.examples.generated.resources.login_error_dismiss
+import dev.ohs.workflow.examples.generated.resources.login_error_title
+import dev.ohs.workflow.examples.generated.resources.login_redirect_hint
+import dev.ohs.workflow.examples.generated.resources.login_sign_in
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.app_logo
-import player_reference_examples.workflow_examples.generated.resources.login_brand
-import player_reference_examples.workflow_examples.generated.resources.login_card_title
-import player_reference_examples.workflow_examples.generated.resources.login_error_dismiss
-import player_reference_examples.workflow_examples.generated.resources.login_error_title
-import player_reference_examples.workflow_examples.generated.resources.login_redirect_hint
-import player_reference_examples.workflow_examples.generated.resources.login_sign_in
 
 /** Material 3's "expanded" window size class breakpoint (matches HomeWidthBreakpoint.kt). */
 private val LOGIN_EXPANDED_WIDTH_BREAKPOINT = 840.dp

@@ -19,11 +19,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.workflow.examples.feature.component.common.Chip
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.care_status_follow_up_due
+import dev.ohs.workflow.examples.generated.resources.care_status_referred
+import dev.ohs.workflow.examples.generated.resources.work_seen_at_facility
 import org.jetbrains.compose.resources.stringResource
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.care_status_follow_up_due
-import player_reference_examples.workflow_examples.generated.resources.care_status_referred
-import player_reference_examples.workflow_examples.generated.resources.work_seen_at_facility
 
 /** Where a patient stands in the referral loop, as shown on their list row and header. */
 enum class CareStatus {

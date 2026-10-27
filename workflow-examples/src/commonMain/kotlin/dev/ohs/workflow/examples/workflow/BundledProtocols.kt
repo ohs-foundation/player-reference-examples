@@ -21,9 +21,9 @@ import dev.ohs.fhir.model.r4.PlanDefinition
 import dev.ohs.fhir.model.r4.Resource
 import dev.ohs.fhir.model.r4.terminologies.ResourceType
 import dev.ohs.fhir.workflow.CanonicalResolver
+import dev.ohs.workflow.examples.generated.resources.Res
 import dev.ohs.workflow.examples.util.FhirJson
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import player_reference_examples.workflow_examples.generated.resources.Res
 
 /**
  * PlanDefinitions and ActivityDefinitions bundled with the app. Kept out of the engine on purpose:

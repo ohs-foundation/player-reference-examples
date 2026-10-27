@@ -19,10 +19,10 @@ import dev.ohs.fhir.engine.sync.download.ResourceSearchParams
 import dev.ohs.fhir.model.r4.terminologies.ResourceType
 import dev.ohs.workflow.examples.auth.AppRole
 import dev.ohs.workflow.examples.auth.UserContext
+import dev.ohs.workflow.examples.generated.resources.Res
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import player_reference_examples.workflow_examples.generated.resources.Res
 
 /** What one role downloads: per resource type, the search params and/or the ids to fetch. */
 @Serializable data class SyncConfig(val resources: List<SyncResource>)

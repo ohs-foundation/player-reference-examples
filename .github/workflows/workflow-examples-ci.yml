@@ -1,12 +1,18 @@
-# PR validation. Runs ./gradlew check on every pull request and on pushes to
-# main. Catches test failures and compile errors before they reach a release tag.
+# PR validation for the workflow-examples example. Runs ./gradlew check on every
+# pull request and on pushes to main that touch it. Catches test failures and compile errors before they reach a release tag.
 
 name: CI
 
 on:
   pull_request:
+    paths:
+      - 'workflow-examples/**'
+      - '.github/workflows/workflow-examples-ci.yml'
   push:
     branches: [main]
+    paths:
+      - 'workflow-examples/**'
+      - '.github/workflows/workflow-examples-ci.yml'
 
 concurrency:
   # Cancel superseded PR runs (e.g. force-push); queue main pushes so we never
@@ -16,6 +22,10 @@ concurrency:
 
 permissions:
   contents: read
+
+defaults:
+  run:
+    working-directory: workflow-examples
 
 jobs:
   spotless:
@@ -44,6 +54,8 @@ jobs:
           distribution: 'temurin'
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          build-root-directory: workflow-examples
 
       - name: Run spotlessCheck
         run: ./gradlew spotlessCheck --stacktrace
@@ -58,12 +70,12 @@ jobs:
         include:
           - id: jvm
             label: JVM/Desktop
-            tasks: ':workflow-examples:jvmTest'
+            tasks: ':jvmTest'
             kotlinDaemonHeap: '-Xmx6g -XX:+UseG1GC'
             extraArgs: ''
           - id: android
             label: Android
-            tasks: ':workflow-examples:lintDebug'
+            tasks: ':lintDebug'
             kotlinDaemonHeap: '-Xmx6g -XX:+UseG1GC'
             extraArgs: ''
     steps:
@@ -77,6 +89,8 @@ jobs:
           distribution: 'temurin'
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          build-root-directory: workflow-examples
 
       - name: Run ${{ matrix.label }}
         run: >-
@@ -122,16 +136,18 @@ jobs:
           distribution: 'temurin'
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          build-root-directory: workflow-examples
 
       - name: Cache Kotlin/Native toolchain
         uses: actions/cache@v4
         with:
           path: ~/.konan
-          key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties') }}
+          key: konan-${{ runner.os }}-${{ hashFiles('workflow-examples/gradle/libs.versions.toml', 'workflow-examples/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             konan-${{ runner.os }}-
 
       - name: Compile + link ${{ matrix.label }}
         run: |
           ./gradlew --stacktrace \
-            :workflow-examples:linkDebugFramework${{ matrix.target }}
+            :linkDebugFramework${{ matrix.target }}

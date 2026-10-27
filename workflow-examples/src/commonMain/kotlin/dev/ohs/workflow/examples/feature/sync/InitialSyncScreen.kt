@@ -35,14 +35,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.initial_sync_continue
+import dev.ohs.workflow.examples.generated.resources.initial_sync_failed_body
+import dev.ohs.workflow.examples.generated.resources.initial_sync_failed_title
+import dev.ohs.workflow.examples.generated.resources.initial_sync_retry
+import dev.ohs.workflow.examples.generated.resources.initial_sync_subtitle
+import dev.ohs.workflow.examples.generated.resources.initial_sync_title
 import org.jetbrains.compose.resources.stringResource
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.initial_sync_continue
-import player_reference_examples.workflow_examples.generated.resources.initial_sync_failed_body
-import player_reference_examples.workflow_examples.generated.resources.initial_sync_failed_title
-import player_reference_examples.workflow_examples.generated.resources.initial_sync_retry
-import player_reference_examples.workflow_examples.generated.resources.initial_sync_subtitle
-import player_reference_examples.workflow_examples.generated.resources.initial_sync_title
 
 /**
  * Full-screen blocking gate shown between login and Home: a progress state while checking/syncing,

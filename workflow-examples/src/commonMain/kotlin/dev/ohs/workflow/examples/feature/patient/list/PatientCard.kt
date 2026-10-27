@@ -38,14 +38,14 @@ import dev.ohs.player.generated.config.PatientCardConfig
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.workflow.examples.feature.patient.CareStatusChip
 import dev.ohs.workflow.examples.feature.patient.careStatus
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.label_age
+import dev.ohs.workflow.examples.generated.resources.name_unknown
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.stringResource
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.label_age
-import player_reference_examples.workflow_examples.generated.resources.name_unknown
 
 @Composable
 fun PatientCard(

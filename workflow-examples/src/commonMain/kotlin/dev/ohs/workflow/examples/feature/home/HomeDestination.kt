@@ -22,15 +22,15 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
 import dev.ohs.workflow.examples.auth.AppRole
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.home_destination_follow_ups
+import dev.ohs.workflow.examples.generated.resources.home_destination_patients
+import dev.ohs.workflow.examples.generated.resources.home_destination_queue
+import dev.ohs.workflow.examples.generated.resources.home_destination_referrals
+import dev.ohs.workflow.examples.generated.resources.role_chw
+import dev.ohs.workflow.examples.generated.resources.role_clinician
+import dev.ohs.workflow.examples.generated.resources.role_nurse
 import org.jetbrains.compose.resources.StringResource
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.home_destination_follow_ups
-import player_reference_examples.workflow_examples.generated.resources.home_destination_patients
-import player_reference_examples.workflow_examples.generated.resources.home_destination_queue
-import player_reference_examples.workflow_examples.generated.resources.home_destination_referrals
-import player_reference_examples.workflow_examples.generated.resources.role_chw
-import player_reference_examples.workflow_examples.generated.resources.role_clinician
-import player_reference_examples.workflow_examples.generated.resources.role_nurse
 
 /** A top-level destination reachable from [HomeScreen]'s navigation drawer. */
 enum class HomeDestination(val label: StringResource, val icon: ImageVector) {

@@ -1,4 +1,5 @@
-# Release pipeline. Triggered by semantically versioned tags (vX.Y.Z[-suffix]).
+# Release pipeline for the workflow-examples example. Triggered by tags
+# workflow-examples-vX.Y.Z[-suffix]; the prefix routes the tag to this workflow.
 #
 # Action versions are pinned to majors here for readability. To harden
 # against tag-hijack supply-chain attacks, run a tool like `pin-github-action`
@@ -10,12 +11,12 @@ name: Release
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
-      - 'v[0-9]+.[0-9]+.[0-9]+-*'
+      - 'workflow-examples-v[0-9]+.[0-9]+.[0-9]+'
+      - 'workflow-examples-v[0-9]+.[0-9]+.[0-9]+-*'
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to simulate (e.g. v1.2.3). Dry run - builds & signs all platforms and uploads artifacts, but does NOT publish a Release or deploy Pages.'
+        description: 'Tag to simulate (e.g. workflow-examples-v1.2.3). Dry run - builds & signs all platforms and uploads artifacts, but does NOT publish a Release or deploy Pages.'
         required: true
         type: string
 
@@ -74,12 +75,12 @@ jobs:
             DRY_RUN=false
           fi
 
-          if ! printf '%s' "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$'; then
-            echo "::error::Tag '$TAG' must match vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-suffix"
+          if ! printf '%s' "$TAG" | grep -Eq '^workflow-examples-v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$'; then
+            echo "::error::Tag '$TAG' must match workflow-examples-vMAJOR.MINOR.PATCH[-suffix]"
             exit 1
           fi
 
-          VERSION_NAME="${TAG#v}"
+          VERSION_NAME="${TAG#workflow-examples-v}"
           # Per Semantic Versioning 2.0.0 section 9, any hyphen-suffix is a pre-release.
           case "$TAG" in
             *-*) IS_PRERELEASE=true ;;
@@ -159,6 +160,8 @@ jobs:
           distribution: 'temurin'
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          build-root-directory: workflow-examples
 
       - name: Decode keystore
         if: needs.preflight.outputs.signing_enabled == 'true'
@@ -176,7 +179,8 @@ jobs:
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
-        run: ./gradlew :workflow-examples:assembleRelease
+        working-directory: workflow-examples
+        run: ./gradlew :assembleRelease
 
       - name: Stage outputs
         shell: bash
@@ -218,17 +222,17 @@ jobs:
         include:
           - os: ubuntu-latest
             label: Linux deb
-            task: ':workflow-examples:packageDeb'
+            task: ':packageDeb'
             glob: 'workflow-examples/build/compose/binaries/main/deb/*.deb'
             artifact: linux-deb
           - os: ubuntu-latest
             label: Linux rpm
-            task: ':workflow-examples:packageRpm'
+            task: ':packageRpm'
             glob: 'workflow-examples/build/compose/binaries/main/rpm/*.rpm'
             artifact: linux-rpm
           - os: windows-latest
             label: Windows msi
-            task: ':workflow-examples:packageMsi'
+            task: ':packageMsi'
             glob: 'workflow-examples/build/compose/binaries/main/msi/*.msi'
             artifact: windows-msi
           # Pin to the latest stable Apple Silicon image: macos-latest currently
@@ -237,7 +241,7 @@ jobs:
           # a future universal build.
           #- os: macos-15
           #  label: macOS dmg
-          #  task: ':workflow-examples:packageDmg'
+          #  task: ':packageDmg'
           #  glob: 'workflow-examples/build/compose/binaries/main/dmg/*.dmg'
           #  artifact: macos-dmg
     runs-on: ${{ matrix.os }}
@@ -254,6 +258,8 @@ jobs:
           distribution: 'temurin'
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          build-root-directory: workflow-examples
 
       - name: Install rpmbuild
         if: matrix.artifact == 'linux-rpm'
@@ -263,6 +269,7 @@ jobs:
         shell: bash
         env:
           VERSION_NAME: ${{ needs.preflight.outputs.version_name }}
+        working-directory: workflow-examples
         run: ./gradlew ${{ matrix.task }}
 
       - name: Stage outputs
@@ -306,11 +313,14 @@ jobs:
           distribution: 'temurin'
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          build-root-directory: workflow-examples
 
       - name: Create distributable app image
         env:
           VERSION_NAME: ${{ needs.preflight.outputs.version_name }}
-        run: ./gradlew :workflow-examples:createDistributable
+        working-directory: workflow-examples
+        run: ./gradlew :createDistributable
 
       - name: Tar up the distributable
         shell: bash
@@ -358,11 +368,14 @@ jobs:
           distribution: 'temurin'
 
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          build-root-directory: workflow-examples
 
       - name: Build web distribution
         env:
           VERSION_NAME: ${{ needs.preflight.outputs.version_name }}
-        run: ./gradlew :workflow-examples:wasmJsBrowserDistribution
+        working-directory: workflow-examples
+        run: ./gradlew :wasmJsBrowserDistribution
 
       - name: Zip distribution for the GitHub Release
         run: |

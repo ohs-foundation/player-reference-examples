@@ -56,14 +56,14 @@ import dev.ohs.workflow.examples.feature.role.UserContextViewModel
 import dev.ohs.workflow.examples.feature.sync.InitialSyncGateState
 import dev.ohs.workflow.examples.feature.sync.InitialSyncScreen
 import dev.ohs.workflow.examples.feature.sync.InitialSyncViewModel
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.patient_profile_assess_sick_child
+import dev.ohs.workflow.examples.generated.resources.patient_profile_check_in
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.patient_profile_assess_sick_child
-import player_reference_examples.workflow_examples.generated.resources.patient_profile_check_in
 
 @Composable
 fun App() {

@@ -28,23 +28,23 @@ import dev.ohs.player.generated.state.PatientTreatmentState
 import dev.ohs.player.generated.state.PatientVitalState
 import dev.ohs.workflow.examples.feature.component.common.StatusChipData
 import dev.ohs.workflow.examples.feature.component.common.StatusRow
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.care_arrived_on
+import dev.ohs.workflow.examples.generated.resources.care_due_on
+import dev.ohs.workflow.examples.generated.resources.care_given_on
+import dev.ohs.workflow.examples.generated.resources.care_opd_visit
+import dev.ohs.workflow.examples.generated.resources.care_referral_title
+import dev.ohs.workflow.examples.generated.resources.care_referred_on
+import dev.ohs.workflow.examples.generated.resources.care_seen_on
+import dev.ohs.workflow.examples.generated.resources.care_status_done
+import dev.ohs.workflow.examples.generated.resources.care_status_seen
+import dev.ohs.workflow.examples.generated.resources.care_status_waiting
+import dev.ohs.workflow.examples.generated.resources.work_due
+import dev.ohs.workflow.examples.generated.resources.work_seen_at_facility
+import dev.ohs.workflow.examples.generated.resources.work_waiting_at_facility
 import dev.ohs.workflow.examples.util.calendarDate
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.care_arrived_on
-import player_reference_examples.workflow_examples.generated.resources.care_due_on
-import player_reference_examples.workflow_examples.generated.resources.care_given_on
-import player_reference_examples.workflow_examples.generated.resources.care_opd_visit
-import player_reference_examples.workflow_examples.generated.resources.care_referral_title
-import player_reference_examples.workflow_examples.generated.resources.care_referred_on
-import player_reference_examples.workflow_examples.generated.resources.care_seen_on
-import player_reference_examples.workflow_examples.generated.resources.care_status_done
-import player_reference_examples.workflow_examples.generated.resources.care_status_seen
-import player_reference_examples.workflow_examples.generated.resources.care_status_waiting
-import player_reference_examples.workflow_examples.generated.resources.work_due
-import player_reference_examples.workflow_examples.generated.resources.work_seen_at_facility
-import player_reference_examples.workflow_examples.generated.resources.work_waiting_at_facility
 
 class ReferralItemRenderer : ComponentRenderer<PatientReferralState, CareItemConfig> {
   @Composable

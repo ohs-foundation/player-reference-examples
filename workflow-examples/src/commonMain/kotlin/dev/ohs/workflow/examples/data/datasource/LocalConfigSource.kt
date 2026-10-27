@@ -17,7 +17,7 @@ package dev.ohs.workflow.examples.data.datasource
 
 import dev.ohs.player.client.config.ConfigSource
 import dev.ohs.player.generated.GeneratedConfigManifest
-import player_reference_examples.workflow_examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.Res
 
 /**
  * Loads the runtime config Binaries the extractor needs (ViewJoinMap + ViewDefinition) from

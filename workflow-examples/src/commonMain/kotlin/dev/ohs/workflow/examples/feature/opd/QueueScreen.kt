@@ -47,22 +47,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.ohs.workflow.examples.auth.UserContext
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.queue_cancel
+import dev.ohs.workflow.examples.generated.resources.queue_complete
+import dev.ohs.workflow.examples.generated.resources.queue_empty
+import dev.ohs.workflow.examples.generated.resources.queue_outcome
+import dev.ohs.workflow.examples.generated.resources.queue_position
+import dev.ohs.workflow.examples.generated.resources.queue_priority_routine
+import dev.ohs.workflow.examples.generated.resources.queue_priority_stat
+import dev.ohs.workflow.examples.generated.resources.queue_priority_urgent
+import dev.ohs.workflow.examples.generated.resources.queue_referral
+import dev.ohs.workflow.examples.generated.resources.queue_updated
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.queue_cancel
-import player_reference_examples.workflow_examples.generated.resources.queue_complete
-import player_reference_examples.workflow_examples.generated.resources.queue_empty
-import player_reference_examples.workflow_examples.generated.resources.queue_outcome
-import player_reference_examples.workflow_examples.generated.resources.queue_position
-import player_reference_examples.workflow_examples.generated.resources.queue_priority_routine
-import player_reference_examples.workflow_examples.generated.resources.queue_priority_stat
-import player_reference_examples.workflow_examples.generated.resources.queue_priority_urgent
-import player_reference_examples.workflow_examples.generated.resources.queue_referral
-import player_reference_examples.workflow_examples.generated.resources.queue_updated
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -54,10 +54,10 @@ import dev.ohs.player.client.renderer.ConfiguredRenderer
 import dev.ohs.player.client.renderer.LayoutRenderer
 import dev.ohs.player.client.renderer.RenderOptions
 import dev.ohs.player.generated.config.SectionCardConfig
+import dev.ohs.workflow.examples.generated.resources.Res
+import dev.ohs.workflow.examples.generated.resources.section_collapse
+import dev.ohs.workflow.examples.generated.resources.section_expand
 import org.jetbrains.compose.resources.stringResource
-import player_reference_examples.workflow_examples.generated.resources.Res
-import player_reference_examples.workflow_examples.generated.resources.section_collapse
-import player_reference_examples.workflow_examples.generated.resources.section_expand
 
 /**
  * Layout renderer that introduces a list of items with a flat overline section label — no card,
