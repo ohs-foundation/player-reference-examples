@@ -38,10 +38,10 @@ import dev.ohs.player.client.renderer.ComponentRenderer
 import dev.ohs.player.client.renderer.RenderOptions
 import dev.ohs.player.generated.config.ImmunizationRecommendationItemConfig
 import dev.ohs.player.generated.state.PatientImmunizationRecommendationState
-import org.jetbrains.compose.resources.stringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.immunization_due_on
 import dev.ohs.player.medplum.generated.resources.immunization_overdue_since
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * One forecast row, rendered as a due-task pill: a full-width tappable bar reading "＋ Measles 1 due

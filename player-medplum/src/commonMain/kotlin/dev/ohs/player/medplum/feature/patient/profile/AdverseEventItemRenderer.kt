@@ -23,7 +23,6 @@ import dev.ohs.player.generated.config.AdverseEventItemConfig
 import dev.ohs.player.generated.state.PatientAdverseEventState
 import dev.ohs.player.medplum.feature.component.common.StatusChipData
 import dev.ohs.player.medplum.feature.component.common.StatusRow
-import org.jetbrains.compose.resources.stringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.adverse_event_after_vaccine
 import dev.ohs.player.medplum.generated.resources.adverse_event_detail_separator
@@ -33,6 +32,7 @@ import dev.ohs.player.medplum.generated.resources.adverse_event_severity_moderat
 import dev.ohs.player.medplum.generated.resources.adverse_event_severity_severe
 import dev.ohs.player.medplum.generated.resources.adverse_event_started
 import dev.ohs.player.medplum.generated.resources.adverse_event_unknown
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * One reported AEFI: the reaction on the left, how bad it was as a chip on the right.

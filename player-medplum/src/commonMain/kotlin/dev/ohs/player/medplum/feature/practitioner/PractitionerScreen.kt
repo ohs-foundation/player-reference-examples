@@ -47,8 +47,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.ohs.player.medplum.data.repository.PractitionerProfile
-import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.name_unknown
 import dev.ohs.player.medplum.generated.resources.practitioner_back
@@ -63,6 +61,8 @@ import dev.ohs.player.medplum.generated.resources.practitioner_section_facility
 import dev.ohs.player.medplum.generated.resources.practitioner_section_you
 import dev.ohs.player.medplum.generated.resources.practitioner_title
 import dev.ohs.player.medplum.generated.resources.practitioner_unavailable
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * Who is signed in, and where they work — read from the synced Practitioner and Organization rather

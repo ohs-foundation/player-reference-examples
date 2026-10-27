@@ -61,9 +61,6 @@ import dev.ohs.player.generated.state.PatientImmunizationRecommendationState
 import dev.ohs.player.generated.state.PatientImmunizationState
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.player.generated.viewtype.ViewTypeCS
-import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.patient_profile_action_failed
 import dev.ohs.player.medplum.generated.resources.patient_profile_back
@@ -73,6 +70,9 @@ import dev.ohs.player.medplum.generated.resources.patient_profile_not_found
 import dev.ohs.player.medplum.generated.resources.patient_profile_record_growth
 import dev.ohs.player.medplum.generated.resources.patient_profile_status_changed_active
 import dev.ohs.player.medplum.generated.resources.patient_profile_status_changed_inactive
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

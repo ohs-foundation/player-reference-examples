@@ -28,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import org.jetbrains.compose.resources.stringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.patient_profile_already_deceased
 import dev.ohs.player.medplum.generated.resources.patient_profile_change_status
@@ -36,6 +35,7 @@ import dev.ohs.player.medplum.generated.resources.patient_profile_more_actions
 import dev.ohs.player.medplum.generated.resources.patient_profile_no_doses_recorded
 import dev.ohs.player.medplum.generated.resources.patient_profile_report_aefi
 import dev.ohs.player.medplum.generated.resources.patient_profile_report_deceased
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Overflow menu in the profile's app bar.

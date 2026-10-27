@@ -36,9 +36,9 @@ import dev.ohs.player.client.renderer.RenderOptions
 import dev.ohs.player.generated.config.ContactItemConfig
 import dev.ohs.player.generated.state.PatientContactState
 import dev.ohs.player.medplum.feature.component.common.Chip
-import org.jetbrains.compose.resources.stringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.name_unknown
+import org.jetbrains.compose.resources.stringResource
 
 class ContactItemRenderer : ComponentRenderer<PatientContactState, ContactItemConfig> {
   @Composable

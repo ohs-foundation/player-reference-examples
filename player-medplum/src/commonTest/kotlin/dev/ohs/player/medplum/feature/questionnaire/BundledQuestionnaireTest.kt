@@ -17,6 +17,7 @@ package dev.ohs.player.medplum.feature.questionnaire
 
 import dev.ohs.fhir.model.r4.Questionnaire as QuestionnaireR4
 import dev.ohs.player.medplum.data.repository.InMemorySampleFhirRepository
+import dev.ohs.player.medplum.generated.resources.Res
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
@@ -26,7 +27,6 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import dev.ohs.player.medplum.generated.resources.Res
 
 /**
  * Structural checks on every questionnaire the app can launch.

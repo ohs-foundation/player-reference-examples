@@ -16,7 +16,7 @@
 package dev.ohs.player.medplum
 
 /**
- * Desktop entry point. Everything it does lives in the root project -- see [launchDesktopApp].
- * This module exists to package the app (jpackage, icons), not to hold logic.
+ * Desktop entry point. Everything it does lives in the root project -- see [launchDesktopApp]. This
+ * module exists to package the app (jpackage, icons), not to hold logic.
  */
 fun main() = launchDesktopApp()

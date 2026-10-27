@@ -29,10 +29,10 @@ import dev.ohs.player.medplum.data.di.initKoin
 import dev.ohs.player.medplum.data.sync.ForegroundSyncManager
 import dev.ohs.player.medplum.data.sync.SYNC_TIMEOUT_DURATION
 import dev.ohs.player.medplum.data.sync.SyncManager
-import org.jetbrains.compose.resources.painterResource
-import org.koin.dsl.module
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.app_logo
+import org.jetbrains.compose.resources.painterResource
+import org.koin.dsl.module
 
 /**
  * Desktop composition root. Lives here rather than in :desktopApp because it reads

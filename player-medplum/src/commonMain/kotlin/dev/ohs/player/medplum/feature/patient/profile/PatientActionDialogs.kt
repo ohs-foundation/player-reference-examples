@@ -34,9 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import kotlin.time.Clock
-import kotlin.time.Instant
-import org.jetbrains.compose.resources.stringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.patient_profile_cancel
 import dev.ohs.player.medplum.generated.resources.patient_profile_deceased_body
@@ -49,6 +46,9 @@ import dev.ohs.player.medplum.generated.resources.patient_profile_status_confirm
 import dev.ohs.player.medplum.generated.resources.patient_profile_status_confirm_deactivate
 import dev.ohs.player.medplum.generated.resources.patient_profile_status_title_activate
 import dev.ohs.player.medplum.generated.resources.patient_profile_status_title_deactivate
+import kotlin.time.Clock
+import kotlin.time.Instant
+import org.jetbrains.compose.resources.stringResource
 
 /** Today as `YYYY-MM-DD`. ISO dates compare correctly as plain strings, so no date library. */
 internal fun todayIsoDate(): String = Clock.System.now().toString().substringBefore('T')

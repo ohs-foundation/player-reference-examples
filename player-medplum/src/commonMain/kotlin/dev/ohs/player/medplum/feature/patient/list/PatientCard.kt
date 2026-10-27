@@ -37,6 +37,9 @@ import androidx.compose.ui.unit.dp
 import dev.ohs.player.generated.config.PatientCardConfig
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.player.medplum.feature.component.common.StatusChip
+import dev.ohs.player.medplum.generated.resources.Res
+import dev.ohs.player.medplum.generated.resources.label_age
+import dev.ohs.player.medplum.generated.resources.name_unknown
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -44,9 +47,6 @@ import kotlinx.datetime.daysUntil
 import kotlinx.datetime.monthsUntil
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.stringResource
-import dev.ohs.player.medplum.generated.resources.Res
-import dev.ohs.player.medplum.generated.resources.label_age
-import dev.ohs.player.medplum.generated.resources.name_unknown
 
 @Composable
 fun PatientCard(

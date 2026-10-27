@@ -18,9 +18,9 @@ package dev.ohs.player.medplum.feature.home
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.ui.graphics.vector.ImageVector
-import org.jetbrains.compose.resources.StringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.home_destination_children
+import org.jetbrains.compose.resources.StringResource
 
 /**
  * A register reachable from [HomeScreen]'s navigation drawer.

@@ -54,10 +54,10 @@ import dev.ohs.player.client.renderer.ConfiguredRenderer
 import dev.ohs.player.client.renderer.LayoutRenderer
 import dev.ohs.player.client.renderer.RenderOptions
 import dev.ohs.player.generated.config.SectionCardConfig
-import org.jetbrains.compose.resources.stringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.section_collapse
 import dev.ohs.player.medplum.generated.resources.section_expand
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Layout renderer that introduces a list of items with an uppercase overline label, then groups the

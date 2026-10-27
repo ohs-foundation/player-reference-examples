@@ -23,10 +23,10 @@ import dev.ohs.player.generated.config.ImmunizationItemConfig
 import dev.ohs.player.generated.state.PatientImmunizationState
 import dev.ohs.player.medplum.feature.component.common.StatusChipData
 import dev.ohs.player.medplum.feature.component.common.StatusRow
-import org.jetbrains.compose.resources.stringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.immunization_given
 import dev.ohs.player.medplum.generated.resources.immunization_unknown
+import org.jetbrains.compose.resources.stringResource
 
 class ImmunizationItemRenderer :
   ComponentRenderer<PatientImmunizationState, ImmunizationItemConfig> {

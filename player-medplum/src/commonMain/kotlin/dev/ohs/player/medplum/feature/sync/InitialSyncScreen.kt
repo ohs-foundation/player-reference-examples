@@ -35,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.resources.stringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.initial_sync_continue
 import dev.ohs.player.medplum.generated.resources.initial_sync_failed_body
@@ -43,6 +42,7 @@ import dev.ohs.player.medplum.generated.resources.initial_sync_failed_title
 import dev.ohs.player.medplum.generated.resources.initial_sync_retry
 import dev.ohs.player.medplum.generated.resources.initial_sync_subtitle
 import dev.ohs.player.medplum.generated.resources.initial_sync_title
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Full-screen blocking gate shown between login and Home: a progress state while checking/syncing,

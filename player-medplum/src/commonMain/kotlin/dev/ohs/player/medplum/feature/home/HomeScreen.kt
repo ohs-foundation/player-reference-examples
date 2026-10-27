@@ -80,10 +80,6 @@ import dev.ohs.player.medplum.data.settings.ThemePreference
 import dev.ohs.player.medplum.data.settings.ThemeRepository
 import dev.ohs.player.medplum.feature.patient.list.PatientListScreen
 import dev.ohs.player.medplum.feature.patient.profile.PatientProfileScreen
-import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.home_cancel_sync
 import dev.ohs.player.medplum.generated.resources.home_last_synced
@@ -103,6 +99,10 @@ import dev.ohs.player.medplum.generated.resources.home_theme_not_selected
 import dev.ohs.player.medplum.generated.resources.home_theme_selected
 import dev.ohs.player.medplum.generated.resources.home_theme_system
 import dev.ohs.player.medplum.generated.resources.home_view_profile
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * The navigation drawer is deliberately dark, independent of the app's light colour scheme.

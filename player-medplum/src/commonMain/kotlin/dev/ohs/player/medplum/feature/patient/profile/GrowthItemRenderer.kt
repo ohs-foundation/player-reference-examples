@@ -24,10 +24,10 @@ import dev.ohs.player.generated.config.GrowthItemConfig
 import dev.ohs.player.generated.state.PatientGrowthState
 import dev.ohs.player.medplum.feature.component.common.StatusChipData
 import dev.ohs.player.medplum.feature.component.common.StatusRow
-import org.jetbrains.compose.resources.stringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.growth_measured
 import dev.ohs.player.medplum.generated.resources.growth_unknown
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * One growth measurement: the measurement name on the left, the reading as a chip on the right.

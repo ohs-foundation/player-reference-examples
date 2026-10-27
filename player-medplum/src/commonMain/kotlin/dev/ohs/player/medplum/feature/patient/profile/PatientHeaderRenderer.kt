@@ -35,13 +35,13 @@ import dev.ohs.player.generated.config.PatientHeaderConfig
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.player.medplum.feature.component.common.StatusChip
 import dev.ohs.player.medplum.feature.patient.list.calculateAge
-import org.jetbrains.compose.resources.stringResource
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.label_age_plain
 import dev.ohs.player.medplum.generated.resources.label_dob
 import dev.ohs.player.medplum.generated.resources.label_id
 import dev.ohs.player.medplum.generated.resources.label_sex
 import dev.ohs.player.medplum.generated.resources.name_unknown
+import org.jetbrains.compose.resources.stringResource
 
 class PatientHeaderRenderer : ComponentRenderer<PatientSummaryState, PatientHeaderConfig> {
   @Composable

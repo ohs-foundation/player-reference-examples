@@ -51,8 +51,6 @@ import dev.ohs.player.client.layout.VerticalListRenderer
 import dev.ohs.player.client.scaffold.ListScaffold
 import dev.ohs.player.generated.state.PatientSummaryState
 import dev.ohs.player.generated.viewtype.ViewTypeCS
-import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.generated.resources.home_open_navigation_menu
 import dev.ohs.player.medplum.generated.resources.patient_list_clear_search
@@ -61,6 +59,8 @@ import dev.ohs.player.medplum.generated.resources.patient_list_no_matches
 import dev.ohs.player.medplum.generated.resources.patient_list_register
 import dev.ohs.player.medplum.generated.resources.patient_list_search_hint
 import dev.ohs.player.medplum.generated.resources.patient_list_title
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

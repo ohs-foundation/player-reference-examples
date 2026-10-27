@@ -22,6 +22,7 @@ import dev.ohs.fhir.model.r4.Observation
 import dev.ohs.fhir.model.r4.Questionnaire as QuestionnaireR4
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
 import dev.ohs.player.medplum.data.repository.FhirRepository
+import dev.ohs.player.medplum.generated.resources.Res
 import dev.ohs.player.medplum.util.FhirJson
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -32,7 +33,6 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-import dev.ohs.player.medplum.generated.resources.Res
 
 /**
  * Identifiers describing why/for-whom a questionnaire was launched.
