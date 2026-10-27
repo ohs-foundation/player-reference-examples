@@ -458,7 +458,7 @@ The shared code builds for Android, iOS, desktop (JVM) and web (Wasm/JS).
 
 | Requirement | Reason |
 |---|---|
-| `:player-medplum-app` holds all Kotlin and resources; `:androidApp`, `:desktopApp` and `:webApp` hold packaging only | Entry points are small `main()` wrappers calling `launchDesktopApp()` / `launchWebApp()`, so `GeneratedAuthConfig` stays `internal` |
+| The root project holds all Kotlin and resources; `:androidApp`, `:desktopApp` and `:webApp` hold packaging only | Entry points are small `main()` wrappers calling `launchDesktopApp()` / `launchWebApp()`, so `GeneratedAuthConfig` stays `internal` |
 | Use `com.android.library` + `androidTarget`, not AGP 9's `kotlin { android { } }` | That block does not exist in AGP 8.11.2 |
 | Include `modules("jdk.unsupported")` in the desktop jlink runtime | Without it KSafe cannot use `sun.misc.Unsafe`, and the packaged desktop app falls back to a software-encrypted file instead of OS key storage for the session token |
 | `:webApp` owns the vendored `sqlite-wasm-worker` npm module | A local `file:` npm dependency does not reach consumers, so it must live where webpack runs |
@@ -551,16 +551,16 @@ targets HAPI FHIR and Keycloak.
 [localprops]: player-medplum/local.properties.sample
 [appconfig]: player-medplum/build-logic/src/main/kotlin/app-config-conventions.gradle.kts
 [desktopbuild]: player-medplum/desktopApp/build.gradle.kts
-[application]: player-medplum/player-medplum-app/src/androidMain/kotlin/dev/ohs/player/medplum/OhsPlayerApplication.kt
-[platformjvm]: player-medplum/player-medplum-app/src/jvmMain/kotlin/dev/ohs/player/medplum/auth/Platform.jvm.kt
-[oauthconfig]: player-medplum/player-medplum-app/src/commonMain/kotlin/dev/ohs/player/medplum/auth/OAuthConfig.kt
-[oidcapi]: player-medplum/player-medplum-app/src/commonMain/kotlin/dev/ohs/player/medplum/auth/OidcAuthApi.kt
-[bearer]: player-medplum/player-medplum-app/src/commonMain/kotlin/dev/ohs/player/medplum/auth/FhirBearerAuthenticator.kt
-[synctask]: player-medplum/player-medplum-app/src/commonMain/kotlin/dev/ohs/player/medplum/data/sync/AppFhirSyncTask.kt
-[tsctx]: player-medplum/player-medplum-app/src/commonMain/kotlin/dev/ohs/player/medplum/data/sync/DataStoreTimestampContext.kt
-[immwriter]: player-medplum/player-medplum-app/src/commonMain/kotlin/dev/ohs/player/medplum/data/repository/ImmunizationWriter.kt
-[patientrepo]: player-medplum/player-medplum-app/src/commonMain/kotlin/dev/ohs/player/medplum/data/repository/PatientRepository.kt
-[practrepo]: player-medplum/player-medplum-app/src/commonMain/kotlin/dev/ohs/player/medplum/data/repository/PractitionerRepository.kt
-[questionnaire]: player-medplum/player-medplum-app/src/commonMain/kotlin/dev/ohs/player/medplum/feature/questionnaire/QuestionnaireService.kt
-[synccoveragetest]: player-medplum/player-medplum-app/src/commonTest/kotlin/dev/ohs/player/medplum/data/sync/ProfileSyncCoverageTest.kt
-[tsctxtest]: player-medplum/player-medplum-app/src/jvmTest/kotlin/dev/ohs/player/medplum/data/sync/DataStoreTimestampContextTest.kt
+[application]: player-medplum/src/androidMain/kotlin/dev/ohs/player/medplum/OhsPlayerApplication.kt
+[platformjvm]: player-medplum/src/jvmMain/kotlin/dev/ohs/player/medplum/auth/Platform.jvm.kt
+[oauthconfig]: player-medplum/src/commonMain/kotlin/dev/ohs/player/medplum/auth/OAuthConfig.kt
+[oidcapi]: player-medplum/src/commonMain/kotlin/dev/ohs/player/medplum/auth/OidcAuthApi.kt
+[bearer]: player-medplum/src/commonMain/kotlin/dev/ohs/player/medplum/auth/FhirBearerAuthenticator.kt
+[synctask]: player-medplum/src/commonMain/kotlin/dev/ohs/player/medplum/data/sync/AppFhirSyncTask.kt
+[tsctx]: player-medplum/src/commonMain/kotlin/dev/ohs/player/medplum/data/sync/DataStoreTimestampContext.kt
+[immwriter]: player-medplum/src/commonMain/kotlin/dev/ohs/player/medplum/data/repository/ImmunizationWriter.kt
+[patientrepo]: player-medplum/src/commonMain/kotlin/dev/ohs/player/medplum/data/repository/PatientRepository.kt
+[practrepo]: player-medplum/src/commonMain/kotlin/dev/ohs/player/medplum/data/repository/PractitionerRepository.kt
+[questionnaire]: player-medplum/src/commonMain/kotlin/dev/ohs/player/medplum/feature/questionnaire/QuestionnaireService.kt
+[synccoveragetest]: player-medplum/src/commonTest/kotlin/dev/ohs/player/medplum/data/sync/ProfileSyncCoverageTest.kt
+[tsctxtest]: player-medplum/src/jvmTest/kotlin/dev/ohs/player/medplum/data/sync/DataStoreTimestampContextTest.kt

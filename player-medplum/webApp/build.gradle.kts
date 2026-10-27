@@ -18,7 +18,7 @@ import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 plugins {
   alias(libs.plugins.kotlinMultiplatform)
   // Kept even though main.kt uses no Compose API: this module owns the executable, and the Compose
-  // plugin is what packages :player-medplum-app's composeResources (including the files/configs
+  // plugin is what packages the root project's composeResources (including the files/configs
   // and files/states JSON read at runtime via Res.readBytes) into the web distribution.
   alias(libs.plugins.composeMultiplatform)
   alias(libs.plugins.composeCompiler)
@@ -39,7 +39,7 @@ kotlin {
 
   sourceSets {
     webMain.dependencies {
-      implementation(project(":player-medplum-app"))
+      implementation(project(":"))
       implementation(libs.compose.ui)
       // :engine's WebWorkerSQLiteDriver worker (androidx.sqlite:sqlite-web) is loaded via
       // `new Worker(new URL("sqlite-wasm-worker/worker.js", import.meta.url), { type: "module" })`

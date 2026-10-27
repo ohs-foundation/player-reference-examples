@@ -5,7 +5,7 @@
 #
 #   cp local.properties.sample local.properties
 #
-# `local.properties` is git-ignored. The :player-medplum-app `generateAuthConfig`
+# `local.properties` is git-ignored. The `generateAuthConfig`
 # task bakes these into `GeneratedAuthConfig` before Kotlin compilation, so
 # edits here need a rebuild — not just an app restart.
 #

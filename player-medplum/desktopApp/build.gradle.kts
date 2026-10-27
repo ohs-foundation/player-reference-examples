@@ -28,7 +28,7 @@ plugins {
 val appConfig = extensions.getByType<AppConfig>()
 
 dependencies {
-  implementation(project(":player-medplum-app"))
+  implementation(project(":"))
   implementation(compose.desktop.currentOs)
   implementation(libs.kotlinx.coroutinesSwing)
 }
@@ -43,7 +43,7 @@ java {
 compose.desktop {
   application {
     // src/main/kotlin/dev/ohs/player/medplum/main.kt -> MainKt. The window itself is built by
-    // launchDesktopApp() in :player-medplum-app.
+    // launchDesktopApp() in the root project.
     mainClass = "dev.ohs.player.medplum.MainKt"
 
     nativeDistributions {

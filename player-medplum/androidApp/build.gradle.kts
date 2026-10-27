@@ -18,7 +18,7 @@ import java.util.Properties
 
 /*
  * Packaging only -- this module has no Kotlin source. MainActivity, OhsPlayerApplication and
- * LoginRedirectActivity all live in :player-medplum-app's androidMain, next to the expect/actual
+ * LoginRedirectActivity all live in the root project's androidMain, next to the expect/actual
  * declarations and the internal GeneratedAuthConfig they depend on; the manifest here names them by
  * fully-qualified class name. Hence no Kotlin or Compose compiler plugin.
  */
@@ -68,7 +68,7 @@ android {
     versionCode = appConfig.versionCode
     versionName = appConfig.versionName
     // Substituted into the LoginRedirectActivity intent-filter in src/main/AndroidManifest.xml,
-    // from the same appConfig values :player-medplum-app bakes into GeneratedAuthConfig.
+    // from the same appConfig values the root project bakes into GeneratedAuthConfig.
     manifestPlaceholders["oauthRedirectScheme"] = appConfig.redirectScheme
     manifestPlaceholders["oauthRedirectHost"] = appConfig.redirectHost
   }
@@ -104,7 +104,7 @@ android {
   }
 
   compileOptions {
-    // Must match :player-medplum-app -- its AAR is Java 21 bytecode, and fhir-engine's inline
+    // Must match the root project -- its AAR is Java 21 bytecode, and fhir-engine's inline
     // functions are compiled at 21.
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
@@ -112,6 +112,6 @@ android {
 }
 
 dependencies {
-  implementation(project(":player-medplum-app"))
+  implementation(project(":"))
   debugImplementation(libs.compose.uiTooling)
 }
