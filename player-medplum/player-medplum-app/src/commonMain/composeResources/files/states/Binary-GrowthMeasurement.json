@@ -1,0 +1,51 @@
+{
+  "resourceType": "https://sql-on-fhir.org/ig/StructureDefinition/ViewDefinition",
+  "url": "http://ohs.dev/ViewDefinition/GrowthMeasurement",
+  "fhirVersion": [
+    "4.0.1"
+  ],
+  "select": [
+    {
+      "column": [
+        {
+          "name": "measurementId",
+          "path": "id",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        },
+        {
+          "name": "measurementName",
+          "path": "iif(code.text.exists(), code.text, code.coding.display.first())",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        },
+        {
+          "name": "measurementCode",
+          "path": "code.coding.where(system = 'http://loinc.org').code.first()",
+          "type": "http://hl7.org/fhir/StructureDefinition/code"
+        },
+        {
+          "name": "measurementValue",
+          "path": "value.ofType(Quantity).value",
+          "type": "http://hl7.org/fhir/StructureDefinition/decimal"
+        },
+        {
+          "name": "measurementUnit",
+          "path": "value.ofType(Quantity).unit",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        },
+        {
+          "name": "measurementDate",
+          "path": "effective.ofType(dateTime)",
+          "type": "http://hl7.org/fhir/StructureDefinition/dateTime"
+        },
+        {
+          "name": "measurementPatientRef",
+          "path": "subject.reference.replace('Patient/', '')",
+          "type": "http://hl7.org/fhir/StructureDefinition/string"
+        }
+      ]
+    }
+  ],
+  "name": "GrowthMeasurement",
+  "status": "active",
+  "resource": "Observation"
+}
