@@ -1,128 +1,123 @@
 # Workflow Examples
 
-A Kotlin Multiplatform app that shows [`dev.ohs.fhir:fhir-workflow`](https://github.com/ohs-foundation/kotlin-fhir-workflow) running two real-world workflows in one app. A community health worker (CHW) assesses a sick child with WHO/UNICEF iCCM and refers the child to the facility. At the facility, the nurse checks the child in, OPD triage queues them, and the clinician closes the referral. Each clinical decision comes from a FHIRPath `PlanDefinition` applied with `FhirOperator.generateCarePlan`. The referral moves through the CPG `ActivityFlow`: proposal → order → perform. The app started from the `player-reference` template.
+A community-to-facility referral loop built on [`fhir-workflow`](https://github.com/ohs-foundation/kotlin-fhir-workflow). A community health worker (CHW) assesses a sick child with WHO/UNICEF iCCM and refers them. At the facility, a nurse checks the child in, triage queues them, and a clinician closes the referral. The CHW then gets a follow-up visit carrying the facility's outcome.
+
+Every clinical decision is a FHIRPath `PlanDefinition` run by `FhirOperator.generateCarePlan`. The referral moves through the CPG `ActivityFlow`: proposal → order → perform.
 
 ```mermaid
 flowchart LR
   subgraph Community["CHW"]
-    A[Sick-child assessment] --> B{{"apply iccm-sick-child"}}
-    B -->|danger sign| R[Referral<br/>proposal → order]
-    B -->|fever + RDT positive| M1[Artemether-lumefantrine]
-    B -->|fast breathing| M2[Amoxicillin]
-    B -->|home treatment| F[Day-3 follow-up]
+    A[Sick-child assessment] --> B{{"iccm-sick-child"}}
+    B -->|danger sign| R[Referral]
+    B -->|malaria / fast breathing| M[Treatment + day-3 follow-up]
+    V[Follow-up visit] --> W{{"iccm-follow-up-visit"}}
+    W -->|same / worse| R
   end
   subgraph Facility["Nurse · Clinician"]
-    K[Check-in + vitals] --> T{{"apply opd-triage"}}
-    T --> Q[Consult task<br/>stat · urgent · routine]
-    Q --> P[Outcome → Procedure<br/>referral completed]
+    K[Check-in + vitals] --> T{{"opd-triage"}}
+    T --> Q[Queue: stat · urgent · routine]
+    Q --> P[Consult outcome]
+    P --> H{{"referral-follow-up"}}
   end
-  R -. sync .-> T
-  P -. sync .-> Community
+  R -. sync .-> K
+  H -. sync .-> V
 ```
 
 ## Roles
 
-The role is the `PractitionerRole.code` (system `http://ohs.dev/fhir/CodeSystem/app-role`) on the signed-in user's PractitionerRole. The app reads it from the gateway's `GET /api/practitioner-details`.
+The role comes from `PractitionerRole.code` (system `http://ohs.dev/fhir/CodeSystem/app-role`), read from the gateway's `GET /api/practitioner-details`.
 
-| Role | Lands on | Does |
+| Role | Sees | Does |
 |---|---|---|
-| `chw` | Patients · Follow-ups · Referrals | Registers children, runs the sick-child assessment (a danger sign sends the referral on submit), closes day-3 follow-ups, and sees each referral as *Waiting at facility* or *Seen at facility* |
-| `nurse` | Patients | Registers patients and checks them in with vitals, which runs OPD triage |
-| `clinician` | OPD queue | Works the queue most urgent first, and completes consults with an outcome, which closes any referral behind them |
+| `chw` | Patients, Follow-ups, Referrals | Registers and assesses children. A danger sign sends the referral on submit. |
+| `nurse` | Patients | Checks patients in with vitals, which runs triage. |
+| `clinician` | OPD queue | Works the queue most urgent first and records each outcome. |
 
-A user with no known role sees a "No role assigned" screen and does not sync. Several users can share one device, and their data is kept together in one local store. A new sign-in starts a full download for that user.
+A user without a known role gets a "No role assigned" screen and never syncs. Users can share a device; a new sign-in starts a fresh download.
 
 ## Protocols
 
-All protocol content ships in [`files/protocols/`](./src/commonMain/composeResources/files/protocols). It is resolved in memory and never written to the local database. A write there would be queued for upload, and the gateway refuses `PlanDefinition`.
+The protocols live in [`files/protocols/`](./src/commonMain/composeResources/files/protocols) and stay in memory. They're never written to the local database, because the gateway refuses `PlanDefinition` uploads.
 
-| PlanDefinition | Variables | Produces |
+| PlanDefinition | Input | Produces |
 |---|---|---|
-| `referral-follow-up` | `%referral`: the closed referral | A follow-up `Task` for the referring CHW, due in 2 days, carrying the facility outcome |
-| `iccm-follow-up-visit` | `%visit`: the follow-up response | A new urgent referral when the child is the same, worse, or shows a danger sign; nothing when better |
-| `iccm-sick-child` | `%assessment`: the assessment response | `ServiceRequest` referral (SNOMED 3457005, urgent) on any danger sign. Otherwise, `MedicationRequest` for malaria or fast breathing, plus a follow-up `Task` |
-| `opd-triage` | `%vitals`, `%referrals` | One `opd-consult` `Task` whose `priority` is `stat` if SpO₂ < 90 or the referral is urgent, `urgent` for any other referral, and `routine` otherwise |
+| `iccm-sick-child` | `%assessment` | An urgent referral on any danger sign. Otherwise medicine for malaria or fast breathing, plus a day-3 follow-up. |
+| `opd-triage` | `%vitals`, `%referrals` | A consult task: `stat` if SpO₂ < 90 or the referral is urgent, `urgent` for other referrals, else `routine`. |
+| `referral-follow-up` | `%referral` | A follow-up for the referring CHW, due in two days, carrying the outcome. |
+| `iccm-follow-up-visit` | `%visit` | A new urgent referral if the child is the same, worse or has a danger sign. |
 
-The library has no CQL, so every condition is FHIRPath over data the app looks up first and passes in as `Bundle`s. To change clinical logic, edit the JSON. The tests in `IccmSickChildTest` and `OpdTriageTest` pin each branch.
+There's no CQL in the library, so conditions are FHIRPath over data the app passes in. To change clinical logic, edit the JSON. `IccmSickChildTest` and `OpdTriageTest` pin every branch.
 
 ## Sync
 
-Each role downloads what [`files/sync/<role>.json`](./src/commonMain/composeResources/files/sync) names. Each entry has a resource `type`, search `params`, and `ids`. `{practitioner}`, `{organization}` and `{location}` are filled in from the user's PractitionerRole.
+Each role downloads what [`files/sync/<role>.json`](./src/commonMain/composeResources/files/sync) lists: a resource `type`, search `params` and `ids`. The placeholders `{practitioner}`, `{organization}` and `{location}` come from the user's PractitionerRole.
 
 ```json
 { "type": "ServiceRequest", "params": { "intent": "order", "performer": "Organization/{organization}" } }
 ```
 
-Saving a form or completing a consult uploads at once. Offline, it waits for the next sync. A sync requested while another is running gets its own sync afterwards, so nothing saved mid-sync is missed.
+The gateway's org-scoped access checker adds the organization filter to every search, so the configs only narrow by role. `SyncConfigFilesTest` fails on any type or param the gateway refuses.
 
-The gateway runs `org_scoped_access` (ohs-player-reference-backend PR #82). It adds the organization filter to every search, so configs only narrow by role. `SyncConfigFilesTest` fails if a config names a type or param the gateway refuses.
+Saving a form or completing a consult uploads straight away. Offline, the upload waits for the next sync. The OPD queue refreshes every minute and on pull.
 
 ## Setup
 
-| Step | |
-|---|---|
-| JDK | 21. Gradle rejects JDK 25, so set `JAVA_HOME` if 25 is your default. |
-| `local.properties` | `cp local.properties.sample local.properties`, then set `OAUTH_ISSUER`, `OAUTH_CLIENT_ID` and `FHIR_BASE_URL`. The redirect scheme defaults to `dev.ohs.player.reference.app`, the value already registered on the shared Keycloak client. |
-| Gateway | It must allow `PATCH`. The engine sends every update (referral confirmed, referral completed, task closed) as `PATCH`, and PR #82's checker currently denies it. |
-| Demo users | Create the [seed service account](#seed-service-account), fill in `scripts/seed.env` from `scripts/seed.env.sample`, then run `./scripts/seed.sh`. See [Demo data](#demo-data). |
+1. **JDK 21.** Gradle rejects JDK 25.
+2. **`local.properties`**: copy `local.properties.sample` and set `OAUTH_ISSUER`, `OAUTH_CLIENT_ID` and `FHIR_BASE_URL`.
+3. **Gateway**: it must accept `PATCH`, because the engine sends every update that way.
+4. **Demo users**: create the seed service account, fill in `scripts/seed.env` from `scripts/seed.env.sample`, and run `./scripts/seed.sh`.
 
-## Seed service account
+### Seed service account
 
-`scripts/seed.sh` authenticates as a Keycloak service account in the **same realm as the app** (`ohs-player`).
+`seed.sh` signs in as a Keycloak service account in the app's realm (`ohs-player`).
 
-1. **Clients → Create client.** Type *OpenID Connect*. Client ID e.g. `seed-service`.
-2. **Capability config.** Turn *Client authentication* **on** and tick *Service accounts roles*. Leave the other flows off. Save.
-3. **Credentials tab.** Copy the *Client secret*.
-4. **Service accounts roles tab → Assign role → Filter by clients.** Add `realm-management` → `manage-users` and `manage-realm`.
-5. **`scripts/seed.env`.** Set `SEED_CLIENT_ID` and `SEED_CLIENT_SECRET`. The file is git-ignored.
+1. Create an OpenID Connect client, for example `seed-service`.
+2. Turn on *Client authentication* and *Service accounts roles*. Leave the other flows off.
+3. Copy the client secret from *Credentials*.
+4. Under *Service accounts roles*, add `realm-management` → `manage-users` and `manage-realm`.
+5. Put `SEED_CLIENT_ID` and `SEED_CLIENT_SECRET` in `scripts/seed.env`. It's git-ignored.
 
-On each run the script gives the service account `ORG_SCOPE_EXEMPT` and the `GET_*`/`PUT_*` realm roles. The gateway needs these to accept the Organization and Location writes.
+Each run also grants the account `ORG_SCOPE_EXEMPT` and the `GET_*`/`PUT_*` roles the gateway needs for organization and location writes.
 
-## Demo data
+### Demo data
 
-`scripts/seed.sh` creates only what the three users need to sign in and sync. It creates no patients or clinical records. Every id is a fixed UUID in [`scripts/seed-bundle.json`](./scripts/seed-bundle.json), so a re-run updates rather than duplicates.
+The seed creates only what three users need to sign in and sync, and no patients. Ids are fixed UUIDs in [`scripts/seed-bundle.json`](./scripts/seed-bundle.json), so re-running updates rather than duplicates.
 
 ```
 Kiambu County Department of Health          county code 022
 └─ Ruiru Sub-County Health Management Team
-   └─ Kimbo Health Centre                    KE-022-0417     Locations: building → Outpatient Department
-      └─ Kimbo Community Health Unit         KE-022-0417-01  Location: Kimbo Village
+   └─ Kimbo Health Centre                    KE-022-0417     Outpatient Department
+      └─ Kimbo Community Health Unit         KE-022-0417-01  Kimbo Village
 ```
 
-| Username | Password | Practitioner | Role | Organization | Location |
-|---|---|---|---|---|---|
-| `chw1` | `chw_1234!` | Mwanaisha Juma Mwinyi | Community Health Promoter (`chw`) | Kimbo Community Health Unit | Kimbo Village |
-| `nurse1` | `nurse_1234!` | Kadzo Zawadi Baya | Registered Nurse (`nurse`) | Kimbo Health Centre | Outpatient Department |
-| `clinician1` | `clinician_1234!` | Hamisi Kazungu Charo | Clinical Officer (`clinician`) | Kimbo Health Centre | Outpatient Department |
+| User | Password | Name | Role | Organization |
+|---|---|---|---|---|
+| `chw1` | `chw_1234!` | Mwanaisha Juma Mwinyi | `chw` | Kimbo Community Health Unit |
+| `nurse1` | `nurse_1234!` | Kadzo Zawadi Baya | `nurse` | Kimbo Health Centre |
+| `clinician1` | `clinician_1234!` | Hamisi Kazungu Charo | `clinician` | Kimbo Health Centre |
 
-- The CHW's referrals go to Kimbo Health Centre, the community unit's `partOf`. The gateway's `partOf` expansion lets facility staff see the community unit's patients.
-- Codes, phone numbers and names are realistic but fictional. Codes use local `ohs.dev` identifier systems, not KMHFL.
-- The server is public, so these passwords are for demos only.
+CHW referrals go to Kimbo Health Centre, the unit's `partOf`. Names and codes are realistic but fictional. The server is public, so these passwords are for demos only.
 
 ## Run
 
-Run every command from this directory (`workflow-examples/`).
+From this directory:
 
 | Target | Command |
 |---|---|
 | Desktop | `./gradlew run` |
 | Android | `./gradlew assembleDebug` |
 | Web (Wasm) | `./gradlew wasmJsBrowserDevelopmentRun` |
-| iOS | Open [`iosApp/`](./iosApp) in Xcode |
+| iOS | Open `iosApp/` in Xcode |
 
 ## Walkthrough
 
-1. Sign in as **chw1**. Tap **+** to register *Amina Otieno*, a child born 14 months ago, then open her and choose *Sick-child assessment*. Answer *Chest indrawing* = yes, then submit. The form closes with *Referral sent to the facility* and the referral uploads straight away.
-2. Sign in as **nurse1** and tap *Sync now*. Open *Amina* and choose *Check in to OPD*, entering SpO₂ 95. The app shows *Queued for consultation: stat*, because the referral is urgent.
-3. Sign in as **clinician1**. The queue refreshes every minute, or on pull, and *Amina* appears at the top, marked *Community referral*. Open her entry, enter an outcome, and choose **Complete**.
-4. Sign in as **chw1** and tap *Sync now*. Amina's row shows **Follow-up due**. Completing the consult ran the `referral-follow-up` PlanDefinition, which handed her back to the CHW with a visit due in two days.
-5. Open *Follow-ups* and tap Amina to record the home visit. **Better** closes the follow-up and clears her chip. **The same**, **worse**, or any danger sign creates a new urgent referral (`iccm-follow-up-visit`), which goes back to the facility.
+1. **chw1**: register a 14-month-old, open her, and run *Sick-child assessment* with *Chest indrawing* = yes. The form closes with *Referral sent to the facility*.
+2. **nurse1**: tap *Sync now*, open the child and *Check in to OPD* with SpO₂ 95. She's queued **stat** because the referral is urgent.
+3. **clinician1**: the child appears at the top of the queue, marked *Community referral*. Open her, enter an outcome and **Complete**.
+4. **chw1**: tap *Sync now*. Her row shows **Follow-up due**, two days out, with the facility's outcome.
+5. Record the visit under *Follow-ups*. **Better** closes the loop. **The same**, **worse** or a danger sign refers her again.
 
-The patient list chip shows where each child stands: **Referred** → **Seen at facility** → **Follow-up due** → no chip once the loop is closed. Each profile shows the care record, rendered from ViewDefinition configs: referrals, facility outcome, treatment, follow-ups, facility visits and vitals.
-
-A walk-in follows the same facility path without a referral. **nurse1** opens or registers the patient, then checks them in with a reason and vitals. Triage queues them `routine`, or `stat` when SpO₂ is below 90, and **clinician1** sees them in the OPD queue after a sync.
-
-To see the home-treatment path, register a second child, then assess them with fever and a positive RDT. On submit the app says *Give artemether-lumefantrine. Follow up on day 3.*, and the follow-up appears under *Follow-ups*.
+The list chip tracks each child: **Referred** → **Seen at facility** → **Follow-up due** → none. A walk-in skips step 1: the nurse registers and checks them in, and triage queues them `routine`, or `stat` below SpO₂ 90.
 
 ## Tests
 
@@ -132,12 +127,12 @@ To see the home-treatment path, register a second child, then assess them with f
 
 | Area | Tests |
 |---|---|
-| Protocol branches | `IccmSickChildTest` (9 cases), `OpdTriageTest` (5 cases) |
+| Protocol branches | `IccmSickChildTest`, `OpdTriageTest` |
 | Referral loop on a real engine | `ProtocolServiceTest`, `AtomicSubmitTest` |
-| Sync coordination | `SerializedSyncManagerTest`, `SyncTest`, `DataChangeSignalTest` |
-| Roles and sync | `UserContextTest`, `PractitionerDetailsApiTest`, `SyncConfigResolverTest`, `SyncConfigFilesTest`, `RoleDownloadWorkManagerTest` |
+| Sync | `SerializedSyncManagerTest`, `SyncTest`, `SyncConfigFilesTest`, `RoleDownloadWorkManagerTest` |
+| Roles | `UserContextTest`, `PractitionerDetailsApiTest` |
 | Screens | `WorklistContentTest`, `QueueContentTest`, `NoRoleScreenTest` |
 
-## Not in this example
+## Not covered
 
-Households, pre-referral treatment, ANC, immunisation, stock, CQL and indicators, lab and pharmacy roles, and per-user data isolation on a shared device. The patient list and header still use the template's view-config pipeline (`ViewDefinition` → ig-codegen → `ViewRegistry`). See the `player-reference` README for that pipeline.
+Households, pre-referral treatment, ANC, immunisation, stock, CQL, indicators, lab and pharmacy roles, and per-user data isolation on a shared device.
