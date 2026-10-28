@@ -51,6 +51,7 @@ fun consultQueue(
 ): List<QueueItem> {
   val patientsById = patients.associateBy { it.id }
   val encountersById = encounters.associateBy { it.id }
+  val vitalsByEncounter = observations.groupBy { it.encounter.idOf("Encounter") }
   return tasks
     .filter {
       it.owner.idOf("Organization") == organizationId &&
@@ -74,8 +75,8 @@ fun consultQueue(
         priority = task.priority?.value?.code ?: "routine",
         referred = task.focus != null,
         vitals =
-          observations
-            .filter { encounterId != null && it.encounter.idOf("Encounter") == encounterId }
+          vitalsByEncounter[encounterId ?: ""]
+            .orEmpty()
             .mapNotNull { it.summary() }
             .joinToString(", "),
         arrivedAt = task.authoredOn?.value.clockTime(timeZone),
