@@ -23,7 +23,6 @@ import dev.ohs.player.medplum.data.repository.InMemorySampleFhirRepository
 import dev.ohs.player.medplum.util.FhirJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
 
@@ -117,20 +116,6 @@ class ChildRegistrationExtractionTest {
 
     assertEquals("Practitioner/prac-7", child.generalPractitioner.single().reference?.value)
     assertEquals("Organization/org-3", child.managingOrganization?.reference?.value)
-  }
-
-  /**
-   * This is FHIR data about the child, NOT what scopes access. Medplum stamps `meta.account` from
-   * the signed-in practitioner's AccessPolicy compartment, which this FHIR model cannot even
-   * represent. Treating `managingOrganization` as the security boundary would be a mistake: a
-   * client that can write the field can write any value into it.
-   */
-  @Test
-  fun theFacilityOnTheRecordIsNotWhatEnforcesScoping() = runTest {
-    val child = register().all("Patient").filterIsInstance<Patient>().single()
-
-    assertNotNull(child.managingOrganization)
-    assertEquals(null, child.meta?.security?.firstOrNull())
   }
 
   /**

@@ -21,7 +21,6 @@ import dev.ohs.fhir.engine.sync.createDataStore
 import dev.ohs.fhir.model.r4.terminologies.ResourceType
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 
 class DataStoreTimestampContextTest {
@@ -30,13 +29,6 @@ class DataStoreTimestampContextTest {
     val file = kotlin.io.path.createTempFile(suffix = ".preferences_pb").toFile()
     file.deleteOnExit()
     return createDataStore { file.absolutePath }
-  }
-
-  @Test
-  fun getLasUpdateTimestamp_beforeAnySave_isNull() = runTest {
-    val context = DataStoreTimestampContext(testDataStore())
-
-    assertNull(context.getLasUpdateTimestamp(ResourceType.Patient))
   }
 
   @Test

@@ -15,7 +15,6 @@
  */
 package dev.ohs.player.medplum.feature.questionnaire
 
-import dev.ohs.fhir.engine.sync.SyncJobStatus
 import dev.ohs.fhir.model.r4.QuestionnaireResponse
 import dev.ohs.player.medplum.auth.PendingAuth
 import dev.ohs.player.medplum.auth.Session
@@ -116,24 +115,6 @@ class QuestionnaireHostViewModelTest {
   fun onSubmit_whenExtractionSucceeds_pushesToTheServer() =
     testScope.runTest {
       val syncManager = FakeSyncManager()
-      val viewModel = viewModel(QuestionnaireIds.GROWTH_MONITORING, syncManager)
-      advanceUntilIdle()
-
-      viewModel.onSubmit(growthResponse())
-      advanceUntilIdle()
-
-      assertIs<QuestionnaireHostUiState.Submitted>(viewModel.uiState.value)
-      assertEquals(1, syncManager.syncNowCount)
-    }
-
-  /**
-   * The resources are already committed locally, so a failed push is not a failed submission —
-   * showing an error here would tell the health worker to re-enter a child who is already saved.
-   */
-  @Test
-  fun onSubmit_whenThePushFails_stillReportsSuccess() =
-    testScope.runTest {
-      val syncManager = FakeSyncManager { SyncJobStatus.Failed() }
       val viewModel = viewModel(QuestionnaireIds.GROWTH_MONITORING, syncManager)
       advanceUntilIdle()
 

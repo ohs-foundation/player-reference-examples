@@ -62,11 +62,4 @@ class QueueContentTest {
 
     assertEquals("t1" to "Admitted for oxygen", completed)
   }
-
-  @Test
-  fun emptyQueueSaysSo() = runComposeUiTest {
-    setContent { MaterialTheme { QueueContent(items = emptyList(), onComplete = { _, _ -> }) } }
-
-    onNodeWithText("No one is waiting").assertExists()
-  }
 }

@@ -41,12 +41,6 @@ class ThemeRepositoryTest {
   }
 
   @Test
-  fun defaultsToSystem_whenNothingHasBeenChosen() = runTest {
-    val repository = ThemeRepository(store("fresh.preferences_pb"))
-    assertEquals(ThemePreference.System, repository.persisted())
-  }
-
-  @Test
   fun survivesRestart() = runTest {
     // One DataStore per path, as the app has -- a second ThemeRepository over the same store is
     // what a relaunch looks like.

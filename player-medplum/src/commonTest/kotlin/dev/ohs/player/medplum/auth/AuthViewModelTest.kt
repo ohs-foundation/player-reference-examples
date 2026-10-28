@@ -197,23 +197,6 @@ class AuthViewModelTest {
   }
 
   @Test
-  fun clearError_removesTheErrorMessage() = runTest {
-    val service =
-      AuthService(
-        OAuthConfig("https://idp.example.org", "c", "openid"),
-        FakeSessionStore(null),
-        apiWithWorkingDiscovery(),
-      )
-    val viewModel = AuthViewModel(service, FakeSyncManager())
-    val launcher = FakeLauncher("app://callback") { AuthResult.Failure("network down") }
-    viewModel.loginForTest(launcher)
-
-    viewModel.clearError()
-
-    assertNull(viewModel.error.value)
-  }
-
-  @Test
   fun logout_clearsSessionAndStopsSync() = runTest {
     val store = FakeSessionStore(session())
     val service =

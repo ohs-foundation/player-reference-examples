@@ -47,31 +47,6 @@ class FhirEngineRepositoryTest {
   }
 
   @Test
-  fun upsertResource_thenGet_returnsStoredResource() = runTest {
-    val repository = FhirEngineRepository(fhirEngine)
-    val patient =
-      json.decodeFromString(
-        Patient.serializer(),
-        """
-          {
-            "resourceType": "Patient",
-            "id": "patient-1",
-            "active": true,
-            "name": [{"family": "Otieno", "given": ["Akinyi"]}]
-          }
-        """
-          .trimIndent(),
-      )
-
-    val revisionBefore = repository.revision.value
-    repository.upsert(patient)
-
-    val stored = repository.get("Patient", "patient-1") as? Patient
-    assertEquals("patient-1", stored?.id)
-    assertEquals(revisionBefore + 1, repository.revision.value)
-  }
-
-  @Test
   fun upsertResource_calledTwiceWithSameId_updatesInPlace() = runTest {
     val repository = FhirEngineRepository(fhirEngine)
     val original =

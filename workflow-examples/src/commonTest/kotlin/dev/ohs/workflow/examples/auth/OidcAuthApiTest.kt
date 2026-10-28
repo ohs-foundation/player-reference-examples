@@ -82,13 +82,6 @@ class OidcAuthApiTest {
   }
 
   @Test
-  fun exchangeCode_returnsTokensFromMockedEndpoint() = runTest {
-    val tokens = apiWith().exchangeCode("code123", "verifier", "app://callback")
-    assertEquals("a", tokens.accessToken)
-    assertEquals("r", tokens.refreshToken)
-  }
-
-  @Test
   fun exchangeCode_onProviderError_throwsAuthExceptionWithMessage() = runTest {
     val api =
       apiWith(

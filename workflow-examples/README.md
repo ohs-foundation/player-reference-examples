@@ -131,7 +131,7 @@ The list chip tracks each child: **Referred** → **Seen at facility** → **Fol
 | Referral loop on a real engine | `ProtocolServiceTest`, `AtomicSubmitTest` |
 | Sync | `SerializedSyncManagerTest`, `SyncTest`, `SyncConfigFilesTest`, `RoleDownloadWorkManagerTest` |
 | Roles | `UserContextTest`, `PractitionerDetailsApiTest` |
-| Screens | `WorklistContentTest`, `QueueContentTest`, `NoRoleScreenTest` |
+| Screens | `QueueContentTest`, `HomeScreenTest` |
 
 ## Not covered
 

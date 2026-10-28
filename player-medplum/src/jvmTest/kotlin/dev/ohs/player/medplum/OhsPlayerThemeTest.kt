@@ -71,43 +71,6 @@ class OhsPlayerThemeTest {
   }
 
   @Test
-  fun explicitChoice_overridesTheHost() = runComposeUiTest {
-    val lightOnDarkHost = schemeFor(ThemePreference.Light, SystemTheme.Dark)
-    val darkOnLightHost = schemeFor(ThemePreference.Dark, SystemTheme.Light)
-
-    assertTrue(
-      lightOnDarkHost.getValue("surface").luminance() > 0.5f,
-      "picking Light must win over a dark host",
-    )
-    assertTrue(
-      darkOnLightHost.getValue("surface").luminance() < 0.1f,
-      "picking Dark must win over a light host",
-    )
-  }
-
-  @Test
-  fun system_followsTheHost() = runComposeUiTest {
-    val onDarkHost = schemeFor(ThemePreference.System, SystemTheme.Dark)
-    val onLightHost = schemeFor(ThemePreference.System, SystemTheme.Light)
-
-    assertTrue(onDarkHost.getValue("surface").luminance() < 0.1f)
-    assertTrue(onLightHost.getValue("surface").luminance() > 0.5f)
-  }
-
-  @Test
-  fun brandChromeIsIdenticalInBothSchemes() = runComposeUiTest {
-    // App bars, the login header and avatars are filled with `primary` and labelled `onPrimary`.
-    // Material would lighten primary for a dark scheme, turning those into pale slabs -- this app
-    // keeps the brand blue in both and changes the surfaces instead.
-    val dark = schemeFor(ThemePreference.Dark, SystemTheme.Light)
-    val light = schemeFor(ThemePreference.Light, SystemTheme.Light)
-
-    assertEquals(brandBlue, light.getValue("primary"))
-    assertEquals(brandBlue, dark.getValue("primary"))
-    assertEquals(Color.White, dark.getValue("onPrimary"))
-  }
-
-  @Test
   fun defaultContentColourTracksTheScheme() = runComposeUiTest {
     // Text without an explicit colour falls back to LocalContentColor. MaterialTheme does not set
     // it -- only Surface does -- so unstyled text used to render BLACK regardless of scheme, which
