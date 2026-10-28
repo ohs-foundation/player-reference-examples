@@ -17,6 +17,7 @@ package dev.ohs.workflow.examples.workflow
 
 import dev.ohs.fhir.engine.FhirEngine
 import dev.ohs.workflow.examples.data.DataChangeSignal
+import kotlinx.coroutines.withContext
 
 /** Runs a multi-step write as one unit: every write lands, or none does. */
 fun interface Transactor {
@@ -26,7 +27,7 @@ fun interface Transactor {
 /** A [Transactor] over the engine's database transaction; lists refresh once it commits. */
 class EngineTransactor(private val engine: FhirEngine) : Transactor {
   override suspend fun atomically(block: suspend () -> Unit) {
-    engine.withTransaction { block() }
+    engine.withTransaction { withContext(DataChangeSignal.Batch) { block() } }
     DataChangeSignal.notifyChanged()
   }
 }

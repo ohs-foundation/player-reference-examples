@@ -31,7 +31,7 @@ class FhirEngineRepository(private val fhirEngine: FhirEngine) : FhirRepository 
 
   override suspend fun upsert(resource: Resource) {
     upsertResource(resource)
-    DataChangeSignal.notifyChanged()
+    DataChangeSignal.written()
   }
 
   override suspend fun get(resourceType: String, id: String): Resource? {

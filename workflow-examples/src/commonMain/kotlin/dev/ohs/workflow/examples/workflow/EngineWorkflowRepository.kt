@@ -34,16 +34,16 @@ class EngineWorkflowRepository(private val engine: FhirEngine) : WorkflowReposit
       .getOrElse { if (it is ResourceNotFoundException) null else throw it }
 
   override suspend fun create(resource: Resource): String =
-    engine.create(resource).first().also { DataChangeSignal.notifyChanged() }
+    engine.create(resource).first().also { DataChangeSignal.written() }
 
   override suspend fun update(resource: Resource) {
     engine.update(resource)
-    DataChangeSignal.notifyChanged()
+    DataChangeSignal.written()
   }
 
   override suspend fun delete(type: String, id: String) {
     engine.delete(ResourceType.fromCode(type), id)
-    DataChangeSignal.notifyChanged()
+    DataChangeSignal.written()
   }
 
   override suspend fun searchByReferenceParam(

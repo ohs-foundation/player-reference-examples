@@ -15,6 +15,9 @@
  */
 package dev.ohs.workflow.examples.data
 
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,5 +36,15 @@ object DataChangeSignal {
 
   fun notifyChanged() {
     _revision.update { it + 1 }
+  }
+
+  /** Signals one write, unless it's inside a transaction, which signals once when it commits. */
+  suspend fun written() {
+    if (currentCoroutineContext()[Batch.Key] == null) notifyChanged()
+  }
+
+  /** Marks the coroutines of an open transaction. */
+  object Batch : AbstractCoroutineContextElement(Key) {
+    object Key : CoroutineContext.Key<Batch>
   }
 }
