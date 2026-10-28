@@ -16,6 +16,7 @@
 package dev.ohs.workflow.examples.feature.questionnaire
 
 import androidx.lifecycle.viewModelScope
+import dev.ohs.fhir.engine.sync.SyncJobStatus
 import dev.ohs.fhir.model.r4.Boolean as FhirBoolean
 import dev.ohs.fhir.model.r4.Enumeration
 import dev.ohs.fhir.model.r4.Integer
@@ -36,6 +37,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
@@ -89,20 +91,26 @@ class QuestionnaireHostViewModelTest {
 
   @Test
   fun submittingUploadsRightAway() = runTest {
-    val sync = FakeSyncManager()
+    val uploaded = CompletableDeferred<Unit>()
+    val sync = FakeSyncManager { SyncJobStatus.Succeeded().also { uploaded.complete(Unit) } }
 
     submitAssessment(sync, backgroundScope)
 
+    uploaded.await()
     assertEquals(1, sync.syncNowCount)
   }
 
   @Test
   fun anOfflineUploadIsIgnored() = runTest {
-    val sync = FakeSyncManager { error("Unable to resolve host") }
+    val attempted = CompletableDeferred<Unit>()
+    val sync = FakeSyncManager {
+      attempted.complete(Unit)
+      error("Unable to resolve host")
+    }
 
     val viewModel = submitAssessment(sync, backgroundScope)
 
-    assertEquals(1, sync.syncNowCount)
+    attempted.await()
     assertIs<QuestionnaireHostUiState.Submitted>(viewModel.uiState.value)
   }
 
