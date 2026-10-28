@@ -32,10 +32,16 @@ import dev.ohs.fhir.model.r4.terminologies.ResourceType
 import java.nio.file.Files
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 
 /**
@@ -127,5 +133,29 @@ class SyncTest {
     firstAttempt.await()
 
     Sync.cancelPeriodicSync<TestFhirSyncTask>()
+  }
+
+  @Test
+  fun simultaneousPeriodicStartsRunOneLoop() = runBlocking {
+    var cycles = 0
+    try {
+      List(20) {
+          async(Dispatchers.Default) {
+            Sync.periodicSync(
+              taskFactory = {
+                cycles++
+                TestFhirSyncTask(CompletableDeferred())
+              },
+              repeatInterval = 1.minutes,
+            )
+          }
+        }
+        .awaitAll()
+      delay(2_000)
+    } finally {
+      Sync.cancelPeriodicSync<TestFhirSyncTask>()
+    }
+
+    assertEquals(1, cycles)
   }
 }
