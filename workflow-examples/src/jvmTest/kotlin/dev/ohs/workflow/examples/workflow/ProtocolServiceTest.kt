@@ -39,6 +39,7 @@ import dev.ohs.fhir.workflow.FhirOperator
 import dev.ohs.fhir.workflow.WorkflowRepository
 import dev.ohs.workflow.examples.auth.AppRole
 import dev.ohs.workflow.examples.auth.UserContext
+import dev.ohs.workflow.examples.data.DataChangeSignal
 import java.nio.file.Files
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -392,6 +393,95 @@ class ProtocolServiceTest {
           false
       }
     )
+  }
+
+  private suspend fun referral() =
+    service.confirmReferral(
+      service
+        .assessSickChild(child, response(number("age-months", 14), yes("convulsions")), chw)
+        .referral!!,
+      chw,
+    )
+
+  private suspend fun serviceRequests() =
+    repository
+      .searchByReferenceParam("ServiceRequest", "subject", "Patient/child-1")
+      .filterIsInstance<ServiceRequest>()
+
+  private suspend fun consults() =
+    repository
+      .searchByReferenceParam("Task", "subject", "Patient/child-1")
+      .filterIsInstance<Task>()
+      .filter { it.code?.coding?.any { coding -> coding.code?.value == "opd-consult" } == true }
+
+  @Test
+  fun checkInWithoutALocationIsRefused() = runTest {
+    assertFails {
+      service.checkIn(child, response(number("spo2", 97)), nurse.copy(locationId = null))
+    }
+
+    assertTrue(
+      repository.searchByReferenceParam("Encounter", "subject", "Patient/child-1").isEmpty()
+    )
+  }
+
+  @Test
+  fun checkingInTwiceReusesTheOpenConsult() = runTest {
+    val first = service.checkIn(child, response(number("spo2", 97)), nurse)
+    val second = service.checkIn(child, response(number("spo2", 97)), nurse)
+
+    assertEquals(first.id, second.id)
+    assertEquals(1, consults().size)
+  }
+
+  @Test
+  fun aConsultClosesEveryReferralItWasTriagedOn() = runTest {
+    referral()
+    referral()
+    val consult = service.checkIn(child, response(number("spo2", 97)), nurse)
+
+    service.completeConsult(consult, "Treated")
+
+    val orders = serviceRequests().filter { it.intent.value == ServiceRequest.RequestIntent.Order }
+    assertEquals(2, orders.size)
+    assertTrue(orders.all { it.status.value == ServiceRequest.RequestStatus.Completed })
+  }
+
+  @Test
+  fun aFollowUpOnAClosedTaskIsRejected() = runTest {
+    referral()
+    service.completeConsult(service.checkIn(child, response(number("spo2", 97)), nurse), "Treated")
+    val followUp =
+      repository
+        .searchByReferenceParam("Task", "subject", "Patient/child-1")
+        .filterIsInstance<Task>()
+        .single { it.isFollowUp() }
+    val better =
+      response(
+        "condition" to Value.Coding(Coding(code = Code(value = "better"))),
+        no("danger-sign"),
+      )
+    val worse =
+      response("condition" to Value.Coding(Coding(code = Code(value = "worse"))), no("danger-sign"))
+    service.recordFollowUp(child, better, followUp.id!!, chw)
+    val before = serviceRequests().size
+
+    assertFails { service.recordFollowUp(child, worse, followUp.id!!, chw) }
+
+    assertEquals(before, serviceRequests().size)
+  }
+
+  @Test
+  fun writesInATransactionRefreshListsOnceAfterCommit() = runTest {
+    val before = DataChangeSignal.revision.value
+
+    EngineTransactor(fhirEngine).atomically {
+      repository.create(Patient(id = "a"))
+      repository.create(Patient(id = "b"))
+      repository.create(Patient(id = "c"))
+    }
+
+    assertEquals(before + 1, DataChangeSignal.revision.value)
   }
 
   @Test

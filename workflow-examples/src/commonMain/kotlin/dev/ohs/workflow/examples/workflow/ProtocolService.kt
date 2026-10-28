@@ -45,6 +45,7 @@ import dev.ohs.fhir.workflow.activity.resource.event.CPGProcedureEvent
 import dev.ohs.fhir.workflow.activity.resource.request.CPGServiceRequest
 import dev.ohs.fhir.workflow.activity.resource.request.Status
 import dev.ohs.workflow.examples.auth.UserContext
+import dev.ohs.workflow.examples.feature.opd.CONSULT_TASK
 import dev.ohs.workflow.examples.generateId
 import dev.ohs.workflow.examples.util.idOf
 import kotlin.time.Clock
@@ -118,15 +119,17 @@ class ProtocolService(
     followUpTaskId: String,
     context: UserContext,
   ): AssessmentResult {
+    val task =
+      repository.read("Task", followUpTaskId) as? Task
+        ?: error("This follow-up is no longer on the device.")
+    check(task.status.value != Task.TaskStatus.Completed) { "This follow-up was already recorded." }
     store(response, patient)
     val chw = reference("Practitioner/${context.practitionerId}")
     val requests =
       apply(ICCM_FOLLOW_UP_VISIT, patient, mapOf("visit" to collection(listOf(response)))) {
         if (it is ServiceRequest) it.copy(requester = chw) else it
       }
-    (repository.read("Task", followUpTaskId) as? Task)?.let {
-      repository.update(it.copy(status = Enumeration(value = Task.TaskStatus.Completed)))
-    }
+    repository.update(task.copy(status = Enumeration(value = Task.TaskStatus.Completed)))
     return AssessmentResult(
       requests.filterIsInstance<ServiceRequest>().firstOrNull(),
       emptyList(),
@@ -158,6 +161,12 @@ class ProtocolService(
     response: QuestionnaireResponse,
     context: UserContext,
   ): Task {
+    val locationId =
+      context.locationId
+        ?: error("Your role has no location, so the clinicians can't see this visit.")
+    openConsult(patient, context.organizationId)?.let {
+      return it
+    }
     store(response, patient)
     val subject = reference("Patient/${patient.id}")
     val encounter =
@@ -174,10 +183,7 @@ class ProtocolService(
           listOfNotNull(response.string("reason")).map {
             CodeableConcept(text = FhirString(value = it))
           },
-        location =
-          listOfNotNull(context.locationId).map {
-            Encounter.Location(location = reference("Location/$it"))
-          },
+        location = listOf(Encounter.Location(location = reference("Location/$locationId"))),
         serviceProvider = reference("Organization/${context.organizationId}"),
         period = Period(start = dateTimeNow()),
       )
@@ -206,6 +212,7 @@ class ProtocolService(
           encounter = encounterReference,
           focus =
             referrals.firstOrNull()?.let { referral -> reference("ServiceRequest/${referral.id}") },
+          basedOn = referrals.map { referral -> reference("ServiceRequest/${referral.id}") },
         )
       }
       .single() as Task
@@ -220,10 +227,13 @@ class ProtocolService(
     transactor.atomically {
       val current = repository.read("Task", task.id!!) as? Task ?: task
       if (current.status.value == Task.TaskStatus.Completed) return@atomically
-      val referral =
-        current.focus.idOf("ServiceRequest")?.let { repository.read("ServiceRequest", it) }
-          as? ServiceRequest
-      if (referral?.status?.value == ServiceRequest.RequestStatus.Active) {
+      val referralIds =
+        (current.basedOn + listOfNotNull(current.focus)).mapNotNull { it.idOf("ServiceRequest") }
+      for (referral in
+        referralIds.distinct().mapNotNull {
+          repository.read("ServiceRequest", it) as? ServiceRequest
+        }) {
+        if (referral.status.value != ServiceRequest.RequestStatus.Active) continue
         val flow = ActivityFlow.of(repository, CPGServiceRequest(referral))
         val event = flow.preparePerform<CPGProcedureEvent>("CPGProcedureEvent").getOrThrow()
         val perform = flow.initiatePerform(event).getOrThrow()
@@ -271,6 +281,19 @@ class ProtocolService(
       )
     }
   }
+
+  /**
+   * The patient's consult still waiting at [facilityId], so a second check-in doesn't queue twice.
+   */
+  private suspend fun openConsult(patient: Patient, facilityId: String): Task? =
+    repository
+      .searchByReferenceParam("Task", "subject", "Patient/${patient.id}")
+      .filterIsInstance<Task>()
+      .firstOrNull {
+        it.status.value == Task.TaskStatus.Requested &&
+          it.owner?.reference?.value == "Organization/$facilityId" &&
+          it.code?.coding?.any { coding -> coding.code?.value == CONSULT_TASK } == true
+      }
 
   /**
    * Open referral orders for [patient] addressed to [facilityId]; other facilities' stay theirs.
