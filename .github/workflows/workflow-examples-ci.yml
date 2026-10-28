@@ -1,7 +1,7 @@
 # PR validation for the workflow-examples example. Runs ./gradlew check on every
 # pull request and on pushes to main that touch it. Catches test failures and compile errors before they reach a release tag.
 
-name: CI
+name: workflow-examples CI
 
 on:
   pull_request:

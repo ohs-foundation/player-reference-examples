@@ -6,7 +6,7 @@
 # or enable Dependabot (.github/dependabot.yml with `package-ecosystem: github-actions`)
 # to convert these to commit SHAs.
 
-name: Release
+name: workflow-examples Release
 
 on:
   push:
