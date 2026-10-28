@@ -76,7 +76,7 @@ jobs:
         include:
           - id: jvm
             label: JVM/Desktop
-            tasks: ':player-medplum-app:jvmTest'
+            tasks: ':jvmTest'
             kotlinDaemonHeap: '-Xmx6g -XX:+UseG1GC'
             extraArgs: ''
           - id: android
@@ -156,4 +156,4 @@ jobs:
       - name: Compile + link ${{ matrix.label }}
         run: |
           ./gradlew --stacktrace \
-            :player-medplum-app:linkDebugFramework${{ matrix.target }}
+            :linkDebugFramework${{ matrix.target }}

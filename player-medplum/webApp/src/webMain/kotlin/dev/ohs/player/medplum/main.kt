@@ -16,7 +16,7 @@
 package dev.ohs.player.medplum
 
 /**
- * Web entry point for both the js and wasmJs targets. [launchWebApp] lives in :player-medplum-app's
+ * Web entry point for both the js and wasmJs targets. [launchWebApp] lives in the root project's
  * foregroundSyncWebMain, which has exactly this target set.
  */
 fun main() = launchWebApp()

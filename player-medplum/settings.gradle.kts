@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// The root project name is half the Compose Resources package
-// (player_medplum.player_medplum_app.generated.resources) -- renaming it moves every `Res` import.
 rootProject.name = "player-medplum"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
@@ -56,8 +54,7 @@ dependencyResolutionManagement {
 
 plugins { id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0" }
 
-// The shared library: all Kotlin, all Compose resources, ig-codegen. The other three are packaging.
-include(":player-medplum-app")
+// The root project holds all Kotlin, Compose resources and ig-codegen; these three only package it.
 
 include(":androidApp")
 

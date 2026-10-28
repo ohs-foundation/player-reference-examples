@@ -1,0 +1,26 @@
+{
+  "resourceType": "PlanDefinition",
+  "id": "referral-follow-up",
+  "url": "http://ohs.dev/fhir/PlanDefinition/referral-follow-up",
+  "version": "1.0.0",
+  "name": "ReferralFollowUp",
+  "title": "Counter-referral to the community",
+  "status": "active",
+  "description": "When the facility closes a referral that came from a community health worker, hand the child back to that worker for a home follow-up visit.",
+  "action": [
+    {
+      "id": "follow-up-after-facility",
+      "title": "Follow up after facility visit",
+      "condition": [
+        {
+          "kind": "applicability",
+          "expression": {
+            "language": "text/fhirpath",
+            "expression": "%referral.entry.resource.requester.reference.startsWith('Practitioner/').anyTrue()"
+          }
+        }
+      ],
+      "definitionCanonical": "http://ohs.dev/fhir/ActivityDefinition/referral-follow-up"
+    }
+  ]
+}

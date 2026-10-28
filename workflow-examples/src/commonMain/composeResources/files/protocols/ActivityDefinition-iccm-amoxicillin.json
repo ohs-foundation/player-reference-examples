@@ -1,0 +1,16 @@
+{
+  "resourceType": "ActivityDefinition",
+  "id": "iccm-amoxicillin",
+  "url": "http://ohs.dev/fhir/ActivityDefinition/iccm-amoxicillin",
+  "status": "active",
+  "kind": "MedicationRequest",
+  "title": "Amoxicillin",
+  "productCodeableConcept": {
+    "text": "Amoxicillin 250 mg dispersible"
+  },
+  "dosage": [
+    {
+      "text": "Twice daily for 5 days"
+    }
+  ]
+}

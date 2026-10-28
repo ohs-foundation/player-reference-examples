@@ -1,0 +1,16 @@
+{
+  "resourceType": "ActivityDefinition",
+  "id": "iccm-al",
+  "url": "http://ohs.dev/fhir/ActivityDefinition/iccm-al",
+  "status": "active",
+  "kind": "MedicationRequest",
+  "title": "Artemether-lumefantrine",
+  "productCodeableConcept": {
+    "text": "Artemether-lumefantrine 20/120 mg dispersible"
+  },
+  "dosage": [
+    {
+      "text": "Twice daily for 3 days, dose by age band"
+    }
+  ]
+}

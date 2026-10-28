@@ -1,0 +1,17 @@
+{
+  "resourceType": "ActivityDefinition",
+  "id": "opd-consult",
+  "url": "http://ohs.dev/fhir/ActivityDefinition/opd-consult",
+  "status": "active",
+  "kind": "Task",
+  "title": "OPD consultation",
+  "description": "OPD consultation",
+  "code": {
+    "coding": [
+      {
+        "system": "http://ohs.dev/fhir/CodeSystem/task-type",
+        "code": "opd-consult"
+      }
+    ]
+  }
+}

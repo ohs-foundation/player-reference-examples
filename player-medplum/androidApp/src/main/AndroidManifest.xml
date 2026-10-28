@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!--
-      Every class named below lives in :player-medplum-app, not in this module. That is fine:
+      Every class named below lives in the root project, not in this module. That is fine:
       android:name resolves against the merged application's runtime classpath. The names are
       spelled out in full rather than as ".MainActivity" precisely because they are not local:
       the two modules happen to share a namespace, and a reader should not have to know that.

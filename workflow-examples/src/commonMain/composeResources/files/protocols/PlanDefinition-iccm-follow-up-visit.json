@@ -1,0 +1,26 @@
+{
+  "resourceType": "PlanDefinition",
+  "id": "iccm-follow-up-visit",
+  "url": "http://ohs.dev/fhir/PlanDefinition/iccm-follow-up-visit",
+  "version": "1.0.0",
+  "name": "IccmFollowUpVisit",
+  "title": "iCCM follow-up visit",
+  "status": "active",
+  "description": "At the follow-up visit, a child who is not better, is worse, or shows any danger sign is referred urgently; a child who is better closes the follow-up.",
+  "action": [
+    {
+      "id": "refer",
+      "title": "Refer urgently to the health facility",
+      "condition": [
+        {
+          "kind": "applicability",
+          "expression": {
+            "language": "text/fhirpath",
+            "expression": "(%visit.entry.resource.item.where(linkId = 'condition').answer.value.code contains 'same') or (%visit.entry.resource.item.where(linkId = 'condition').answer.value.code contains 'worse') or (%visit.entry.resource.item.where(linkId = 'danger-sign').answer.value contains true)"
+          }
+        }
+      ],
+      "definitionCanonical": "http://ohs.dev/fhir/ActivityDefinition/iccm-referral"
+    }
+  ]
+}

@@ -1,53 +1,40 @@
 # Player Reference Examples
 
-Reference integrations that show how the [Open Health Stack][ohs] **player** — JSON-configured,
-SQL-on-FHIR-driven UI — is wired up against a real FHIR backend.
+Working apps built on the [Open Health Stack][ohs] player, each wired to a real FHIR backend. Every directory is its own Gradle project, shaped like [`player-reference`][pr]: change into it, then build and run from there.
 
-Each example is a self-contained project in its own top-level directory, with its own build,
-its own README and its own CI workflow. Nothing is shared between examples except the licence
-and the repository conventions in this root.
-
-## Examples
-
-| Example | Backend | Platforms | Status |
+| Example | What it shows | Backend | Platforms |
 |---|---|---|---|
-| [`player-medplum/`](player-medplum) — OHS Medplum EIR, an electronic immunization registry | Self-hosted [Medplum][medplum] FHIR R4 | Android, iOS, desktop (JVM), web (Wasm/JS) | Proof of concept |
-
-## Working on an example
-
-Everything you need is inside the example's directory — change into it first:
+| [`workflow-examples/`](workflow-examples) | A community-to-facility referral loop driven by `fhir-workflow` PlanDefinitions | HAPI FHIR behind the OHS gateway, Keycloak | Android, iOS, desktop, web (Wasm) |
+| [`player-medplum/`](player-medplum) | An immunization registry | Self-hosted [Medplum][medplum] | Android, iOS, desktop, web (Wasm, JS) |
 
 ```bash
-cd player-medplum
-./gradlew :desktopApp:run
+cd workflow-examples && ./gradlew run
+cd player-medplum && ./gradlew :desktopApp:run
 ```
 
-See that example's `README.md` for prerequisites, configuration and the full task list.
-
-## Repository layout
+## Layout
 
 ```
 .
-├── .github/workflows/     # one CI + release workflow pair per example,
-│                          #   named <example>-ci.yml / <example>-release.yml
-├── LICENSE                # Apache 2.0, applies to the whole repository
-├── license-header.txt     # header the per-example formatters enforce
-└── player-medplum/        # first example — see its README
+├── .github/workflows/   <example>-ci.yml and <example>-release.yml per example
+├── player-medplum/      Gradle project: app at the root, plus androidApp/, desktopApp/, webApp/ launchers
+├── workflow-examples/   Gradle project: app at the root
+├── LICENSE              Apache 2.0, for the whole repository
+└── license-header.txt
 ```
 
 ## Adding an example
 
-1. Create a top-level directory with the example's build, sources, README and `.gitignore`.
-2. Copy `.github/workflows/player-medplum-ci.yml` to `<example>-ci.yml` and retarget the
-   `paths:` filter, `working-directory:` and `build-root-directory:` at the new directory.
+1. Create a top-level directory with its own build, README and `.gitignore`.
+2. Copy a CI workflow to `.github/workflows/<example>-ci.yml` and point its `paths:`, `working-directory:` and `build-root-directory:` at the new directory.
 3. Add a row to the table above.
 
-Release tags are per-example. Prefix the tag with the directory name so the right release
-workflow picks it up — for example `player-medplum-v1.0.0`.
+Release tags start with the directory name, so the right workflow picks them up: `player-medplum-v1.0.0`, `workflow-examples-v1.0.0`.
 
 ## Licence
 
-Apache License 2.0 — see [LICENSE](LICENSE).
+Apache 2.0, see [LICENSE](LICENSE).
 
 [ohs]: https://ohs-foundation.github.io/
+[pr]: https://github.com/ohs-foundation/player-reference
 [medplum]: https://www.medplum.com/
