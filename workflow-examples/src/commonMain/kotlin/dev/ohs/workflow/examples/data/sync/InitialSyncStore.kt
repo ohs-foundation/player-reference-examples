@@ -23,9 +23,9 @@ import kotlinx.coroutines.flow.first
 
 /**
  * Persisted "the first sync has succeeded at least once" marker that drives the initial-sync gate.
- * A plain data-count check ([dev.ohs.workflow.examples.data.repository.FhirRepository]) can't do
- * this: an account that syncs successfully but holds no resources would look un-synced forever. The
- * marker is set only on a successful sync, so a failed first sync still shows the blocking gate.
+ * A plain data-count check (`FhirRepository`) can't do this: an account that syncs successfully but
+ * holds no resources would look un-synced forever. The marker is set only on a successful sync, so
+ * a failed first sync still shows the blocking gate.
  */
 interface InitialSyncStore {
   suspend fun isComplete(): Boolean

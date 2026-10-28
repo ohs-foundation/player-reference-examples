@@ -26,9 +26,9 @@ import dev.ohs.workflow.examples.auth.ensureFreshSessionForSync
 import dev.ohs.workflow.examples.data.DataChangeSignal
 
 /**
- * WorkManager entry point for this app's sync, enqueued via [dev.ohs.fhir.engine.sync.Sync]. Built
- * by WorkManager's default factory (reflection on the `(Context, WorkerParameters)` constructor),
- * so it constructs its own [AppFhirSyncTask] rather than resolving one through Koin.
+ * WorkManager entry point for this app's sync, enqueued via `Sync`. Built by WorkManager's default
+ * factory (reflection on the `(Context, WorkerParameters)` constructor), so it constructs its own
+ * [AppFhirSyncTask] rather than resolving one through Koin.
  */
 class AppFhirSyncWorker(appContext: Context, workerParams: WorkerParameters) :
   FhirSyncWorker(appContext, workerParams) {
@@ -36,8 +36,8 @@ class AppFhirSyncWorker(appContext: Context, workerParams: WorkerParameters) :
 
   /**
    * WorkManager can relaunch this worker in a fresh process after the app was killed, where the UI
-   * bootstrap never ran and [dev.ohs.workflow.examples.auth.SessionRepository] is empty. Hydrate
-   * and refresh the session first so the sync's requests carry a valid Bearer token.
+   * bootstrap never ran and `SessionRepository` is empty. Hydrate and refresh the session first so
+   * the sync's requests carry a valid Bearer token.
    */
   @Suppress("RestrictedApi")
   override suspend fun doWork(): Result {

@@ -54,7 +54,7 @@ dependencyResolutionManagement {
 
 plugins { id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0" }
 
-// The shared library: all Kotlin, all Compose resources, ig-codegen. The other three are packaging.
+// The root project holds all Kotlin, Compose resources and ig-codegen; these three only package it.
 
 include(":androidApp")
 

@@ -47,7 +47,7 @@ import org.jetbrains.compose.resources.stringResource
 /**
  * Full-screen blocking gate shown between login and Home: a progress state while checking/syncing,
  * and a failure state offering Retry or Continue without syncing. Never shown for [Passed] — the
- * caller ([dev.ohs.workflow.examples.App]) switches to the real content on that state instead.
+ * caller (`App`) switches to the real content on that state instead.
  */
 @Composable
 fun InitialSyncScreen(

@@ -53,8 +53,8 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 /**
- * Binds the production [FhirRepository], backed by [FhirEngineRepository]. Requires a
- * [dev.ohs.fhir.FhirEngine] binding, supplied by each platform's module (see `initKoin` callers).
+ * Binds the production [FhirRepository], backed by [FhirEngineRepository]. Requires a `FhirEngine`
+ * binding, supplied by each platform's module (see `initKoin` callers).
  */
 internal val fhirEngineRepositoryModule = module {
   single<FhirRepository> { FhirEngineRepository(get()) }

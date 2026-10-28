@@ -41,7 +41,7 @@ internal const val PERIODIC_SYNC_TASK_IDENTIFIER = "dev.ohs.workflow.examples.sy
  * iOS [SyncManager]. Periodic sync runs as a `BGProcessingTask` via [IosBgSyncScheduler];
  * registration happens in the constructor (not lazily) because `BGTaskScheduler` requires it before
  * `applicationDidFinishLaunching` returns — see [IosBgSyncScheduler]'s docs and
- * [dev.ohs.workflow.examples.MainViewController], which constructs this eagerly.
+ * `MainViewController`, which constructs this eagerly.
  *
  * One-time sync runs on a dedicated [Dispatchers.IO]-backed scope decoupled from the caller, so
  * backgrounding the triggering screen doesn't cancel an in-flight network sync. Mirrors

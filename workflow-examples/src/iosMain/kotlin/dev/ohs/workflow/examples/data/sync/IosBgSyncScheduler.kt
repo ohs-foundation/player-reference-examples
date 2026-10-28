@@ -47,9 +47,9 @@ import platform.Foundation.NSError
  * Registers and schedules this app's sync as a `BGProcessingTask`. Mirrors kotlin-fhir-engine's
  * engine-app `IosBgSyncScheduler`. [register] must be called during app launch, before
  * `applicationDidFinishLaunching` returns per Apple's `BGTaskScheduler` docs — see
- * [dev.ohs.workflow.examples.MainViewController], which constructs [IosSyncManager] eagerly (not
- * lazily through Koin) for exactly this reason. Requires
- * `BGTaskSchedulerPermittedIdentifiers`/`UIBackgroundModes` in `iosApp/iosApp/Info.plist`.
+ * `MainViewController`, which constructs [IosSyncManager] eagerly (not lazily through Koin) for
+ * exactly this reason. Requires `BGTaskSchedulerPermittedIdentifiers`/`UIBackgroundModes` in
+ * `iosApp/iosApp/Info.plist`.
  */
 internal class IosBgSyncScheduler(
   private val taskIdentifier: String,

@@ -19,7 +19,7 @@ package dev.ohs.build
  * Build-time app configuration, resolved once per project by the `app-config-conventions` plugin
  * from env vars, then the root `local.properties`, then a default.
  *
- * Three modules read this same object, which is the point: `:player-medplum-app` bakes the OAuth
+ * Three modules read this same object, which is the point: the root project bakes the OAuth
  * values into `GeneratedAuthConfig`, `:androidApp` feeds [redirectScheme]/[redirectHost] into the
  * `LoginRedirectActivity` intent-filter as manifest placeholders, and `:desktopApp` uses
  * [packageVersion] for jpackage. Resolving them separately per module is how the manifest and the

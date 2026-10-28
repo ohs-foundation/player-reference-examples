@@ -20,9 +20,9 @@ import java.util.Collections
 
 /**
  * Desktop has no OS-level sync scheduler to enforce a network constraint (unlike Android/iOS), so
- * [dev.ohs.workflow.examples.data.sync.Sync.periodicSync] checks this before every cycle. Fails
- * open (returns true) on enumeration errors — an unnecessary sync attempt that fails is preferable
- * to silently never syncing again because this heuristic broke.
+ * `Sync.periodicSync` checks this before every cycle. Fails open (returns true) on enumeration
+ * errors — an unnecessary sync attempt that fails is preferable to silently never syncing again
+ * because this heuristic broke.
  */
 internal actual fun isNetworkConnected(): Boolean =
   try {

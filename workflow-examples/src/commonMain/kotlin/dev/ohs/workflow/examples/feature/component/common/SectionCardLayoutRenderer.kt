@@ -61,8 +61,7 @@ import org.jetbrains.compose.resources.stringResource
 
 /**
  * Layout renderer that introduces a list of items with a flat overline section label — no card,
- * border, or per-row divider. Registered under
- * [dev.ohs.player.generated.viewtype.ViewTypeCS.SectionCard].
+ * border, or per-row divider. Registered under `ViewTypeCS.SectionCard`.
  *
  * Supports an optional item count and collapsible behavior driven by [SectionCardConfig].
  */
