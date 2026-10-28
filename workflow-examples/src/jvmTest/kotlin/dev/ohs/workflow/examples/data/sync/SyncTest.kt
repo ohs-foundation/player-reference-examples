@@ -34,20 +34,22 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 
 /**
  * A no-op [FhirSyncTask] whose download step optionally blocks on [gate] before completing empty
- * (no requests, no local changes) — real enough for [dev.ohs.fhir.engine.sync.runSync] to reach
- * [dev.ohs.fhir.engine.sync.SyncJobStatus.Succeeded] without ever touching the network. Matches the
- * shape kotlin-fhir-engine's own `DownloaderImplTest.TestDownloadWorkManager` uses.
+ * (no requests, no local changes) — real enough for `runSync` to reach `SyncJobStatus.Succeeded`
+ * without ever touching the network. Matches the shape kotlin-fhir-engine's own
+ * `DownloaderImplTest.TestDownloadWorkManager` uses.
  */
 private class TestFhirSyncTask(private val gate: CompletableDeferred<Unit>? = null) : FhirSyncTask {
   override fun getFhirEngine(): FhirEngine = FhirEngineProvider.getInstance()
@@ -97,20 +99,6 @@ class SyncTest {
   }
 
   @Test
-  fun aSyncRefreshesTheSessionBeforeItRuns() = runTest {
-    val refreshed = CompletableDeferred<Unit>()
-    val original = Sync.beforeAttempt
-    Sync.beforeAttempt = { refreshed.complete(Unit) }
-    try {
-      Sync.oneTimeSync(taskFactory = { TestFhirSyncTask(CompletableDeferred()) })
-      refreshed.await()
-    } finally {
-      Sync.cancelOneTimeSync<TestFhirSyncTask>()
-      Sync.beforeAttempt = original
-    }
-  }
-
-  @Test
   fun simultaneousRequestsShareOneSync() = runBlocking {
     val gate = CompletableDeferred<Unit>()
     var tasks = 0
@@ -139,6 +127,56 @@ class SyncTest {
   }
 
   @Test
+  fun aFinishedSyncNeverAnswersTheNextRequest() = runBlocking {
+    var attempts = 0
+    val original = Sync.beforeAttempt
+    Sync.beforeAttempt = {
+      attempts++
+      error("offline")
+    }
+    val perSync =
+      try {
+        Sync.oneTimeSync(taskFactory = { TestFhirSyncTask() }).first {
+          it is CurrentSyncJobStatus.Failed
+        }
+        val first = attempts
+        Sync.oneTimeSync(taskFactory = { TestFhirSyncTask() }).first {
+          it is CurrentSyncJobStatus.Failed
+        }
+        first to attempts - first
+      } finally {
+        Sync.beforeAttempt = original
+      }
+
+    assertTrue(perSync.first > 0)
+    assertEquals(perSync.first, perSync.second)
+  }
+
+  @Test
+  fun simultaneousPeriodicStartsRunOneLoop() = runBlocking {
+    var cycles = 0
+    try {
+      List(20) {
+          async(Dispatchers.Default) {
+            Sync.periodicSync(
+              taskFactory = {
+                cycles++
+                TestFhirSyncTask(CompletableDeferred())
+              },
+              repeatInterval = 1.minutes,
+            )
+          }
+        }
+        .awaitAll()
+      delay(2_000)
+    } finally {
+      Sync.cancelPeriodicSync<TestFhirSyncTask>()
+    }
+
+    assertEquals(1, cycles)
+  }
+
+  @Test
   fun cancelOneTimeSync_whileRunning_emitsCancelled() = runTest {
     val gate = CompletableDeferred<Unit>()
     val statusFlow = Sync.oneTimeSync(taskFactory = { TestFhirSyncTask(gate) })
@@ -150,50 +188,5 @@ class SyncTest {
 
     val terminal = statusFlow.first { it !is CurrentSyncJobStatus.Running }
     assertIs<CurrentSyncJobStatus.Cancelled>(terminal)
-  }
-
-  @Test
-  fun periodicSync_start_runsFirstCycleImmediately() = runTest {
-    val firstAttempt = CompletableDeferred<Unit>()
-
-    Sync.periodicSync(
-      taskFactory = {
-        firstAttempt.complete(Unit)
-        TestFhirSyncTask()
-      },
-      // Long enough that only one cycle should fire during this test's lifetime.
-      repeatInterval = 1.minutes,
-    )
-
-    // No withTimeout wrapper here on purpose: withTimeout schedules its cancellation on the
-    // *test* dispatcher's virtual-time scheduler, which auto-advances past it near-instantly
-    // once this coroutine looks "idle" (runTest doesn't know about the real work happening on
-    // Sync's separate syncDispatcher) — a virtual/real time mismatch that made this test flake.
-    // A plain await() is a real suspension resolved only when the background coroutine actually
-    // completes it; runTest's own real-time dispatch timeout is the safety net if it never does.
-    firstAttempt.await()
-
-    Sync.cancelPeriodicSync<TestFhirSyncTask>()
-  }
-
-  @Test
-  fun periodicSync_calledTwice_doesNotStartASecondCompetingLoop() = runTest {
-    var startCount = 0
-    val firstAttemptStarted = CompletableDeferred<Unit>()
-    val factory: () -> TestFhirSyncTask = {
-      startCount++
-      firstAttemptStarted.complete(Unit)
-      TestFhirSyncTask()
-    }
-
-    Sync.periodicSync(taskFactory = factory, repeatInterval = 1.minutes)
-    firstAttemptStarted.await()
-    // The first cycle's loop is now sleeping the 1-minute interval, so it's still "active" —
-    // this second call must see that and no-op rather than starting a competing loop.
-    Sync.periodicSync(taskFactory = factory, repeatInterval = 1.minutes)
-
-    assertEquals(1, startCount)
-
-    Sync.cancelPeriodicSync<TestFhirSyncTask>()
   }
 }

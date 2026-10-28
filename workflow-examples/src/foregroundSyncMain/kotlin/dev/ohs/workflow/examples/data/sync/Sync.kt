@@ -137,6 +137,8 @@ internal object Sync {
               runAttemptsWithRetry(taskFactory, uniqueWorkName, retryConfiguration, syncTimeout) {
                 statusFlow.emit(it)
               }
+            mutex.withLock { activeSyncs.remove(uniqueWorkName) }
+            removeUniqueWorkNameInDataStore(fhirDataStore, uniqueWorkName)
             when (lastResult) {
               is SyncJobStatus.Succeeded ->
                 statusFlow.emit(CurrentSyncJobStatus.Succeeded(lastResult.timestamp))
@@ -147,8 +149,6 @@ internal object Sync {
                   )
                 )
             }
-            removeUniqueWorkNameInDataStore(fhirDataStore, uniqueWorkName)
-            mutex.withLock { activeSyncs.remove(uniqueWorkName) }
           }
         SyncHandle(job, statusFlow).also { activeSyncs[uniqueWorkName] = it } to true
       }
@@ -166,30 +166,25 @@ internal object Sync {
     repeatInterval: Duration,
     retryConfiguration: RetryConfiguration?,
   ) {
-    mutex
-      .withLock { activePeriodicJobs[uniqueWorkName] }
-      ?.takeIf { it.isActive }
-      ?.let {
-        return
-      }
-
-    val job =
-      scope.launch {
-        while (true) {
-          if (isNetworkConnected()) {
-            runAttemptsWithRetry(
-              taskFactory,
-              uniqueWorkName,
-              retryConfiguration,
-              syncTimeout = null,
-            ) {}
-          } else {
-            Logger.d { "Periodic sync cycle skipped for $uniqueWorkName — offline" }
+    mutex.withLock {
+      if (activePeriodicJobs[uniqueWorkName]?.isActive == true) return
+      activePeriodicJobs[uniqueWorkName] =
+        scope.launch {
+          while (true) {
+            if (isNetworkConnected()) {
+              runAttemptsWithRetry(
+                taskFactory,
+                uniqueWorkName,
+                retryConfiguration,
+                syncTimeout = null,
+              ) {}
+            } else {
+              Logger.d { "Periodic sync cycle skipped for $uniqueWorkName — offline" }
+            }
+            delay(repeatInterval)
           }
-          delay(repeatInterval)
         }
-      }
-    mutex.withLock { activePeriodicJobs[uniqueWorkName] = job }
+    }
   }
 
   suspend fun cancelSync(uniqueWorkName: String) {
