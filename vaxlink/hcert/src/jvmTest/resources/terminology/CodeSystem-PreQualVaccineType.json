@@ -1,0 +1,197 @@
+{
+  "resourceType" : "CodeSystem",
+  "id" : "PreQualVaccineType",
+  "text" : {
+    "status" : "generated",
+    "div" : "<div xmlns=\"http://www.w3.org/1999/xhtml\"><p class=\"res-header-id\"><b>Generated Narrative: CodeSystem PreQualVaccineType</b></p><a name=\"PreQualVaccineType\"> </a><a name=\"hcPreQualVaccineType\"> </a><p>This  code system <code>http://smart.who.int/pcmt-vaxprequal/CodeSystem/PreQualVaccineType</code> defines the following codes:</p><table class=\"codes\"><tr><td style=\"white-space:nowrap\"><b>Code</b></td><td><b>Display</b></td></tr><tr><td style=\"white-space:nowrap\">BCG<a name=\"PreQualVaccineType-BCG\"> </a></td><td>BCG</td></tr><tr><td style=\"white-space:nowrap\">C19<a name=\"PreQualVaccineType-C19\"> </a></td><td>C-19</td></tr><tr><td style=\"white-space:nowrap\">DT<a name=\"PreQualVaccineType-DT\"> </a></td><td>DT</td></tr><tr><td style=\"white-space:nowrap\">DTaP<a name=\"PreQualVaccineType-DTaP\"> </a></td><td>DTaP</td></tr><tr><td style=\"white-space:nowrap\">DTaPHepBIPVHib<a name=\"PreQualVaccineType-DTaPHepBIPVHib\"> </a></td><td>DTaP-HepB-IPV-Hib</td></tr><tr><td style=\"white-space:nowrap\">DTwP<a name=\"PreQualVaccineType-DTwP\"> </a></td><td>DTwP</td></tr><tr><td style=\"white-space:nowrap\">DTwPHepBHib<a name=\"PreQualVaccineType-DTwPHepBHib\"> </a></td><td>DTwP-HepB+Hib</td></tr><tr><td style=\"white-space:nowrap\">DTwPHib<a name=\"PreQualVaccineType-DTwPHib\"> </a></td><td>DTwP+Hib</td></tr><tr><td style=\"white-space:nowrap\">EBOV<a name=\"PreQualVaccineType-EBOV\"> </a></td><td>EBOV</td></tr><tr><td style=\"white-space:nowrap\">HPV<a name=\"PreQualVaccineType-HPV\"> </a></td><td>HPV</td></tr><tr><td style=\"white-space:nowrap\">HepA<a name=\"PreQualVaccineType-HepA\"> </a></td><td>HepA</td></tr><tr><td style=\"white-space:nowrap\">HepB<a name=\"PreQualVaccineType-HepB\"> </a></td><td>HepB</td></tr><tr><td style=\"white-space:nowrap\">Hib<a name=\"PreQualVaccineType-Hib\"> </a></td><td>Hib</td></tr><tr><td style=\"white-space:nowrap\">IIV3<a name=\"PreQualVaccineType-IIV3\"> </a></td><td>IIV3</td></tr><tr><td style=\"white-space:nowrap\">IIV4<a name=\"PreQualVaccineType-IIV4\"> </a></td><td>IIV4</td></tr><tr><td style=\"white-space:nowrap\">IIVPandemic<a name=\"PreQualVaccineType-IIVPandemic\"> </a></td><td>IIVPandemic</td></tr><tr><td style=\"white-space:nowrap\">IPV<a name=\"PreQualVaccineType-IPV\"> </a></td><td>IPV</td></tr><tr><td style=\"white-space:nowrap\">JE<a name=\"PreQualVaccineType-JE\"> </a></td><td>JE</td></tr><tr><td style=\"white-space:nowrap\">LARV<a name=\"PreQualVaccineType-LARV\"> </a></td><td>LARV</td></tr><tr><td style=\"white-space:nowrap\">M<a name=\"PreQualVaccineType-M\"> </a></td><td>M</td></tr><tr><td style=\"white-space:nowrap\">MMR<a name=\"PreQualVaccineType-MMR\"> </a></td><td>MMR</td></tr><tr><td style=\"white-space:nowrap\">MR<a name=\"PreQualVaccineType-MR\"> </a></td><td>MR</td></tr><tr><td style=\"white-space:nowrap\">Malaria<a name=\"PreQualVaccineType-Malaria\"> </a></td><td>Malaria</td></tr><tr><td style=\"white-space:nowrap\">MenA<a name=\"PreQualVaccineType-MenA\"> </a></td><td>MenA</td></tr><tr><td style=\"white-space:nowrap\">MenACYW135<a name=\"PreQualVaccineType-MenACYW135\"> </a></td><td>MenACYW-135</td></tr><tr><td style=\"white-space:nowrap\">MenACYWX<a name=\"PreQualVaccineType-MenACYWX\"> </a></td><td>MenACYWX</td></tr><tr><td style=\"white-space:nowrap\">OCV<a name=\"PreQualVaccineType-OCV\"> </a></td><td>OCV</td></tr><tr><td style=\"white-space:nowrap\">PCV<a name=\"PreQualVaccineType-PCV\"> </a></td><td>PCV</td></tr><tr><td style=\"white-space:nowrap\">R<a name=\"PreQualVaccineType-R\"> </a></td><td>R</td></tr><tr><td style=\"white-space:nowrap\">Rabies<a name=\"PreQualVaccineType-Rabies\"> </a></td><td>Rabies</td></tr><tr><td style=\"white-space:nowrap\">TDV<a name=\"PreQualVaccineType-TDV\"> </a></td><td>TDV</td></tr><tr><td style=\"white-space:nowrap\">TT<a name=\"PreQualVaccineType-TT\"> </a></td><td>TT</td></tr><tr><td style=\"white-space:nowrap\">Typhoid<a name=\"PreQualVaccineType-Typhoid\"> </a></td><td>Typhoid</td></tr><tr><td style=\"white-space:nowrap\">VAR<a name=\"PreQualVaccineType-VAR\"> </a></td><td>VAR</td></tr><tr><td style=\"white-space:nowrap\">YF<a name=\"PreQualVaccineType-YF\"> </a></td><td>YF</td></tr><tr><td style=\"white-space:nowrap\">bOPV<a name=\"PreQualVaccineType-bOPV\"> </a></td><td>bOPV</td></tr><tr><td style=\"white-space:nowrap\">dT<a name=\"PreQualVaccineType-dT\"> </a></td><td>dT</td></tr><tr><td style=\"white-space:nowrap\">mOPV1<a name=\"PreQualVaccineType-mOPV1\"> </a></td><td>mOPV1</td></tr><tr><td style=\"white-space:nowrap\">mOPV2<a name=\"PreQualVaccineType-mOPV2\"> </a></td><td>mOPV2</td></tr><tr><td style=\"white-space:nowrap\">mOPV3<a name=\"PreQualVaccineType-mOPV3\"> </a></td><td>mOPV3</td></tr><tr><td style=\"white-space:nowrap\">nOPV2<a name=\"PreQualVaccineType-nOPV2\"> </a></td><td>nOPV2</td></tr><tr><td style=\"white-space:nowrap\">sIPV<a name=\"PreQualVaccineType-sIPV\"> </a></td><td>sIPV</td></tr><tr><td style=\"white-space:nowrap\">tOPV<a name=\"PreQualVaccineType-tOPV\"> </a></td><td>tOPV</td></tr></table></div>"
+  },
+  "url" : "http://smart.who.int/pcmt-vaxprequal/CodeSystem/PreQualVaccineType",
+  "version" : "0.2.0",
+  "name" : "PreQualVaccineType",
+  "title" : "WHO PreQualificaiton Vaccine VaccineTypes",
+  "status" : "draft",
+  "date" : "2026-10-20T13:52:37+00:00",
+  "publisher" : "WHO",
+  "contact" : [{
+    "name" : "WHO",
+    "telecom" : [{
+      "system" : "url",
+      "value" : "http://who.int"
+    }]
+  }],
+  "description" : "WHO PreQualificaiton Vaccine VaccineTypes",
+  "content" : "complete",
+  "count" : 43,
+  "concept" : [{
+    "code" : "BCG",
+    "display" : "BCG"
+  },
+  {
+    "code" : "C19",
+    "display" : "C-19"
+  },
+  {
+    "code" : "DT",
+    "display" : "DT"
+  },
+  {
+    "code" : "DTaP",
+    "display" : "DTaP"
+  },
+  {
+    "code" : "DTaPHepBIPVHib",
+    "display" : "DTaP-HepB-IPV-Hib"
+  },
+  {
+    "code" : "DTwP",
+    "display" : "DTwP"
+  },
+  {
+    "code" : "DTwPHepBHib",
+    "display" : "DTwP-HepB+Hib"
+  },
+  {
+    "code" : "DTwPHib",
+    "display" : "DTwP+Hib"
+  },
+  {
+    "code" : "EBOV",
+    "display" : "EBOV"
+  },
+  {
+    "code" : "HPV",
+    "display" : "HPV"
+  },
+  {
+    "code" : "HepA",
+    "display" : "HepA"
+  },
+  {
+    "code" : "HepB",
+    "display" : "HepB"
+  },
+  {
+    "code" : "Hib",
+    "display" : "Hib"
+  },
+  {
+    "code" : "IIV3",
+    "display" : "IIV3"
+  },
+  {
+    "code" : "IIV4",
+    "display" : "IIV4"
+  },
+  {
+    "code" : "IIVPandemic",
+    "display" : "IIVPandemic"
+  },
+  {
+    "code" : "IPV",
+    "display" : "IPV"
+  },
+  {
+    "code" : "JE",
+    "display" : "JE"
+  },
+  {
+    "code" : "LARV",
+    "display" : "LARV"
+  },
+  {
+    "code" : "M",
+    "display" : "M"
+  },
+  {
+    "code" : "MMR",
+    "display" : "MMR"
+  },
+  {
+    "code" : "MR",
+    "display" : "MR"
+  },
+  {
+    "code" : "Malaria",
+    "display" : "Malaria"
+  },
+  {
+    "code" : "MenA",
+    "display" : "MenA"
+  },
+  {
+    "code" : "MenACYW135",
+    "display" : "MenACYW-135"
+  },
+  {
+    "code" : "MenACYWX",
+    "display" : "MenACYWX"
+  },
+  {
+    "code" : "OCV",
+    "display" : "OCV"
+  },
+  {
+    "code" : "PCV",
+    "display" : "PCV"
+  },
+  {
+    "code" : "R",
+    "display" : "R"
+  },
+  {
+    "code" : "Rabies",
+    "display" : "Rabies"
+  },
+  {
+    "code" : "TDV",
+    "display" : "TDV"
+  },
+  {
+    "code" : "TT",
+    "display" : "TT"
+  },
+  {
+    "code" : "Typhoid",
+    "display" : "Typhoid"
+  },
+  {
+    "code" : "VAR",
+    "display" : "VAR"
+  },
+  {
+    "code" : "YF",
+    "display" : "YF"
+  },
+  {
+    "code" : "bOPV",
+    "display" : "bOPV"
+  },
+  {
+    "code" : "dT",
+    "display" : "dT"
+  },
+  {
+    "code" : "mOPV1",
+    "display" : "mOPV1"
+  },
+  {
+    "code" : "mOPV2",
+    "display" : "mOPV2"
+  },
+  {
+    "code" : "mOPV3",
+    "display" : "mOPV3"
+  },
+  {
+    "code" : "nOPV2",
+    "display" : "nOPV2"
+  },
+  {
+    "code" : "sIPV",
+    "display" : "sIPV"
+  },
+  {
+    "code" : "tOPV",
+    "display" : "tOPV"
+  }]
+}

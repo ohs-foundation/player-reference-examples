@@ -1,0 +1,44 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "PreQualProductToTypeLocal",
+  "url": "https://nawitech.github.io/vaxlink-ig/ConceptMap/PreQualProductToTypeLocal",
+  "title": "WHO PreQual product to vaccine type (local, provisional)",
+  "description": "The vaccine type of each PreQual product the demo uses, read off the WHO PreQual vaccine database by hand. Local and provisional: WHO has been asked to publish this map in the vaxprequal IG, and this instance is replaced by it when that lands.",
+  "name": "PreQualProductToTypeLocal",
+  "status": "draft",
+  "experimental": true,
+  "date": "2026-10-31",
+  "publisher": "Nawitech Limited",
+  "sourceCanonical": "http://smart.who.int/pcmt-vaxprequal/ValueSet/PreQualProductIds",
+  "targetCanonical": "http://smart.who.int/pcmt-vaxprequal/ValueSet/PreQualVaccineType",
+  "group": [
+    {
+      "source": "http://smart.who.int/pcmt-vaxprequal/CodeSystem/PreQualProductIds",
+      "target": "http://smart.who.int/pcmt-vaxprequal/CodeSystem/PreQualVaccineType",
+      "element": [
+        {
+          "code": "a3K3X000006MiiXUAS",
+          "display": "Hepatitis B Vaccine (rDNA) (Paediatric), FVP-P-132",
+          "target": [
+            {
+              "code": "HepB",
+              "display": "HepB",
+              "equivalence": "wider"
+            }
+          ]
+        },
+        {
+          "code": "a3K3X000006MiiCUAS",
+          "display": "BCG Vaccine, FVP-P-73",
+          "target": [
+            {
+              "code": "BCG",
+              "display": "BCG",
+              "equivalence": "wider"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
