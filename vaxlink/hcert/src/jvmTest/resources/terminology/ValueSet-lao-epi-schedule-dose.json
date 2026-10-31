@@ -1,0 +1,17 @@
+{
+  "resourceType": "ValueSet",
+  "status": "draft",
+  "name": "LaoEpiScheduleDoseVS",
+  "id": "lao-epi-schedule-dose",
+  "title": "Lao PDR EPI schedule doses",
+  "description": "Every dose of the Lao PDR national immunization schedule.",
+  "url": "https://nawitech.github.io/vaxlink-ig/ValueSet/lao-epi-schedule-dose",
+  "experimental": true,
+  "compose": {
+    "include": [
+      {
+        "system": "https://nawitech.github.io/vaxlink-ig/CodeSystem/lao-epi-schedule-dose"
+      }
+    ]
+  }
+}

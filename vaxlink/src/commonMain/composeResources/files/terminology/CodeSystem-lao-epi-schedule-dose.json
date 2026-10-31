@@ -1,0 +1,357 @@
+{
+  "resourceType": "CodeSystem",
+  "status": "draft",
+  "content": "complete",
+  "name": "LaoEpiScheduleDose",
+  "id": "lao-epi-schedule-dose",
+  "title": "Lao PDR EPI schedule dose",
+  "description": "The doses of the Lao PDR national immunization schedule, from the Ministry of Health 2026 vaccination list. One code per schedule dose, with the age band where the list gives one.",
+  "url": "https://nawitech.github.io/vaxlink-ig/CodeSystem/lao-epi-schedule-dose",
+  "concept": [
+    {
+      "code": "HB0-24H",
+      "display": "HB0 <24 Hours",
+      "definition": "Hepatitis B birth dose, within 24 hours of birth",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "HB"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 0
+        }
+      ]
+    },
+    {
+      "code": "HB0-7D",
+      "display": "HB0 <7 days",
+      "definition": "Hepatitis B birth dose, within 7 days of birth",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "HB"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 0
+        }
+      ]
+    },
+    {
+      "code": "PENTA-1",
+      "display": "Penta 1",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "Penta"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 1
+        }
+      ]
+    },
+    {
+      "code": "PENTA-2",
+      "display": "Penta 2",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "Penta"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 2
+        }
+      ]
+    },
+    {
+      "code": "PENTA-3",
+      "display": "Penta 3",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "Penta"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 3
+        }
+      ]
+    },
+    {
+      "code": "OPV-1",
+      "display": "OPV 1",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "OPV"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 1
+        }
+      ]
+    },
+    {
+      "code": "OPV-2",
+      "display": "OPV 2",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "OPV"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 2
+        }
+      ]
+    },
+    {
+      "code": "OPV-3",
+      "display": "OPV 3",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "OPV"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 3
+        }
+      ]
+    },
+    {
+      "code": "IPV-1",
+      "display": "IPV 1",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "IPV"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 1
+        }
+      ]
+    },
+    {
+      "code": "IPV-2",
+      "display": "IPV 2",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "IPV"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 2
+        }
+      ]
+    },
+    {
+      "code": "IPV-3",
+      "display": "IPV 3",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "IPV"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 3
+        }
+      ]
+    },
+    {
+      "code": "PCV-1",
+      "display": "PCV 1",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "PCV"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 1
+        }
+      ]
+    },
+    {
+      "code": "PCV-2",
+      "display": "PCV 2",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "PCV"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 2
+        }
+      ]
+    },
+    {
+      "code": "PCV-3",
+      "display": "PCV 3",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "PCV"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 3
+        }
+      ]
+    },
+    {
+      "code": "ROTA-1",
+      "display": "Rota 1",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "Rota"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 1
+        }
+      ]
+    },
+    {
+      "code": "ROTA-2",
+      "display": "Rota 2",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "Rota"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 2
+        }
+      ]
+    },
+    {
+      "code": "ROTA-3",
+      "display": "Rota 3",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "Rota"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 3
+        }
+      ]
+    },
+    {
+      "code": "MR1-9-11M",
+      "display": "MR1 9-11 Months",
+      "definition": "First measles-rubella dose, given at 9 to 11 months",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "MR"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 1
+        }
+      ]
+    },
+    {
+      "code": "MR1-12-59M",
+      "display": "MR1 12-59 Months",
+      "definition": "First measles-rubella dose, caught up at 12 to 59 months",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "MR"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 1
+        }
+      ]
+    },
+    {
+      "code": "MR2-12-18M",
+      "display": "MR2 12-18 Months",
+      "definition": "Second measles-rubella dose, given at 12 to 18 months",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "MR"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 2
+        }
+      ]
+    },
+    {
+      "code": "MR2-19-59M",
+      "display": "MR2 19-59 Months",
+      "definition": "Second measles-rubella dose, caught up at 19 to 59 months",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "MR"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 2
+        }
+      ]
+    },
+    {
+      "code": "JE-9-11M",
+      "display": "JE 9-11 months",
+      "definition": "Japanese encephalitis, given at 9 to 11 months",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "JE"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 1
+        }
+      ]
+    },
+    {
+      "code": "JE-OVER-1Y",
+      "display": "JE over 1 year",
+      "definition": "Japanese encephalitis, caught up after the first birthday",
+      "property": [
+        {
+          "code": "vaccineType",
+          "valueString": "JE"
+        },
+        {
+          "code": "doseNumber",
+          "valueInteger": 1
+        }
+      ]
+    }
+  ],
+  "experimental": true,
+  "caseSensitive": true,
+  "property": [
+    {
+      "code": "vaccineType",
+      "description": "The vaccine the dose belongs to, as the list names it",
+      "type": "string"
+    },
+    {
+      "code": "doseNumber",
+      "description": "Dose number within the series, when the list gives one",
+      "type": "integer"
+    }
+  ],
+  "count": 23
+}

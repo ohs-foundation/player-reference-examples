@@ -65,6 +65,15 @@ when (val result = engine.verify(hc1, trust, HcertClock.nowEpochSeconds())) {
 - Codes are never translated. The Lao coding is added at J3 only after a clinician confirms it, outside
   this module (NE-3).
 
+## Terminology
+
+`ConceptMaps.kt` reads the two maps the VaxLink IG (https://github.com/nawitech/vaxlink-ig) generates,
+bundled with the app under `files/terminology/`: `PreQualProducts.withTypesFrom` gives each scanned
+product its vaccine type from `ConceptMap/PreQualProductToTypeLocal` (WHO's map once published), and
+`LaoDoseMap.propose` turns the type into a `DoseProposal` from `ConceptMap/PreQualTypeToLaoDose`:
+`Mapped` (HepB, add the Lao coding and record it as automatic), `Unmatched` (BCG, the clinician
+decides) or `Unknown`. `ConceptMapsTest` pins all three on the generated files.
+
 ## Building the library
 
 The library is not on Maven Central yet. Build it from the checkout and publish it locally:

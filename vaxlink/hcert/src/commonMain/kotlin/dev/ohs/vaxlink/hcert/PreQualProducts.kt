@@ -51,6 +51,20 @@ class PreQualProducts(private val products: Map<String, PreQualProduct>) {
 
   fun plus(other: PreQualProducts): PreQualProducts = PreQualProducts(products + other.products)
 
+  /**
+   * Sets each product's vaccine type from a product-to-type ConceptMap: WHO's once it is published,
+   * `ConceptMap/PreQualProductToTypeLocal` from the VaxLink IG until then. A product the map does
+   * not mention keeps whatever type it had.
+   */
+  fun withTypesFrom(productToTypeConceptMapJson: String): PreQualProducts {
+    val index = ConceptMapIndex.parse(productToTypeConceptMapJson)
+    val typed =
+      products.mapValues { (id, product) ->
+        index.firstTarget(id)?.code?.let { product.copy(vaccineType = it) } ?: product
+      }
+    return PreQualProducts(typed)
+  }
+
   companion object {
     /** The two products of the WHO worked example, named from the PreQual vaccine database. */
     val DEMO: PreQualProducts =

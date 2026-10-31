@@ -1,0 +1,157 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "PreQualTypeToLaoDose",
+  "url": "https://nawitech.github.io/vaxlink-ig/ConceptMap/PreQualTypeToLaoDose",
+  "title": "WHO PreQual vaccine type to Lao PDR schedule dose",
+  "description": "The national map from a WHO PreQual vaccine type to the Lao schedule dose a dose of that type counts as, at the first dose of each series. A type with no target here (BCG) is not on the Lao schedule, so a clinician has to decide what a foreign dose of it means. The dose number of a later dose comes from the child's immunization history, not from this map.",
+  "name": "PreQualTypeToLaoDose",
+  "status": "draft",
+  "experimental": true,
+  "date": "2026-10-31",
+  "publisher": "Nawitech Limited",
+  "purpose": "Lets a clinic app propose the Lao schedule dose for a vaccine type read from a foreign certificate, and makes visible where no such dose exists.",
+  "sourceCanonical": "http://smart.who.int/pcmt-vaxprequal/ValueSet/PreQualVaccineType",
+  "targetCanonical": "https://nawitech.github.io/vaxlink-ig/ValueSet/lao-epi-schedule-dose",
+  "group": [
+    {
+      "source": "http://smart.who.int/pcmt-vaxprequal/CodeSystem/PreQualVaccineType",
+      "target": "https://nawitech.github.io/vaxlink-ig/CodeSystem/lao-epi-schedule-dose",
+      "element": [
+        {
+          "code": "HepB",
+          "display": "HepB",
+          "target": [
+            {
+              "code": "HB0-24H",
+              "display": "HB0 <24 Hours",
+              "equivalence": "equivalent",
+              "comment": "A dose on the day of birth. One to six days after birth is HB0-7D; the app decides from the dates."
+            }
+          ]
+        },
+        {
+          "code": "BCG",
+          "display": "BCG",
+          "target": [
+            {
+              "equivalence": "unmatched",
+              "comment": "Not on the Lao PDR 2026 schedule. A foreign BCG dose needs a clinician's decision."
+            }
+          ]
+        },
+        {
+          "code": "DTwPHepBHib",
+          "display": "DTwP-HepB+Hib",
+          "target": [
+            {
+              "code": "PENTA-1",
+              "display": "Penta 1",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "bOPV",
+          "display": "bOPV",
+          "target": [
+            {
+              "code": "OPV-1",
+              "display": "OPV 1",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "tOPV",
+          "display": "tOPV",
+          "target": [
+            {
+              "code": "OPV-1",
+              "display": "OPV 1",
+              "equivalence": "wider"
+            }
+          ]
+        },
+        {
+          "code": "nOPV2",
+          "display": "nOPV2",
+          "target": [
+            {
+              "code": "OPV-1",
+              "display": "OPV 1",
+              "equivalence": "inexact",
+              "comment": "A campaign monovalent vaccine; counting it as a routine OPV dose is a programme decision."
+            }
+          ]
+        },
+        {
+          "code": "IPV",
+          "display": "IPV",
+          "target": [
+            {
+              "code": "IPV-1",
+              "display": "IPV 1",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "sIPV",
+          "display": "sIPV",
+          "target": [
+            {
+              "code": "IPV-1",
+              "display": "IPV 1",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "PCV",
+          "display": "PCV",
+          "target": [
+            {
+              "code": "PCV-1",
+              "display": "PCV 1",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "R",
+          "display": "R",
+          "target": [
+            {
+              "code": "ROTA-1",
+              "display": "Rota 1",
+              "equivalence": "equivalent",
+              "comment": "Assumes the PreQual type R is rotavirus; to confirm with WHO."
+            }
+          ]
+        },
+        {
+          "code": "MR",
+          "display": "MR",
+          "target": [
+            {
+              "code": "MR1-9-11M",
+              "display": "MR1 9-11 Months",
+              "equivalence": "equivalent"
+            }
+          ]
+        },
+        {
+          "code": "JE",
+          "display": "JE",
+          "target": [
+            {
+              "code": "JE-9-11M",
+              "display": "JE 9-11 months",
+              "equivalence": "equivalent"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
