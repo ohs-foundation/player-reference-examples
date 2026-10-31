@@ -1,0 +1,21 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "patient-registration",
+  "status": "active",
+  "title": "Register patient",
+  "item": [
+    { "linkId": "given", "text": "First name", "type": "string", "required": true },
+    { "linkId": "family", "text": "Last name", "type": "string", "required": true },
+    {
+      "linkId": "gender",
+      "text": "Sex",
+      "type": "choice",
+      "required": true,
+      "answerOption": [
+        { "valueCoding": { "system": "http://hl7.org/fhir/administrative-gender", "code": "female", "display": "Female" } },
+        { "valueCoding": { "system": "http://hl7.org/fhir/administrative-gender", "code": "male", "display": "Male" } }
+      ]
+    },
+    { "linkId": "birth-date", "text": "Date of birth", "type": "date", "required": true }
+  ]
+}

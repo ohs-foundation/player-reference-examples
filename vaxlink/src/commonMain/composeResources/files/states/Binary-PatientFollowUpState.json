@@ -1,0 +1,1 @@
+{"resourceType": "http://ohs.dev/StructureDefinition/ViewJoinMap", "name": "patientFollowUp", "from": "revIncluded", "resource": "Task", "view": "FollowUp", "searchParam": "subject"}

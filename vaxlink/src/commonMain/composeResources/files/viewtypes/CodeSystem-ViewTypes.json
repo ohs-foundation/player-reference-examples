@@ -1,0 +1,28 @@
+{
+  "resourceType": "CodeSystem",
+  "id": "view-type-codesystem",
+  "url": "http://example.org",
+  "name": "ViewTypeCS",
+  "title": "UI Component Types",
+  "status": "active",
+  "content": "complete",
+  "description": "View types this app renders. Each code selects a component the renderer binds to.",
+  "concept": [
+    {
+      "code": "PatientCard",
+      "display": "Patient summary list card"
+    },
+    {
+      "code": "PatientHeader",
+      "display": "Patient detail header"
+    },
+    {
+      "code": "CareItem",
+      "display": "Care activity row on the patient profile"
+    },
+    {
+      "code": "SectionCard",
+      "display": "Titled section on the patient profile"
+    }
+  ]
+}
