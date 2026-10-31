@@ -163,6 +163,10 @@ jobs:
         with:
           build-root-directory: vaxlink
 
+      # The WHO HCERT library is not on Maven Central yet: build it from source into ~/.m2.
+      - name: Publish the HCERT library to Maven Local
+        run: ./scripts/publish-hcert-local.sh
+
       - name: Decode keystore
         if: needs.preflight.outputs.signing_enabled == 'true'
         env:
@@ -261,6 +265,10 @@ jobs:
         with:
           build-root-directory: vaxlink
 
+      # The WHO HCERT library is not on Maven Central yet: build it from source into ~/.m2.
+      - name: Publish the HCERT library to Maven Local
+        run: ./scripts/publish-hcert-local.sh
+
       - name: Install rpmbuild
         if: matrix.artifact == 'linux-rpm'
         run: sudo apt-get update && sudo apt-get install -y rpm
@@ -316,6 +324,10 @@ jobs:
         with:
           build-root-directory: vaxlink
 
+      # The WHO HCERT library is not on Maven Central yet: build it from source into ~/.m2.
+      - name: Publish the HCERT library to Maven Local
+        run: ./scripts/publish-hcert-local.sh
+
       - name: Create distributable app image
         env:
           VERSION_NAME: ${{ needs.preflight.outputs.version_name }}
@@ -370,6 +382,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           build-root-directory: vaxlink
+
+      # The WHO HCERT library is not on Maven Central yet: build it from source into ~/.m2.
+      - name: Publish the HCERT library to Maven Local
+        run: ./scripts/publish-hcert-local.sh
 
       - name: Build web distribution
         env:

@@ -90,7 +90,8 @@ data class DvcFhirResources(
  *   the DSC, with the certificate fingerprint as the source entity.
  * - Nothing here translates codes. A Lao coding is added at J3 outside this mapper: automatically
  *   when the national ConceptMap has a target (and recorded as automatic), otherwise only after a
- *   clinician confirms it. With the Lao list of 30 Oct 2026, HepB maps and BCG is the card that asks.
+ *   clinician confirms it. With the Lao list of 30 Oct 2026, HepB maps and BCG is the card that
+ *   asks.
  */
 object DvcFhirMapper {
   const val NATIONALITY_EXTENSION = "http://hl7.org/fhir/StructureDefinition/patient-nationality"

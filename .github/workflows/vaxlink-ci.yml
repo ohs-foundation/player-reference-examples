@@ -57,6 +57,10 @@ jobs:
         with:
           build-root-directory: vaxlink
 
+      # The WHO HCERT library is not on Maven Central yet: build it from source into ~/.m2.
+      - name: Publish the HCERT library to Maven Local
+        run: ./scripts/publish-hcert-local.sh
+
       - name: Run spotlessCheck
         run: ./gradlew spotlessCheck --stacktrace
 
@@ -91,6 +95,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           build-root-directory: vaxlink
+
+      # The WHO HCERT library is not on Maven Central yet: build it from source into ~/.m2.
+      - name: Publish the HCERT library to Maven Local
+        run: ./scripts/publish-hcert-local.sh
 
       - name: Run ${{ matrix.label }}
         run: >-
@@ -138,6 +146,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           build-root-directory: vaxlink
+
+      # The WHO HCERT library is not on Maven Central yet: build it from source into ~/.m2.
+      - name: Publish the HCERT library to Maven Local
+        run: ./scripts/publish-hcert-local.sh
 
       - name: Cache Kotlin/Native toolchain
         uses: actions/cache@v4

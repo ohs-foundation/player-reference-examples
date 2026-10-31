@@ -70,9 +70,11 @@ when (val result = engine.verify(hc1, trust, HcertClock.nowEpochSeconds())) {
 The library is not on Maven Central yet. Build it from the checkout and publish it locally:
 
 ```bash
-cd ../../smart-trust-tools/tools/hcert-kotlin
-../../../player-reference-examples/vaxlink/gradlew -p . :hcert-core:jvmTest publishToMavenLocal
+scripts/publish-hcert-local.sh                      # clones the pinned commit under build/ and publishes
+scripts/publish-hcert-local.sh ../../smart-trust-tools   # or from an existing checkout
 ```
+
+CI runs the same script before every Gradle step.
 
 That is what `io.github.litlfred:hcert-core:0.1.0` in `gradle/libs.versions.toml` resolves to, through
 the `mavenLocal()` repository in `settings.gradle.kts`. When Carl publishes a release, change the version
